@@ -4,7 +4,9 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme {
-  /* Pink red / Primary */
+  --font-pretendard: var(--font-pretendard);
+
+  /* Color */
   --color-primary-50: #fff0f2;
   --color-primary-100: #ffdede;
   --color-primary-200: #ffc1ca;
@@ -16,6 +18,141 @@
   --color-primary-800: #af051f;
   --color-primary-900: #900c20;
   --color-primary-950: #58000c;
+
+  /* Typo */
+  /* Heading1 - Bold (700) */
+  --typo-h1-base: 700 16px/1.4 var(--font-pretendard);
+  --typo-h1-lg: 700 18px/1.4 var(--font-pretendard);
+  --typo-h1-xl: 700 20px/1.4 var(--font-pretendard);
+  --typo-h1-2xl: 700 22px/1.4 var(--font-pretendard);
+  --typo-h1-3xl: 700 24px/1.4 var(--font-pretendard);
+  --typo-h1-4xl: 700 28px/1.4 var(--font-pretendard);
+  --typo-h1-5xl: 700 30px/1.4 var(--font-pretendard);
+  --typo-h1-6xl: 700 36px/1.4 var(--font-pretendard);
+
+  /* Heading2 - Semibold (600) */
+  --typo-h2-base: 600 16px/1.4 var(--font-pretendard);
+  --typo-h2-lg: 600 18px/1.4 var(--font-pretendard);
+  --typo-h2-xl: 600 20px/1.4 var(--font-pretendard);
+  --typo-h2-2xl: 600 22px/1.4 var(--font-pretendard);
+  --typo-h2-3xl: 600 24px/1.4 var(--font-pretendard);
+  --typo-h2-4xl: 600 28px/1.4 var(--font-pretendard);
+  --typo-h2-5xl: 600 30px/1.4 var(--font-pretendard);
+  --typo-h2-6xl: 600 36px/1.4 var(--font-pretendard);
+
+  /* Body1 - Medium (500) */
+  --typo-body1-xs: 500 12px/1.4 var(--font-pretendard);
+  --typo-body1-sm: 500 14px/1.4 var(--font-pretendard);
+  --typo-body1-base: 500 16px/1.4 var(--font-pretendard);
+  --typo-body1-lg: 500 18px/1.4 var(--font-pretendard);
+  --typo-body1-xl: 500 20px/1.4 var(--font-pretendard);
+
+  /* Body2 - Regular (400) */
+  --typo-body2-xs: 400 12px/1.4 var(--font-pretendard);
+  --typo-body2-sm: 400 14px/1.4 var(--font-pretendard);
+  --typo-body2-base: 400 16px/1.4 var(--font-pretendard);
+  --typo-body2-lg: 400 18px/1.4 var(--font-pretendard);
+  --typo-body2-xl: 400 20px/1.4 var(--font-pretendard);
+
+  /* Footnote - Regular (400) */
+  --typo-footnote-xxs: 400 11px/1.4 var(--font-pretendard);
+}
+
+@layer utilities {
+  /* Heading1 */
+  .typo-h1-base {
+    font: var(--typo-h1-base);
+  }
+  .typo-h1-lg {
+    font: var(--typo-h1-lg);
+  }
+  .typo-h1-xl {
+    font: var(--typo-h1-xl);
+  }
+  .typo-h1-2xl {
+    font: var(--typo-h1-2xl);
+  }
+  .typo-h1-3xl {
+    font: var(--typo-h1-3xl);
+  }
+  .typo-h1-4xl {
+    font: var(--typo-h1-4xl);
+  }
+  .typo-h1-5xl {
+    font: var(--typo-h1-5xl);
+  }
+  .typo-h1-6xl {
+    font: var(--typo-h1-6xl);
+  }
+
+  /* Heading2 */
+  .typo-h2-base {
+    font: var(--typo-h2-base);
+  }
+  .typo-h2-lg {
+    font: var(--typo-h2-lg);
+  }
+  .typo-h2-xl {
+    font: var(--typo-h2-xl);
+  }
+  .typo-h2-2xl {
+    font: var(--typo-h2-2xl);
+  }
+  .typo-h2-3xl {
+    font: var(--typo-h2-3xl);
+  }
+  .typo-h2-4xl {
+    font: var(--typo-h2-4xl);
+  }
+  .typo-h2-5xl {
+    font: var(--typo-h2-5xl);
+  }
+  .typo-h2-6xl {
+    font: var(--typo-h2-6xl);
+  }
+
+  /* Body1 */
+  .typo-body1-xs {
+    font: var(--typo-body1-xs);
+  }
+  .typo-body1-sm {
+    font: var(--typo-body1-sm);
+  }
+  .typo-body1-base {
+    font: var(--typo-body1-base);
+  }
+  .typo-body1-lg {
+    font: var(--typo-body1-lg);
+  }
+  .typo-body1-xl {
+    font: var(--typo-body1-xl);
+  }
+
+  /* Body2 */
+  .typo-body2-xs {
+    font: var(--typo-body2-xs);
+  }
+  .typo-body2-sm {
+    font: var(--typo-body2-sm);
+  }
+  .typo-body2-base {
+    font: var(--typo-body2-base);
+  }
+  .typo-body2-lg {
+    font: var(--typo-body2-lg);
+  }
+  .typo-body2-xl {
+    font: var(--typo-body2-xl);
+  }
+
+  /* Footnote */
+  .typo-footnote-xxs {
+    font: var(--typo-footnote-xxs);
+  }
+}
+
+body {
+  font-family: var(--font-pretendard);
 }
 
 @theme inline {
