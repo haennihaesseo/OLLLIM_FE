@@ -51,6 +51,10 @@ export function useRecordingSession() {
   const fullLevelsRef = useRef<number[]>([]);
   const writeIndexRef = useRef(0);
   const lastSampleTimeRef = useRef(0);
+  
+  // Timeline draw animation
+  const timelineAnimationRef = useRef<number | null>(null);
+  const timelineAnimationStartRef = useRef(0);
 
   // MediaRecorder (real recording)
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
@@ -113,7 +117,7 @@ export function useRecordingSession() {
     [GAP]
   );
 
-  const drawFullTimeline = useCallback(() => {
+  const drawFullTimeline = useCallback((visibleRatio = 1) => {
     const full = fullLevelsRef.current;
     if (full.length === 0) return;
 
@@ -131,7 +135,11 @@ export function useRecordingSession() {
       summarized.push(max);
     }
 
-    drawBars(summarized, playbackProgressRef.current);
+    // 애니메이션: visibleRatio만큼만 표시
+    const visibleCount = Math.ceil(summarized.length * visibleRatio);
+    const visibleBars = summarized.slice(0, visibleCount);
+    
+    drawBars(visibleBars, playbackProgressRef.current);
   }, [BAR_COUNT, drawBars]);
   
   const updatePlaybackProgress = useCallback((progress: number) => {
@@ -194,6 +202,40 @@ export function useRecordingSession() {
       animationRef.current = null;
     }
   }, []);
+  
+  const cleanupTimelineAnimation = useCallback(() => {
+    if (timelineAnimationRef.current) {
+      cancelAnimationFrame(timelineAnimationRef.current);
+      timelineAnimationRef.current = null;
+    }
+    timelineAnimationStartRef.current = 0;
+  }, []);
+  
+  const animateTimelineDraw = useCallback((duration = 500) => {
+    cleanupTimelineAnimation();
+    
+    const animate = (currentTime: number) => {
+      if (timelineAnimationStartRef.current === 0) {
+        timelineAnimationStartRef.current = currentTime;
+      }
+      
+      const elapsed = currentTime - timelineAnimationStartRef.current;
+      const progress = Math.min(elapsed / duration, 1);
+      
+      // easeOutCubic 이징 함수 적용
+      const eased = 1 - Math.pow(1 - progress, 3);
+      
+      drawFullTimeline(eased);
+      
+      if (progress < 1) {
+        timelineAnimationRef.current = requestAnimationFrame(animate);
+      } else {
+        cleanupTimelineAnimation();
+      }
+    };
+    
+    timelineAnimationRef.current = requestAnimationFrame(animate);
+  }, [cleanupTimelineAnimation, drawFullTimeline]);
 
   const cleanupMedia = useCallback(async () => {
     // recorder stop은 stop()에서 명시적으로 처리
@@ -323,15 +365,16 @@ export function useRecordingSession() {
     analyserRef.current = null;
     dataArrayRef.current = null;
 
-    // 전체 파형 렌더
-    drawFullTimeline();
+    // 전체 파형 애니메이션으로 렌더
+    animateTimelineDraw(500);
 
     setStatus("stopped");
-  }, [cleanupRAF, drawFullTimeline, status]);
+  }, [animateTimelineDraw, cleanupRAF, status]);
 
   const reset = useCallback(() => {
     // 진행중이면 정리
     cleanupRAF();
+    cleanupTimelineAnimation();
 
     const recorder = mediaRecorderRef.current;
     if (recorder && recorder.state !== "inactive") {
@@ -359,12 +402,13 @@ export function useRecordingSession() {
 
     setAudioBlob(null);
     setStatus("idle");
-  }, [cleanupMedia, cleanupRAF]);
+  }, [cleanupMedia, cleanupRAF, cleanupTimelineAnimation]);
 
   // unmount cleanup
   useEffect(() => {
     return () => {
       cleanupRAF();
+      cleanupTimelineAnimation();
       // recorder/stream/context 정리
       const recorder = mediaRecorderRef.current;
       if (recorder && recorder.state !== "inactive") {
@@ -376,7 +420,7 @@ export function useRecordingSession() {
       }
       cleanupMedia();
     };
-  }, [cleanupMedia, cleanupRAF]);
+  }, [cleanupMedia, cleanupRAF, cleanupTimelineAnimation]);
 
   return {
     canvasRef,
