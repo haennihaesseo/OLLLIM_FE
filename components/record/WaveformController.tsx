@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { RotateCcw } from "lucide-react";
+import { RotateCcw, Play } from "lucide-react";
 import type { ControlPreset } from "hooks/record/useWaveformControllerPreset";
 
 function IconButton({ preset }: { preset: ControlPreset }) {
@@ -72,12 +72,11 @@ function IconButton({ preset }: { preset: ControlPreset }) {
         );
       case "play":
         return (
-          <div
-            className={
-              size === "md"
-                ? "w-0 h-0 border-l-14 border-y-10 border-y-transparent border-l-gray-600 ml-1"
-                : "w-0 h-0 border-l-10 border-y-[7px] border-y-transparent border-l-gray-600 ml-0.5"
-            }
+          <Play
+            size={size === "md" ? 28 : 24}
+            className="text-primary-700"
+            fill="currentColor"
+            aria-hidden="true"
           />
         );
 
