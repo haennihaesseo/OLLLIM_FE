@@ -38,7 +38,7 @@ export function useAudioPlayback(
     const onTime = () => {
       const currentTime = audio.currentTime || 0;
       setCurrentTime(currentTime);
-      
+
       // 재생 진행률 업데이트 콜백 호출
       if (onProgressUpdate && audio.duration > 0) {
         const progress = currentTime / audio.duration;
@@ -73,8 +73,13 @@ export function useAudioPlayback(
   const play = useCallback(async () => {
     const a = audioRef.current;
     if (!a) return;
-    await a.play();
-    setStatus("playing");
+
+    try {
+      await a.play();
+      setStatus("playing");
+    } catch (error) {
+      console.error("Playback failed", error);
+    }
   }, []);
 
   const pause = useCallback(() => {
@@ -91,7 +96,7 @@ export function useAudioPlayback(
     a.currentTime = 0;
     setCurrentTime(0);
     setStatus("idle");
-    
+
     // 재생 중지 시 진행률 초기화
     if (onProgressUpdate) {
       onProgressUpdate(0);

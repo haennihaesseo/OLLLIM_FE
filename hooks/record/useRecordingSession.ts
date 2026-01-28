@@ -63,6 +63,7 @@ export function useRecordingSession() {
 
   const [status, setStatus] = useState<RecordingStatus>("idle");
   const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
+  const [error, setError] = useState<string | null>(null);
   
   // Playback progress for canvas visualization
   const playbackProgressRef = useRef(0);
@@ -267,9 +268,23 @@ export function useRecordingSession() {
     lastSampleTimeRef.current = 0; // RAF 첫 실행 시 설정됨
 
     setAudioBlob(null); // 새 세션이므로 기존 녹음 제거
+    setError(null); // 에러 상태 초기화
 
-    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    streamRef.current = stream;
+    let stream: MediaStream;
+    try {
+      stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      streamRef.current = stream;
+    } catch (err) {
+      // 사용자가 권한을 거부했거나 마이크가 없는 경우
+      const errorMessage =
+        err instanceof Error
+          ? err.message
+          : "마이크 접근 권한을 얻을 수 없습니다.";
+      console.error("[useRecordingSession] getUserMedia failed:", err);
+      setError(errorMessage);
+      // streamRef.current는 할당하지 않고, status는 idle로 유지
+      return;
+    }
 
     // WebAudio analyser
     const audioContext = new AudioContext();
@@ -426,6 +441,7 @@ export function useRecordingSession() {
     canvasRef,
     status, // idle|recording|paused|stopped
     audioBlob, // stop 후 확정
+    error, // 마이크 접근 등의 에러 메시지
     start,
     pause,
     resume,
