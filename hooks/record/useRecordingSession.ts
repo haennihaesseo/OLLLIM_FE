@@ -59,6 +59,9 @@ export function useRecordingSession() {
 
   const [status, setStatus] = useState<RecordingStatus>("idle");
   const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
+  
+  // Playback progress for canvas visualization
+  const playbackProgressRef = useRef(0);
 
   // ===== tuning =====
   const BAR_COUNT = 70;
@@ -75,7 +78,7 @@ export function useRecordingSession() {
   };
 
   const drawBars = useCallback(
-    (levels: number[]) => {
+    (levels: number[], playbackProgress = 0) => {
       const canvas = canvasRef.current;
       if (!canvas) return;
       const ctx = canvas.getContext("2d");
@@ -89,13 +92,21 @@ export function useRecordingSession() {
       const barWidth = Math.max(2, (width - GAP * (count - 1)) / count);
 
       ctx.clearRect(0, 0, width, height);
-      ctx.fillStyle = "#111827";
 
       for (let i = 0; i < count; i++) {
         const level = levels[i]; // 0~1
         const barHeight = level * (height * 0.9);
         const x = i * (barWidth + GAP);
         const y = centerY - barHeight / 2;
+        
+        // 재생 진행률에 따라 색상 변경
+        const barProgress = (i + 1) / count;
+        if (playbackProgress > 0 && barProgress <= playbackProgress) {
+          ctx.fillStyle = "#e60023"; // primary-700
+        } else {
+          ctx.fillStyle = "#111827"; // gray-900
+        }
+        
         ctx.fillRect(x, y, barWidth, barHeight);
       }
     },
@@ -120,8 +131,13 @@ export function useRecordingSession() {
       summarized.push(max);
     }
 
-    drawBars(summarized);
+    drawBars(summarized, playbackProgressRef.current);
   }, [BAR_COUNT, drawBars]);
+  
+  const updatePlaybackProgress = useCallback((progress: number) => {
+    playbackProgressRef.current = progress;
+    drawFullTimeline();
+  }, [drawFullTimeline]);
 
   // loop (bar waveform sampling)
   useEffect(() => {
@@ -135,7 +151,11 @@ export function useRecordingSession() {
       // paused면 샘플링/렌더 중단 (마지막 캔버스는 유지)
       if (status !== "recording") return;
 
-      if (t - lastSampleTimeRef.current >= SAMPLE_INTERVAL) {
+      // 첫 실행 시 기준 시간 설정
+      if (lastSampleTimeRef.current === 0) {
+        lastSampleTimeRef.current = t;
+        // 첫 실행은 샘플링하지 않고 다음 RAF로 진행
+      } else if (t - lastSampleTimeRef.current >= SAMPLE_INTERVAL) {
         lastSampleTimeRef.current = t;
 
         const rms = computeRMS(dataArray);
@@ -202,7 +222,7 @@ export function useRecordingSession() {
     windowLevelsRef.current = Array.from({ length: BAR_COUNT }, () => 0);
     fullLevelsRef.current = [];
     writeIndexRef.current = 0;
-    lastSampleTimeRef.current = performance.now();
+    lastSampleTimeRef.current = 0; // RAF 첫 실행 시 설정됨
 
     setAudioBlob(null); // 새 세션이므로 기존 녹음 제거
 
@@ -274,7 +294,7 @@ export function useRecordingSession() {
     }
 
     setStatus("recording");
-    lastSampleTimeRef.current = performance.now();
+    lastSampleTimeRef.current = 0; // RAF 첫 실행 시 재설정됨
 
     cleanupRAF();
     animationRef.current = requestAnimationFrame((t) => loopRef.current?.(t));
@@ -367,5 +387,6 @@ export function useRecordingSession() {
     resume,
     stop,
     reset,
+    updatePlaybackProgress,
   };
 }

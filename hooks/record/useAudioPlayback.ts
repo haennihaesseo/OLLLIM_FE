@@ -4,7 +4,10 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 export type PlaybackStatus = "idle" | "playing" | "paused";
 
-export function useAudioPlayback(audioBlob: Blob | null) {
+export function useAudioPlayback(
+  audioBlob: Blob | null,
+  onProgressUpdate?: (progress: number) => void
+) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   // DERIVED (no state): blob -> objectURL
@@ -32,8 +35,23 @@ export function useAudioPlayback(audioBlob: Blob | null) {
     audioRef.current = audio;
 
     const onLoaded = () => setDuration(audio.duration || 0);
-    const onTime = () => setCurrentTime(audio.currentTime || 0);
-    const onEnded = () => setStatus("idle");
+    const onTime = () => {
+      const currentTime = audio.currentTime || 0;
+      setCurrentTime(currentTime);
+      
+      // 재생 진행률 업데이트 콜백 호출
+      if (onProgressUpdate && audio.duration > 0) {
+        const progress = currentTime / audio.duration;
+        onProgressUpdate(progress);
+      }
+    };
+    const onEnded = () => {
+      setStatus("idle");
+      // 재생 종료 시 진행률 초기화
+      if (onProgressUpdate) {
+        onProgressUpdate(0);
+      }
+    };
 
     audio.addEventListener("loadedmetadata", onLoaded);
     audio.addEventListener("timeupdate", onTime);
@@ -50,7 +68,7 @@ export function useAudioPlayback(audioBlob: Blob | null) {
       // revoke the object URL created from this blob
       URL.revokeObjectURL(audioUrl);
     };
-  }, [audioUrl]);
+  }, [audioUrl, onProgressUpdate]);
 
   const play = useCallback(async () => {
     const a = audioRef.current;
@@ -73,7 +91,12 @@ export function useAudioPlayback(audioBlob: Blob | null) {
     a.currentTime = 0;
     setCurrentTime(0);
     setStatus("idle");
-  }, []);
+    
+    // 재생 중지 시 진행률 초기화
+    if (onProgressUpdate) {
+      onProgressUpdate(0);
+    }
+  }, [onProgressUpdate]);
 
   const seek = useCallback(
     (time: number) => {

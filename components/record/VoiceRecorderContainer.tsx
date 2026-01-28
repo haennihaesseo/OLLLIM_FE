@@ -17,6 +17,7 @@ export default function VoiceRecorderContainer() {
     resume,
     stop,
     reset,
+    updatePlaybackProgress,
   } = useRecordingSession();
 
   //Playback FSM
@@ -29,7 +30,7 @@ export default function VoiceRecorderContainer() {
     pause: pausePlayback,
     stop: stopPlayback,
     // seek,
-  } = useAudioPlayback(audioBlob);
+  } = useAudioPlayback(audioBlob, updatePlaybackProgress);
 
   const canPlayback = recordingStatus === "stopped" && !!audioBlob;
 
