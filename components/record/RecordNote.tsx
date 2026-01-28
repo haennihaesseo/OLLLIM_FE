@@ -7,6 +7,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 
 export default function RecordNote() {
   const [open, setOpen] = useState(false);
+  const [note, setNote] = useState('');
 
   return (
     <div className="min-h-87">
@@ -42,11 +43,22 @@ export default function RecordNote() {
               style={{ overflow: 'hidden' }}
             >
               <textarea
+                value={note}
+                onChange={(e) => {
+                  if (e.target.value.length <= 1500) {
+                    setNote(e.target.value);
+                  }
+                }}
                 placeholder="말할내용을 미리 정리해보세요"
                 className="w-full h-55 resize-none typo-body1-base outline-none"
                 maxLength={1500}
               />
-              <div className="mt-2 text-right text-xs text-gray-400">0/1500</div>
+              <div className="mt-2 text-right text-xs text-gray-400">
+                <span className={note.length === 1500 ? 'text-primary-700' : ''}>
+                  {note.length}
+                </span>
+                /1500
+              </div>
             </motion.div>
           )}
         </AnimatePresence>
