@@ -22,7 +22,8 @@
       "@/components/*": ["./components/*"],
       "@/app/*": ["./app/*"],
       "@/lib/*": ["./lib/*"],
-      "@/public/*": ["./public/*"]
+      "@/public/*": ["./public/*"],
+      "@/hooks/*": ["./hooks/*"],
     },
     "baseUrl": ".",
   },

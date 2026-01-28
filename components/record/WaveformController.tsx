@@ -2,7 +2,7 @@
 
 import React from "react";
 import { RotateCcw, Play } from "lucide-react";
-import type { ControlPreset } from "hooks/record/useWaveformControllerPreset";
+import type { ControlPreset } from "@/hooks/record/useWaveformControllerPreset";
 
 function IconButton({ preset }: { preset: ControlPreset }) {
   const { variant, ariaLabel, size = "md", onClick, disabled } = preset;

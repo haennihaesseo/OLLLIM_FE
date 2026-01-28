@@ -2,9 +2,9 @@
 
 import WaveformCanvas from "./WaveformCanvas";
 import WaveformController from "./WaveformController";
-import { useRecordingSession } from "hooks/record/useRecordingSession";
-import { useAudioPlayback } from "hooks/record/useAudioPlayback";
-import { useWaveformControllerPreset } from "hooks/record/useWaveformControllerPreset";
+import { useRecordingSession } from "@/hooks/record/useRecordingSession";
+import { useAudioPlayback } from "@/hooks/record/useAudioPlayback";
+import { useWaveformControllerPreset } from "@/hooks/record/useWaveformControllerPreset";
 
 export default function VoiceRecorderContainer() {
   //Recording FSM
