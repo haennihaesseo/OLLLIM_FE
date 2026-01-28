@@ -62,6 +62,7 @@ export function useRecordingSession() {
   const mimeTypeRef = useRef<string>("");
 
   const [status, setStatus] = useState<RecordingStatus>("idle");
+  const statusRef = useRef<RecordingStatus>("idle"); // RAF loop에서 최신 상태 참조용
   const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
   const [error, setError] = useState<string | null>(null);
   
@@ -89,14 +90,18 @@ export function useRecordingSession() {
       const ctx = canvas.getContext("2d");
       if (!ctx) return;
 
-      const { width, height } = canvas;
+      // Canvas의 실제 표시 크기 사용 (devicePixelRatio 고려)
+      const rect = canvas.getBoundingClientRect();
+      const width = rect.width;
+      const height = rect.height;
       const centerY = height / 2;
       const count = levels.length;
       if (count === 0) return;
 
       const barWidth = Math.max(2, (width - GAP * (count - 1)) / count);
 
-      ctx.clearRect(0, 0, width, height);
+      // Canvas의 내부 해상도로 clear
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       for (let i = 0; i < count; i++) {
         const level = levels[i]; // 0~1
@@ -158,11 +163,12 @@ export function useRecordingSession() {
       analyser.getByteTimeDomainData(dataArray);
 
       // paused면 샘플링/렌더 중단 (마지막 캔버스는 유지)
-      if (status !== "recording") return;
+      if (statusRef.current !== "recording") return;
 
       // 첫 실행 시 기준 시간 설정
       if (lastSampleTimeRef.current === 0) {
         lastSampleTimeRef.current = t;
+        console.log('[useRecordingSession] RAF loop first run, statusRef.current:', statusRef.current);
         // 첫 실행은 샘플링하지 않고 다음 RAF로 진행
       } else if (t - lastSampleTimeRef.current >= SAMPLE_INTERVAL) {
         lastSampleTimeRef.current = t;
@@ -195,7 +201,7 @@ export function useRecordingSession() {
         loopRef.current?.(time)
       );
     };
-  }, [status, BAR_COUNT, SAMPLE_INTERVAL, drawBars]);
+  }, [BAR_COUNT, SAMPLE_INTERVAL, drawBars]);
 
   const cleanupRAF = useCallback(() => {
     if (animationRef.current) {
@@ -288,6 +294,18 @@ export function useRecordingSession() {
 
     // WebAudio analyser
     const audioContext = new AudioContext();
+    console.log('[useRecordingSession] AudioContext initial state:', audioContext.state);
+    
+    // iOS에서 AudioContext가 suspended 상태로 시작되므로 resume 필요
+    if (audioContext.state === 'suspended') {
+      try {
+        await audioContext.resume();
+        console.log('[useRecordingSession] AudioContext resumed, new state:', audioContext.state);
+      } catch (err) {
+        console.error('[useRecordingSession] Failed to resume AudioContext:', err);
+      }
+    }
+    
     const analyser = audioContext.createAnalyser();
     analyser.fftSize = 2048;
     analyser.smoothingTimeConstant = 0.1;
@@ -298,6 +316,8 @@ export function useRecordingSession() {
     audioContextRef.current = audioContext;
     analyserRef.current = analyser;
     dataArrayRef.current = new Uint8Array(analyser.frequencyBinCount);
+    
+    console.log('[useRecordingSession] Audio visualization setup complete');
 
     // MediaRecorder (real recording)
     const mimeType = pickSupportedMime();
@@ -324,10 +344,12 @@ export function useRecordingSession() {
     recorder.start(); // 필요하면 timeslice를 줄 수도 있음(예: 1000)
     mediaRecorderRef.current = recorder;
 
+    statusRef.current = "recording"; // RAF loop에서 즉시 참조 가능
     setStatus("recording");
 
     cleanupRAF();
     animationRef.current = requestAnimationFrame((t) => loopRef.current?.(t));
+    console.log('[useRecordingSession] RAF started, statusRef.current:', statusRef.current);
   }, [BAR_COUNT, cleanupRAF, status]);
 
   const pause = useCallback(() => {
@@ -338,6 +360,7 @@ export function useRecordingSession() {
       mediaRecorderRef.current.pause();
     }
 
+    statusRef.current = "paused";
     setStatus("paused");
     cleanupRAF();
     // stream/context 유지, canvas 유지
@@ -350,6 +373,7 @@ export function useRecordingSession() {
       mediaRecorderRef.current.resume();
     }
 
+    statusRef.current = "recording";
     setStatus("recording");
     lastSampleTimeRef.current = 0; // RAF 첫 실행 시 재설정됨
 
@@ -383,6 +407,7 @@ export function useRecordingSession() {
     // 전체 파형 애니메이션으로 렌더
     animateTimelineDraw(500);
 
+    statusRef.current = "stopped";
     setStatus("stopped");
   }, [animateTimelineDraw, cleanupRAF, status]);
 
@@ -412,10 +437,15 @@ export function useRecordingSession() {
 
     // canvas clear
     const canvas = canvasRef.current;
-    const ctx = canvas?.getContext("2d");
-    if (canvas && ctx) ctx.clearRect(0, 0, canvas.width, canvas.height);
+    if (canvas) {
+      const ctx = canvas.getContext("2d");
+      if (ctx) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+      }
+    }
 
     setAudioBlob(null);
+    statusRef.current = "idle";
     setStatus("idle");
   }, [cleanupMedia, cleanupRAF, cleanupTimelineAnimation]);
 
