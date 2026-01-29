@@ -1,12 +1,12 @@
 "use client";
 
-import { useEffect, type RefObject } from "react";
+import { memo, useEffect, type RefObject } from "react";
 
 type Props = {
   canvasRef: RefObject<HTMLCanvasElement | null>;
 };
 
-export default function WaveformCanvas({ canvasRef }: Props) {
+function WaveformCanvas({ canvasRef }: Props) {
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -14,13 +14,27 @@ export default function WaveformCanvas({ canvasRef }: Props) {
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
+    let lastWidth = 0;
+    let lastHeight = 0;
+
     const syncSize = () => {
       const rect = canvas.getBoundingClientRect();
       const dpr = window.devicePixelRatio || 1;
 
+      const newWidth = Math.round(rect.width * dpr);
+      const newHeight = Math.round(rect.height * dpr);
+
+      // 크기가 실제로 변경된 경우에만 재설정
+      if (newWidth === lastWidth && newHeight === lastHeight) {
+        return;
+      }
+
+      lastWidth = newWidth;
+      lastHeight = newHeight;
+
       // 내부 버퍼를 "현재 표시 크기"에 맞춤
-      canvas.width = Math.round(rect.width * dpr);
-      canvas.height = Math.round(rect.height * dpr);
+      canvas.width = newWidth;
+      canvas.height = newHeight;
 
       // 변환 누적 방지 (매번 리셋)
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
@@ -45,3 +59,5 @@ export default function WaveformCanvas({ canvasRef }: Props) {
     />
   );
 }
+
+export default memo(WaveformCanvas);
