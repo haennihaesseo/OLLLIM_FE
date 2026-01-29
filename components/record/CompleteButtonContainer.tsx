@@ -1,13 +1,15 @@
 "use client";
 
 import { useAtomValue } from "jotai";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { recordingStatusAtom, audioBlobAtom } from "@/store/recordingAtoms";
 import { usePostLetterVoice } from "@/hooks/apis/post/usePostLetterVoice";
+import { getNextStep } from "@/lib/letterSteps";
 import CompleteButton from "./CompleteButton";
 
 export default function CompleteButtonContainer() {
   const router = useRouter();
+  const pathname = usePathname();
   const recordingStatus = useAtomValue(recordingStatusAtom);
   const audioBlob = useAtomValue(audioBlobAtom);
   const { mutate, isPending } = usePostLetterVoice();
@@ -20,7 +22,10 @@ export default function CompleteButtonContainer() {
 
     mutate(audioBlob, {
       onSuccess: () => {
-        router.push("/letter/new/edit");
+        const nextStep = getNextStep(pathname);
+        if (nextStep) {
+          router.push(nextStep);
+        }
       },
       onError: (error) => {
         console.error("음성 업로드 실패:", error);
