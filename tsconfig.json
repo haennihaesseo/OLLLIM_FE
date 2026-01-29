@@ -24,7 +24,8 @@
       "@/lib/*": ["./lib/*"],
       "@/public/*": ["./public/*"],
       "@/hooks/*": ["./hooks/*"],
-      "@/store/*": ["./store/*"]
+      "@/store/*": ["./store/*"],
+      "@/providers/*": ["./providers/*"]
     },
     "baseUrl": "."
   },
