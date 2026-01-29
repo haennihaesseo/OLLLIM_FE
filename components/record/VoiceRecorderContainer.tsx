@@ -48,7 +48,7 @@ export default function VoiceRecorderContainer() {
 
   return (
     <div className="flex flex-col items-center justify-center">
-      <div className="flex flex-col items-center gap-4">
+      <div className="flex flex-col items-center gap-4 w-full">
         <WaveformCanvas canvasRef={canvasRef} />
         <WaveformController preset={preset} />
       </div>
