@@ -10,7 +10,7 @@ export default function RecordNote() {
   const [note, setNote] = useState("");
 
   return (
-    <div className="min-h-83">
+    <div className="min-h-84">
       <div className="bg-gray-100 rounded-lg p-5">
         <header className="flex justify-between items-center">
           <h3 className="typo-h2-xl text-gray-900">Note</h3>
