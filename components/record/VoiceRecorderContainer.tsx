@@ -75,8 +75,8 @@ export default function VoiceRecorderContainer() {
     if (recordingStatus === "recording" || recordingStatus === "paused") {
       return recordingTime;
     }
-    // 녹음 완료 후 재생 중: 재생 시간 표시
-    if (recordingStatus === "stopped" && playbackStatus === "playing") {
+    // 녹음 완료 후 재생 중/일시정지: 재생 시간 표시
+    if (recordingStatus === "stopped" && playbackStatus !== "idle") {
       return currentTime;
     }
     // 녹음 완료 후 재생 전: 00:00 표시
