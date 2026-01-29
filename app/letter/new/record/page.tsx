@@ -1,6 +1,6 @@
 import RecordNote from "@/components/record/RecordNote";
 import VoiceRecorderContainer from "@/components/record/VoiceRecorderContainer";
-import { Button } from "@/components/ui/button";
+import CompleteButton from "@/components/record/CompleteButton";
 
 export default function RecordPage() {
   return (
@@ -16,11 +16,7 @@ export default function RecordPage() {
         <VoiceRecorderContainer />
       </section>
 
-      <section className="fixed bottom-10 left-0 right-0 px-5">
-        <Button className="w-full typo-h2-base text-white bg-primary-700 py-3 h-auto">
-          완료
-        </Button>
-      </section>
+      <CompleteButton />
     </article>
   );
 }
