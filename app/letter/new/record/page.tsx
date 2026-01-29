@@ -1,5 +1,6 @@
 import RecordNote from "@/components/record/RecordNote";
 import VoiceRecorderContainer from "@/components/record/VoiceRecorderContainer";
+import { Button } from "@/components/ui/button";
 
 export default function RecordPage() {
   return (
@@ -11,15 +12,15 @@ export default function RecordPage() {
         <RecordNote />
       </section>
 
-      <section className="flex flex-col p-5">
+      <section className="flex flex-col px-5">
         <VoiceRecorderContainer />
       </section>
 
-      {/* <section className="fixed bottom-15 left-0 right-0 px-5">
+      <section className="fixed bottom-10 left-0 right-0 px-5">
         <Button className="w-full typo-h2-base text-white bg-primary-700 py-3 h-auto">
           완료
         </Button>
-      </section> */}
+      </section>
     </article>
   );
 }
