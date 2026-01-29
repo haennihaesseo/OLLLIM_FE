@@ -51,7 +51,7 @@ export function useRecordingSession() {
   const fullLevelsRef = useRef<number[]>([]);
   const writeIndexRef = useRef(0);
   const lastSampleTimeRef = useRef(0);
-  
+
   // Timeline draw animation
   const timelineAnimationRef = useRef<number | null>(null);
   const timelineAnimationStartRef = useRef(0);
@@ -65,9 +65,14 @@ export function useRecordingSession() {
   const statusRef = useRef<RecordingStatus>("idle"); // RAF loop에서 최신 상태 참조용
   const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
   const [error, setError] = useState<string | null>(null);
-  
+
   // Playback progress for canvas visualization
   const playbackProgressRef = useRef(0);
+
+  // Recording time tracking
+  const [recordingTime, setRecordingTime] = useState(0);
+  const timerIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const recordingStartTimeRef = useRef(0);
 
   // ===== tuning =====
   const BAR_COUNT = 70;
@@ -108,7 +113,7 @@ export function useRecordingSession() {
         const barHeight = level * (height * 0.9);
         const x = i * (barWidth + GAP);
         const y = centerY - barHeight / 2;
-        
+
         // 재생 진행률에 따라 색상 변경
         const barProgress = (i + 1) / count;
         if (playbackProgress > 0 && barProgress <= playbackProgress) {
@@ -116,42 +121,48 @@ export function useRecordingSession() {
         } else {
           ctx.fillStyle = "#111827"; // gray-900
         }
-        
+
         ctx.fillRect(x, y, barWidth, barHeight);
       }
     },
-    [GAP]
+    [GAP],
   );
 
-  const drawFullTimeline = useCallback((visibleRatio = 1) => {
-    const full = fullLevelsRef.current;
-    if (full.length === 0) return;
+  const drawFullTimeline = useCallback(
+    (visibleRatio = 1) => {
+      const full = fullLevelsRef.current;
+      if (full.length === 0) return;
 
-    const bucketCount = BAR_COUNT;
-    const step = Math.max(1, Math.floor(full.length / bucketCount));
-    const summarized: number[] = [];
+      const bucketCount = BAR_COUNT;
+      const step = Math.max(1, Math.floor(full.length / bucketCount));
+      const summarized: number[] = [];
 
-    for (let i = 0; i < bucketCount; i++) {
-      const start = i * step;
-      const end = Math.min(full.length, start + step);
-      let max = 0;
-      for (let j = start; j < end; j++) {
-        if (full[j] > max) max = full[j];
+      for (let i = 0; i < bucketCount; i++) {
+        const start = i * step;
+        const end = Math.min(full.length, start + step);
+        let max = 0;
+        for (let j = start; j < end; j++) {
+          if (full[j] > max) max = full[j];
+        }
+        summarized.push(max);
       }
-      summarized.push(max);
-    }
 
-    // 애니메이션: visibleRatio만큼만 표시
-    const visibleCount = Math.ceil(summarized.length * visibleRatio);
-    const visibleBars = summarized.slice(0, visibleCount);
-    
-    drawBars(visibleBars, playbackProgressRef.current);
-  }, [BAR_COUNT, drawBars]);
-  
-  const updatePlaybackProgress = useCallback((progress: number) => {
-    playbackProgressRef.current = progress;
-    drawFullTimeline();
-  }, [drawFullTimeline]);
+      // 애니메이션: visibleRatio만큼만 표시
+      const visibleCount = Math.ceil(summarized.length * visibleRatio);
+      const visibleBars = summarized.slice(0, visibleCount);
+
+      drawBars(visibleBars, playbackProgressRef.current);
+    },
+    [BAR_COUNT, drawBars],
+  );
+
+  const updatePlaybackProgress = useCallback(
+    (progress: number) => {
+      playbackProgressRef.current = progress;
+      drawFullTimeline();
+    },
+    [drawFullTimeline],
+  );
 
   // loop (bar waveform sampling)
   useEffect(() => {
@@ -168,7 +179,10 @@ export function useRecordingSession() {
       // 첫 실행 시 기준 시간 설정
       if (lastSampleTimeRef.current === 0) {
         lastSampleTimeRef.current = t;
-        console.log('[useRecordingSession] RAF loop first run, statusRef.current:', statusRef.current);
+        console.log(
+          "[useRecordingSession] RAF loop first run, statusRef.current:",
+          statusRef.current,
+        );
         // 첫 실행은 샘플링하지 않고 다음 RAF로 진행
       } else if (t - lastSampleTimeRef.current >= SAMPLE_INTERVAL) {
         lastSampleTimeRef.current = t;
@@ -198,7 +212,7 @@ export function useRecordingSession() {
       }
 
       animationRef.current = requestAnimationFrame((time) =>
-        loopRef.current?.(time)
+        loopRef.current?.(time),
       );
     };
   }, [BAR_COUNT, SAMPLE_INTERVAL, drawBars]);
@@ -209,7 +223,7 @@ export function useRecordingSession() {
       animationRef.current = null;
     }
   }, []);
-  
+
   const cleanupTimelineAnimation = useCallback(() => {
     if (timelineAnimationRef.current) {
       cancelAnimationFrame(timelineAnimationRef.current);
@@ -217,32 +231,52 @@ export function useRecordingSession() {
     }
     timelineAnimationStartRef.current = 0;
   }, []);
-  
-  const animateTimelineDraw = useCallback((duration = 500) => {
-    cleanupTimelineAnimation();
-    
-    const animate = (currentTime: number) => {
-      if (timelineAnimationStartRef.current === 0) {
-        timelineAnimationStartRef.current = currentTime;
-      }
-      
-      const elapsed = currentTime - timelineAnimationStartRef.current;
-      const progress = Math.min(elapsed / duration, 1);
-      
-      // easeOutCubic 이징 함수 적용
-      const eased = 1 - Math.pow(1 - progress, 3);
-      
-      drawFullTimeline(eased);
-      
-      if (progress < 1) {
-        timelineAnimationRef.current = requestAnimationFrame(animate);
-      } else {
-        cleanupTimelineAnimation();
-      }
-    };
-    
-    timelineAnimationRef.current = requestAnimationFrame(animate);
-  }, [cleanupTimelineAnimation, drawFullTimeline]);
+
+  const cleanupTimer = useCallback(() => {
+    if (timerIntervalRef.current) {
+      clearInterval(timerIntervalRef.current);
+      timerIntervalRef.current = null;
+    }
+  }, []);
+
+  const startTimer = useCallback(() => {
+    cleanupTimer();
+    recordingStartTimeRef.current = Date.now() - recordingTime * 1000;
+
+    timerIntervalRef.current = setInterval(() => {
+      const elapsed = Date.now() - recordingStartTimeRef.current;
+      setRecordingTime(Math.floor(elapsed / 1000));
+    }, 1000);
+  }, [cleanupTimer, recordingTime]);
+
+  const animateTimelineDraw = useCallback(
+    (duration = 500) => {
+      cleanupTimelineAnimation();
+
+      const animate = (currentTime: number) => {
+        if (timelineAnimationStartRef.current === 0) {
+          timelineAnimationStartRef.current = currentTime;
+        }
+
+        const elapsed = currentTime - timelineAnimationStartRef.current;
+        const progress = Math.min(elapsed / duration, 1);
+
+        // easeOutCubic 이징 함수 적용
+        const eased = 1 - Math.pow(1 - progress, 3);
+
+        drawFullTimeline(eased);
+
+        if (progress < 1) {
+          timelineAnimationRef.current = requestAnimationFrame(animate);
+        } else {
+          cleanupTimelineAnimation();
+        }
+      };
+
+      timelineAnimationRef.current = requestAnimationFrame(animate);
+    },
+    [cleanupTimelineAnimation, drawFullTimeline],
+  );
 
   const cleanupMedia = useCallback(async () => {
     // recorder stop은 stop()에서 명시적으로 처리
@@ -275,6 +309,7 @@ export function useRecordingSession() {
 
     setAudioBlob(null); // 새 세션이므로 기존 녹음 제거
     setError(null); // 에러 상태 초기화
+    setRecordingTime(0); // 녹음 시간 초기화
 
     let stream: MediaStream;
     try {
@@ -294,18 +329,27 @@ export function useRecordingSession() {
 
     // WebAudio analyser
     const audioContext = new AudioContext();
-    console.log('[useRecordingSession] AudioContext initial state:', audioContext.state);
-    
+    console.log(
+      "[useRecordingSession] AudioContext initial state:",
+      audioContext.state,
+    );
+
     // iOS에서 AudioContext가 suspended 상태로 시작되므로 resume 필요
-    if (audioContext.state === 'suspended') {
+    if (audioContext.state === "suspended") {
       try {
         await audioContext.resume();
-        console.log('[useRecordingSession] AudioContext resumed, new state:', audioContext.state);
+        console.log(
+          "[useRecordingSession] AudioContext resumed, new state:",
+          audioContext.state,
+        );
       } catch (err) {
-        console.error('[useRecordingSession] Failed to resume AudioContext:', err);
+        console.error(
+          "[useRecordingSession] Failed to resume AudioContext:",
+          err,
+        );
       }
     }
-    
+
     const analyser = audioContext.createAnalyser();
     analyser.fftSize = 2048;
     analyser.smoothingTimeConstant = 0.1;
@@ -316,8 +360,8 @@ export function useRecordingSession() {
     audioContextRef.current = audioContext;
     analyserRef.current = analyser;
     dataArrayRef.current = new Uint8Array(analyser.frequencyBinCount);
-    
-    console.log('[useRecordingSession] Audio visualization setup complete');
+
+    console.log("[useRecordingSession] Audio visualization setup complete");
 
     // MediaRecorder (real recording)
     const mimeType = pickSupportedMime();
@@ -325,7 +369,7 @@ export function useRecordingSession() {
 
     const recorder = new MediaRecorder(
       stream,
-      mimeType ? { mimeType } : undefined
+      mimeType ? { mimeType } : undefined,
     );
     chunksRef.current = [];
 
@@ -349,8 +393,14 @@ export function useRecordingSession() {
 
     cleanupRAF();
     animationRef.current = requestAnimationFrame((t) => loopRef.current?.(t));
-    console.log('[useRecordingSession] RAF started, statusRef.current:', statusRef.current);
-  }, [BAR_COUNT, cleanupRAF, status]);
+    console.log(
+      "[useRecordingSession] RAF started, statusRef.current:",
+      statusRef.current,
+    );
+
+    // 타이머 시작
+    startTimer();
+  }, [BAR_COUNT, cleanupRAF, startTimer, status]);
 
   const pause = useCallback(() => {
     if (status !== "recording") return;
@@ -363,8 +413,9 @@ export function useRecordingSession() {
     statusRef.current = "paused";
     setStatus("paused");
     cleanupRAF();
+    cleanupTimer(); // 타이머 정지 (시간은 유지)
     // stream/context 유지, canvas 유지
-  }, [cleanupRAF, status]);
+  }, [cleanupRAF, cleanupTimer, status]);
 
   const resume = useCallback(() => {
     if (status !== "paused") return;
@@ -379,13 +430,17 @@ export function useRecordingSession() {
 
     cleanupRAF();
     animationRef.current = requestAnimationFrame((t) => loopRef.current?.(t));
-  }, [cleanupRAF, status]);
+
+    // 타이머 재시작 (이전 시간부터 이어서)
+    startTimer();
+  }, [cleanupRAF, startTimer, status]);
 
   const stop = useCallback(() => {
     if (status === "idle") return;
 
     // RAF stop
     cleanupRAF();
+    cleanupTimer(); // 타이머 정지 (시간은 유지)
 
     // recorder stop (blob은 onstop에서 확정)
     const recorder = mediaRecorderRef.current;
@@ -409,12 +464,13 @@ export function useRecordingSession() {
 
     statusRef.current = "stopped";
     setStatus("stopped");
-  }, [animateTimelineDraw, cleanupRAF, status]);
+  }, [animateTimelineDraw, cleanupRAF, cleanupTimer, status]);
 
   const reset = useCallback(() => {
     // 진행중이면 정리
     cleanupRAF();
     cleanupTimelineAnimation();
+    cleanupTimer(); // 타이머 정지
 
     const recorder = mediaRecorderRef.current;
     if (recorder && recorder.state !== "inactive") {
@@ -445,15 +501,17 @@ export function useRecordingSession() {
     }
 
     setAudioBlob(null);
+    setRecordingTime(0); // 녹음 시간 초기화
     statusRef.current = "idle";
     setStatus("idle");
-  }, [cleanupMedia, cleanupRAF, cleanupTimelineAnimation]);
+  }, [cleanupMedia, cleanupRAF, cleanupTimelineAnimation, cleanupTimer]);
 
   // unmount cleanup
   useEffect(() => {
     return () => {
       cleanupRAF();
       cleanupTimelineAnimation();
+      cleanupTimer();
       // recorder/stream/context 정리
       const recorder = mediaRecorderRef.current;
       if (recorder && recorder.state !== "inactive") {
@@ -465,13 +523,14 @@ export function useRecordingSession() {
       }
       cleanupMedia();
     };
-  }, [cleanupMedia, cleanupRAF, cleanupTimelineAnimation]);
+  }, [cleanupMedia, cleanupRAF, cleanupTimelineAnimation, cleanupTimer]);
 
   return {
     canvasRef,
     status, // idle|recording|paused|stopped
     audioBlob, // stop 후 확정
     error, // 마이크 접근 등의 에러 메시지
+    recordingTime, // 녹음 시간 (초)
     start,
     pause,
     resume,

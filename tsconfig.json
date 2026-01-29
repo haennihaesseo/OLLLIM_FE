@@ -24,8 +24,10 @@
       "@/lib/*": ["./lib/*"],
       "@/public/*": ["./public/*"],
       "@/hooks/*": ["./hooks/*"],
+      "@/store/*": ["./store/*"],
+      "@/providers/*": ["./providers/*"]
     },
-    "baseUrl": ".",
+    "baseUrl": "."
   },
   "include": [
     "next-env.d.ts",

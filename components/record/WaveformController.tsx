@@ -110,7 +110,7 @@ export default function WaveformController({
   };
 }) {
   return (
-    <section className="flex flex-col items-center gap-4 w-full py-[0.62rem]">
+    <section className="flex flex-col items-center gap-2 w-full py-[0.62rem]">
       <div className="flex w-full justify-between items-center px-2.5">
         <IconButton preset={preset.left} />
         <IconButton preset={preset.main} />
