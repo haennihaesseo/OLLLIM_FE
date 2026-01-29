@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { useEffect, type RefObject } from 'react';
+import { useEffect, type RefObject } from "react";
 
 type Props = {
   canvasRef: RefObject<HTMLCanvasElement | null>;
@@ -11,49 +11,37 @@ export default function WaveformCanvas({ canvasRef }: Props) {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    // 실제 표시 크기 가져오기
-    const rect = canvas.getBoundingClientRect();
-    const dpr = window.devicePixelRatio || 1;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
 
-    // Canvas 내부 해상도를 devicePixelRatio에 맞춰 설정
-    canvas.width = rect.width * dpr;
-    canvas.height = rect.height * dpr;
+    const syncSize = () => {
+      const rect = canvas.getBoundingClientRect();
+      const dpr = window.devicePixelRatio || 1;
 
-    console.log('[WaveformCanvas] Canvas initialized:', {
-      displaySize: { width: rect.width, height: rect.height },
-      internalSize: { width: canvas.width, height: canvas.height },
-      devicePixelRatio: dpr,
-    });
+      // 내부 버퍼를 "현재 표시 크기"에 맞춤
+      canvas.width = Math.round(rect.width * dpr);
+      canvas.height = Math.round(rect.height * dpr);
 
-    // Canvas context의 스케일 조정
-    const ctx = canvas.getContext('2d');
-    if (ctx) {
-      ctx.scale(dpr, dpr);
-    }
-
-    // 리사이즈 핸들러
-    const handleResize = () => {
-      const newRect = canvas.getBoundingClientRect();
-      const newDpr = window.devicePixelRatio || 1;
-      
-      canvas.width = newRect.width * newDpr;
-      canvas.height = newRect.height * newDpr;
-      
-      const newCtx = canvas.getContext('2d');
-      if (newCtx) {
-        newCtx.scale(newDpr, newDpr);
-      }
+      // 변환 누적 방지 (매번 리셋)
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     };
 
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    syncSize();
+
+    // iOS Safari 레이아웃 변동(주소창 등)에도 대응
+    const ro = new ResizeObserver(() => syncSize());
+    ro.observe(canvas);
+
+    return () => {
+      ro.disconnect();
+    };
   }, [canvasRef]);
 
   return (
     <canvas
       ref={canvasRef}
       className="w-full block h-20"
-      style={{ touchAction: 'none' }}
+      style={{ touchAction: "none" }}
     />
   );
 }
