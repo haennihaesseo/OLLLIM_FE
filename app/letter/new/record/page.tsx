@@ -1,6 +1,6 @@
 import RecordNote from "@/components/record/RecordNote";
 import VoiceRecorderContainer from "@/components/record/VoiceRecorderContainer";
-import CompleteButton from "@/components/record/CompleteButton";
+import CompleteButtonContainer from "@/components/record/CompleteButtonContainer";
 
 export default function RecordPage() {
   return (
@@ -16,7 +16,7 @@ export default function RecordPage() {
         <VoiceRecorderContainer />
       </section>
 
-      <CompleteButton />
+      <CompleteButtonContainer />
     </article>
   );
 }
