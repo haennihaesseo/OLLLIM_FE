@@ -1,6 +1,5 @@
 import RecordNote from "@/components/record/RecordNote";
 import VoiceRecorderContainer from "@/components/record/VoiceRecorderContainer";
-import { Button } from "@/components/ui/button";
 
 export default function RecordPage() {
   return (

@@ -7,6 +7,14 @@ export const metadata: Metadata = {
   description: "voice letter service",
 };
 
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  viewportFit: "cover",
+};
+
 const pretendard = localFont({
   src: "../public/PretendardVariable.woff2",
   variable: "--font-pretendard",
