@@ -3,8 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useAtom } from "jotai";
 import { recordingStatusAtom, audioBlobAtom } from "@/store/recordingAtoms";
-
-export type RecordingStatus = "idle" | "recording" | "paused" | "stopped";
+import type { RecordingStatus } from "@/types/recording";
 
 type RecorderMime =
   | "audio/webm;codecs=opus"

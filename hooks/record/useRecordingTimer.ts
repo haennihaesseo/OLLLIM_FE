@@ -1,8 +1,7 @@
 import { useMemo } from "react";
 import { useAtomValue } from "jotai";
 import { recordingStatusAtom } from "@/store/recordingAtoms";
-
-export type PlaybackStatus = "idle" | "playing" | "paused";
+import type { PlaybackStatus } from "@/types/recording";
 
 /**
  * 녹음/재생 상태에 따른 타이머 값을 계산하는 훅

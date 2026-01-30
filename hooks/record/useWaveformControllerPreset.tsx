@@ -2,30 +2,17 @@ import { useMemo } from "react";
 import { useAtomValue } from "jotai";
 import type React from "react";
 import { recordingStatusAtom } from "@/store/recordingAtoms";
-
-export type Status = "idle" | "recording" | "paused" | "stopped";
-export type PlaybackStatus = "idle" | "playing" | "paused";
-
-export type ControlVariant =
-  | "record"
-  | "stop"
-  | "pause"
-  | "play"
-  | "reset"
-  | "disabled";
-
-export type ControlPreset = {
-  variant: ControlVariant;
-  ariaLabel: string;
-  size?: "sm" | "md";
-  onClick?: () => void;
-  disabled?: boolean;
-};
+import type {
+  RecordingStatus,
+  PlaybackStatus,
+  ControlVariant,
+  ControlPreset,
+} from "@/types/recording";
 
 type ActionKey = "start" | "pause" | "resume" | "stop" | "reset";
 
 function buildPreset(args: {
-  status: Status;
+  status: RecordingStatus;
   actions: Record<ActionKey, () => void>;
   playback: {
     canPlayback: boolean;
