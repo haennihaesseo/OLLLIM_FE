@@ -4,6 +4,8 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useAtom } from "jotai";
 import { recordingStatusAtom, audioBlobAtom } from "@/store/recordingAtoms";
 import type { RecordingStatus } from "@/types/recording";
+import { useWaveformVisualization } from "@/hooks/common/useWaveformVisualization";
+import { computeRMSFromUint8 } from "@/lib/audioUtils";
 
 type RecorderMime =
   | "audio/webm;codecs=opus"
@@ -67,9 +69,6 @@ export function useRecordingSession() {
   const [audioBlob, setAudioBlob] = useAtom(audioBlobAtom);
   const [error, setError] = useState<string | null>(null);
 
-  // Playback progress for canvas visualization
-  const playbackProgressRef = useRef(0);
-
   // Recording time tracking
   const [recordingTime, setRecordingTime] = useState(0);
   const timerIntervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -80,89 +79,20 @@ export function useRecordingSession() {
   const GAP = 3;
   const SAMPLE_INTERVAL = 50;
 
-  const computeRMS = (data: Uint8Array) => {
-    let sumSquares = 0;
-    for (let i = 0; i < data.length; i++) {
-      const v = (data[i] - 128) / 128; // -1~1
-      sumSquares += v * v;
-    }
-    return Math.sqrt(sumSquares / data.length); // 0~1
-  };
+  // Waveform visualization hook
+  const {
+    drawBars,
+    drawFullTimeline,
+    updatePlaybackProgress: updatePlaybackProgressBase,
+    clearCanvas,
+  } = useWaveformVisualization({ canvasRef, barCount: BAR_COUNT, gap: GAP });
 
-  const drawBars = useCallback(
-    (levels: number[], playbackProgress = 0) => {
-      const canvas = canvasRef.current;
-      if (!canvas) return;
-      const ctx = canvas.getContext("2d");
-      if (!ctx) return;
-
-      // Canvas의 실제 표시 크기 사용 (devicePixelRatio 고려)
-      const rect = canvas.getBoundingClientRect();
-      const width = rect.width;
-      const height = rect.height;
-      const centerY = height / 2;
-      const count = levels.length;
-      if (count === 0) return;
-
-      const barWidth = Math.max(2, (width - GAP * (count - 1)) / count);
-
-      // Canvas의 내부 해상도로 clear
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      for (let i = 0; i < count; i++) {
-        const level = levels[i]; // 0~1
-        const barHeight = level * (height * 0.9);
-        const x = i * (barWidth + GAP);
-        const y = centerY - barHeight / 2;
-
-        // 재생 진행률에 따라 색상 변경
-        const barProgress = (i + 1) / count;
-        if (playbackProgress > 0 && barProgress <= playbackProgress) {
-          ctx.fillStyle = "#e60023"; // primary-700
-        } else {
-          ctx.fillStyle = "#111827"; // gray-900
-        }
-
-        ctx.fillRect(x, y, barWidth, barHeight);
-      }
-    },
-    [GAP],
-  );
-
-  const drawFullTimeline = useCallback(
-    (visibleRatio = 1) => {
-      const full = fullLevelsRef.current;
-      if (full.length === 0) return;
-
-      const bucketCount = BAR_COUNT;
-      const step = Math.max(1, Math.floor(full.length / bucketCount));
-      const summarized: number[] = [];
-
-      for (let i = 0; i < bucketCount; i++) {
-        const start = i * step;
-        const end = Math.min(full.length, start + step);
-        let max = 0;
-        for (let j = start; j < end; j++) {
-          if (full[j] > max) max = full[j];
-        }
-        summarized.push(max);
-      }
-
-      // 애니메이션: visibleRatio만큼만 표시
-      const visibleCount = Math.ceil(summarized.length * visibleRatio);
-      const visibleBars = summarized.slice(0, visibleCount);
-
-      drawBars(visibleBars, playbackProgressRef.current);
-    },
-    [BAR_COUNT, drawBars],
-  );
-
+  // updatePlaybackProgress를 래핑하여 fullLevelsRef를 자동으로 전달
   const updatePlaybackProgress = useCallback(
     (progress: number) => {
-      playbackProgressRef.current = progress;
-      drawFullTimeline();
+      updatePlaybackProgressBase(progress, fullLevelsRef.current);
     },
-    [drawFullTimeline],
+    [updatePlaybackProgressBase],
   );
 
   // loop (bar waveform sampling)
@@ -184,7 +114,7 @@ export function useRecordingSession() {
       } else if (t - lastSampleTimeRef.current >= SAMPLE_INTERVAL) {
         lastSampleTimeRef.current = t;
 
-        const rms = computeRMS(dataArray);
+        const rms = computeRMSFromUint8(dataArray);
         const level = Math.min(1, rms * 2.2);
 
         // 1) full
@@ -261,7 +191,7 @@ export function useRecordingSession() {
         // easeOutCubic 이징 함수 적용
         const eased = 1 - Math.pow(1 - progress, 3);
 
-        drawFullTimeline(eased);
+        drawFullTimeline(fullLevelsRef.current, eased);
 
         if (progress < 1) {
           timelineAnimationRef.current = requestAnimationFrame(animate);
@@ -330,7 +260,7 @@ export function useRecordingSession() {
     if (audioContext.state === "suspended") {
       try {
         await audioContext.resume();
-      } catch (err) {
+      } catch {
         // ignore
       }
     }
@@ -471,13 +401,7 @@ export function useRecordingSession() {
     lastSampleTimeRef.current = 0;
 
     // canvas clear
-    const canvas = canvasRef.current;
-    if (canvas) {
-      const ctx = canvas.getContext("2d");
-      if (ctx) {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-      }
-    }
+    clearCanvas();
 
     setAudioBlob(null);
     setRecordingTime(0); // 녹음 시간 초기화
@@ -488,6 +412,7 @@ export function useRecordingSession() {
     cleanupRAF,
     cleanupTimelineAnimation,
     cleanupTimer,
+    clearCanvas,
     setStatus,
     setAudioBlob,
   ]);
