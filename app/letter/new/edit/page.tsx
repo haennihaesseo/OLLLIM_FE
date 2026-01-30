@@ -1,7 +1,9 @@
+import { LetterEditContainer } from "@/components/edit/LetterEditContainer";
+
 export default function EditPage() {
   return (
-    <div>
-      <h1>Edit Page</h1>
-    </div>
+    <article className="bg-gray-50 h-full">
+      <LetterEditContainer />
+    </article>
   );
 }

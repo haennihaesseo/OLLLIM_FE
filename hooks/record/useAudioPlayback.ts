@@ -1,12 +1,11 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-
-export type PlaybackStatus = "idle" | "playing" | "paused";
+import type { PlaybackStatus } from "@/types/recording";
 
 export function useAudioPlayback(
   audioBlob: Blob | null,
-  onProgressUpdate?: (progress: number) => void
+  onProgressUpdate?: (progress: number) => void,
 ) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
@@ -78,7 +77,7 @@ export function useAudioPlayback(
       await a.play();
       setStatus("playing");
     } catch (error) {
-      console.error("Playback failed", error);
+      // Playback failed
     }
   }, []);
 
@@ -111,7 +110,7 @@ export function useAudioPlayback(
       a.currentTime = next;
       setCurrentTime(next);
     },
-    [duration]
+    [duration],
   );
 
   // If blob is null, expose "idle" outputs without resetting in an effect

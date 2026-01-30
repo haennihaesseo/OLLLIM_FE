@@ -1,8 +1,11 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-
-export type RecordingStatus = "idle" | "recording" | "paused" | "stopped";
+import { useAtom } from "jotai";
+import { recordingStatusAtom, audioBlobAtom } from "@/store/recordingAtoms";
+import type { RecordingStatus } from "@/types/recording";
+import { useWaveformVisualization } from "@/hooks/common/useWaveformVisualization";
+import { computeRMSFromUint8 } from "@/lib/audioUtils";
 
 type RecorderMime =
   | "audio/webm;codecs=opus"
@@ -61,13 +64,10 @@ export function useRecordingSession() {
   const chunksRef = useRef<BlobPart[]>([]);
   const mimeTypeRef = useRef<string>("");
 
-  const [status, setStatus] = useState<RecordingStatus>("idle");
+  const [status, setStatus] = useAtom(recordingStatusAtom);
   const statusRef = useRef<RecordingStatus>("idle"); // RAF loop에서 최신 상태 참조용
-  const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
+  const [audioBlob, setAudioBlob] = useAtom(audioBlobAtom);
   const [error, setError] = useState<string | null>(null);
-
-  // Playback progress for canvas visualization
-  const playbackProgressRef = useRef(0);
 
   // Recording time tracking
   const [recordingTime, setRecordingTime] = useState(0);
@@ -79,89 +79,20 @@ export function useRecordingSession() {
   const GAP = 3;
   const SAMPLE_INTERVAL = 50;
 
-  const computeRMS = (data: Uint8Array) => {
-    let sumSquares = 0;
-    for (let i = 0; i < data.length; i++) {
-      const v = (data[i] - 128) / 128; // -1~1
-      sumSquares += v * v;
-    }
-    return Math.sqrt(sumSquares / data.length); // 0~1
-  };
+  // Waveform visualization hook
+  const {
+    drawBars,
+    drawFullTimeline,
+    updatePlaybackProgress: updatePlaybackProgressBase,
+    clearCanvas,
+  } = useWaveformVisualization({ canvasRef, barCount: BAR_COUNT, gap: GAP });
 
-  const drawBars = useCallback(
-    (levels: number[], playbackProgress = 0) => {
-      const canvas = canvasRef.current;
-      if (!canvas) return;
-      const ctx = canvas.getContext("2d");
-      if (!ctx) return;
-
-      // Canvas의 실제 표시 크기 사용 (devicePixelRatio 고려)
-      const rect = canvas.getBoundingClientRect();
-      const width = rect.width;
-      const height = rect.height;
-      const centerY = height / 2;
-      const count = levels.length;
-      if (count === 0) return;
-
-      const barWidth = Math.max(2, (width - GAP * (count - 1)) / count);
-
-      // Canvas의 내부 해상도로 clear
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      for (let i = 0; i < count; i++) {
-        const level = levels[i]; // 0~1
-        const barHeight = level * (height * 0.9);
-        const x = i * (barWidth + GAP);
-        const y = centerY - barHeight / 2;
-
-        // 재생 진행률에 따라 색상 변경
-        const barProgress = (i + 1) / count;
-        if (playbackProgress > 0 && barProgress <= playbackProgress) {
-          ctx.fillStyle = "#e60023"; // primary-700
-        } else {
-          ctx.fillStyle = "#111827"; // gray-900
-        }
-
-        ctx.fillRect(x, y, barWidth, barHeight);
-      }
-    },
-    [GAP],
-  );
-
-  const drawFullTimeline = useCallback(
-    (visibleRatio = 1) => {
-      const full = fullLevelsRef.current;
-      if (full.length === 0) return;
-
-      const bucketCount = BAR_COUNT;
-      const step = Math.max(1, Math.floor(full.length / bucketCount));
-      const summarized: number[] = [];
-
-      for (let i = 0; i < bucketCount; i++) {
-        const start = i * step;
-        const end = Math.min(full.length, start + step);
-        let max = 0;
-        for (let j = start; j < end; j++) {
-          if (full[j] > max) max = full[j];
-        }
-        summarized.push(max);
-      }
-
-      // 애니메이션: visibleRatio만큼만 표시
-      const visibleCount = Math.ceil(summarized.length * visibleRatio);
-      const visibleBars = summarized.slice(0, visibleCount);
-
-      drawBars(visibleBars, playbackProgressRef.current);
-    },
-    [BAR_COUNT, drawBars],
-  );
-
+  // updatePlaybackProgress를 래핑하여 fullLevelsRef를 자동으로 전달
   const updatePlaybackProgress = useCallback(
     (progress: number) => {
-      playbackProgressRef.current = progress;
-      drawFullTimeline();
+      updatePlaybackProgressBase(progress, fullLevelsRef.current);
     },
-    [drawFullTimeline],
+    [updatePlaybackProgressBase],
   );
 
   // loop (bar waveform sampling)
@@ -179,15 +110,11 @@ export function useRecordingSession() {
       // 첫 실행 시 기준 시간 설정
       if (lastSampleTimeRef.current === 0) {
         lastSampleTimeRef.current = t;
-        console.log(
-          "[useRecordingSession] RAF loop first run, statusRef.current:",
-          statusRef.current,
-        );
         // 첫 실행은 샘플링하지 않고 다음 RAF로 진행
       } else if (t - lastSampleTimeRef.current >= SAMPLE_INTERVAL) {
         lastSampleTimeRef.current = t;
 
-        const rms = computeRMS(dataArray);
+        const rms = computeRMSFromUint8(dataArray);
         const level = Math.min(1, rms * 2.2);
 
         // 1) full
@@ -264,7 +191,7 @@ export function useRecordingSession() {
         // easeOutCubic 이징 함수 적용
         const eased = 1 - Math.pow(1 - progress, 3);
 
-        drawFullTimeline(eased);
+        drawFullTimeline(fullLevelsRef.current, eased);
 
         if (progress < 1) {
           timelineAnimationRef.current = requestAnimationFrame(animate);
@@ -321,7 +248,6 @@ export function useRecordingSession() {
         err instanceof Error
           ? err.message
           : "마이크 접근 권한을 얻을 수 없습니다.";
-      console.error("[useRecordingSession] getUserMedia failed:", err);
       setError(errorMessage);
       // streamRef.current는 할당하지 않고, status는 idle로 유지
       return;
@@ -329,24 +255,13 @@ export function useRecordingSession() {
 
     // WebAudio analyser
     const audioContext = new AudioContext();
-    console.log(
-      "[useRecordingSession] AudioContext initial state:",
-      audioContext.state,
-    );
 
     // iOS에서 AudioContext가 suspended 상태로 시작되므로 resume 필요
     if (audioContext.state === "suspended") {
       try {
         await audioContext.resume();
-        console.log(
-          "[useRecordingSession] AudioContext resumed, new state:",
-          audioContext.state,
-        );
-      } catch (err) {
-        console.error(
-          "[useRecordingSession] Failed to resume AudioContext:",
-          err,
-        );
+      } catch {
+        // ignore
       }
     }
 
@@ -360,8 +275,6 @@ export function useRecordingSession() {
     audioContextRef.current = audioContext;
     analyserRef.current = analyser;
     dataArrayRef.current = new Uint8Array(analyser.frequencyBinCount);
-
-    console.log("[useRecordingSession] Audio visualization setup complete");
 
     // MediaRecorder (real recording)
     const mimeType = pickSupportedMime();
@@ -393,14 +306,10 @@ export function useRecordingSession() {
 
     cleanupRAF();
     animationRef.current = requestAnimationFrame((t) => loopRef.current?.(t));
-    console.log(
-      "[useRecordingSession] RAF started, statusRef.current:",
-      statusRef.current,
-    );
 
     // 타이머 시작
     startTimer();
-  }, [BAR_COUNT, cleanupRAF, startTimer, status]);
+  }, [BAR_COUNT, cleanupRAF, startTimer, status, setStatus, setAudioBlob]);
 
   const pause = useCallback(() => {
     if (status !== "recording") return;
@@ -415,7 +324,7 @@ export function useRecordingSession() {
     cleanupRAF();
     cleanupTimer(); // 타이머 정지 (시간은 유지)
     // stream/context 유지, canvas 유지
-  }, [cleanupRAF, cleanupTimer, status]);
+  }, [cleanupRAF, cleanupTimer, status, setStatus]);
 
   const resume = useCallback(() => {
     if (status !== "paused") return;
@@ -433,7 +342,7 @@ export function useRecordingSession() {
 
     // 타이머 재시작 (이전 시간부터 이어서)
     startTimer();
-  }, [cleanupRAF, startTimer, status]);
+  }, [cleanupRAF, startTimer, status, setStatus]);
 
   const stop = useCallback(() => {
     if (status === "idle") return;
@@ -464,7 +373,7 @@ export function useRecordingSession() {
 
     statusRef.current = "stopped";
     setStatus("stopped");
-  }, [animateTimelineDraw, cleanupRAF, cleanupTimer, status]);
+  }, [animateTimelineDraw, cleanupRAF, cleanupTimer, status, setStatus]);
 
   const reset = useCallback(() => {
     // 진행중이면 정리
@@ -492,19 +401,21 @@ export function useRecordingSession() {
     lastSampleTimeRef.current = 0;
 
     // canvas clear
-    const canvas = canvasRef.current;
-    if (canvas) {
-      const ctx = canvas.getContext("2d");
-      if (ctx) {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-      }
-    }
+    clearCanvas();
 
     setAudioBlob(null);
     setRecordingTime(0); // 녹음 시간 초기화
     statusRef.current = "idle";
     setStatus("idle");
-  }, [cleanupMedia, cleanupRAF, cleanupTimelineAnimation, cleanupTimer]);
+  }, [
+    cleanupMedia,
+    cleanupRAF,
+    cleanupTimelineAnimation,
+    cleanupTimer,
+    clearCanvas,
+    setStatus,
+    setAudioBlob,
+  ]);
 
   // unmount cleanup
   useEffect(() => {
