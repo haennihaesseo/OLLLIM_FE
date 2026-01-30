@@ -27,8 +27,8 @@ export default function CompleteButtonContainer() {
           router.push(nextStep);
         }
       },
-      onError: (error) => {
-        console.error("음성 업로드 실패:", error);
+      onError: () => {
+        // 음성 업로드 실패
       },
     });
   };

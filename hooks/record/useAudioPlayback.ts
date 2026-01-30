@@ -77,7 +77,7 @@ export function useAudioPlayback(
       await a.play();
       setStatus("playing");
     } catch (error) {
-      console.error("Playback failed", error);
+      // Playback failed
     }
   }, []);
 

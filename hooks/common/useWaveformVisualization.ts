@@ -25,12 +25,10 @@ export function useWaveformVisualization({
     (levels: number[], playbackProgress = 0) => {
       const canvas = canvasRef.current;
       if (!canvas) {
-        console.warn("[useWaveformVisualization] Canvas ref is null");
         return;
       }
       const ctx = canvas.getContext("2d");
       if (!ctx) {
-        console.warn("[useWaveformVisualization] Canvas context is null");
         return;
       }
 
@@ -41,14 +39,7 @@ export function useWaveformVisualization({
       const centerY = height / 2;
       const count = levels.length;
 
-      console.log("[useWaveformVisualization] drawBars called:", {
-        levelsCount: count,
-        canvasSize: { width, height },
-        playbackProgress,
-      });
-
       if (count === 0) {
-        console.warn("[useWaveformVisualization] Levels array is empty");
         return;
       }
 
@@ -84,13 +75,7 @@ export function useWaveformVisualization({
    */
   const drawFullTimeline = useCallback(
     (fullLevels: number[], visibleRatio = 1) => {
-      console.log("[useWaveformVisualization] drawFullTimeline called:", {
-        fullLevelsLength: fullLevels.length,
-        visibleRatio,
-      });
-
       if (fullLevels.length === 0) {
-        console.warn("[useWaveformVisualization] Full levels array is empty");
         return;
       }
 
