@@ -14,6 +14,7 @@ type VoicePlayerProps = {
 export function VoicePlayer({ audioUrl }: VoicePlayerProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const levelsRef = useRef<number[]>([]);
 
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
@@ -28,6 +29,11 @@ export function VoicePlayer({ audioUrl }: VoicePlayerProps) {
       canvasRef,
     },
   );
+
+  // levels를 ref에 미러링
+  useEffect(() => {
+    levelsRef.current = levels;
+  }, [levels]);
 
   // 오디오 엘리먼트 초기화
   useEffect(() => {
@@ -46,17 +52,17 @@ export function VoicePlayer({ audioUrl }: VoicePlayerProps) {
       setCurrentTime(current);
 
       // 재생 진행률 업데이트
-      if (audio.duration > 0 && levels.length > 0) {
+      if (audio.duration > 0 && levelsRef.current.length > 0) {
         const progress = current / audio.duration;
-        updatePlaybackProgress(progress, levels);
+        updatePlaybackProgress(progress, levelsRef.current);
       }
     };
 
     const onEnded = () => {
       setIsPlaying(false);
       setCurrentTime(0);
-      if (levels.length > 0) {
-        updatePlaybackProgress(0, levels);
+      if (levelsRef.current.length > 0) {
+        updatePlaybackProgress(0, levelsRef.current);
       }
     };
 
@@ -71,7 +77,7 @@ export function VoicePlayer({ audioUrl }: VoicePlayerProps) {
       audio.removeEventListener("ended", onEnded);
       audioRef.current = null;
     };
-  }, [audioUrl, analyzedDuration, levels, updatePlaybackProgress]);
+  }, [audioUrl, analyzedDuration, updatePlaybackProgress]);
 
   // Waveform 초기 그리기
   useEffect(() => {
