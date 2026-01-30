@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useAtom } from "jotai";
 import { recordingStatusAtom, audioBlobAtom } from "@/store/recordingAtoms";
 import type { RecordingStatus } from "@/types/recording";
+import { useWaveformVisualization } from "@/hooks/common/useWaveformVisualization";
 
 type RecorderMime =
   | "audio/webm;codecs=opus"
@@ -80,6 +81,13 @@ export function useRecordingSession() {
   const GAP = 3;
   const SAMPLE_INTERVAL = 50;
 
+  // Waveform visualization hook
+  const {
+    drawBars,
+    updatePlaybackProgress: updatePlaybackProgressFromHook,
+    clearCanvas,
+  } = useWaveformVisualization({ canvasRef, barCount: BAR_COUNT, gap: GAP });
+
   const computeRMS = (data: Uint8Array) => {
     let sumSquares = 0;
     for (let i = 0; i < data.length; i++) {
@@ -88,46 +96,6 @@ export function useRecordingSession() {
     }
     return Math.sqrt(sumSquares / data.length); // 0~1
   };
-
-  const drawBars = useCallback(
-    (levels: number[], playbackProgress = 0) => {
-      const canvas = canvasRef.current;
-      if (!canvas) return;
-      const ctx = canvas.getContext("2d");
-      if (!ctx) return;
-
-      // Canvas의 실제 표시 크기 사용 (devicePixelRatio 고려)
-      const rect = canvas.getBoundingClientRect();
-      const width = rect.width;
-      const height = rect.height;
-      const centerY = height / 2;
-      const count = levels.length;
-      if (count === 0) return;
-
-      const barWidth = Math.max(2, (width - GAP * (count - 1)) / count);
-
-      // Canvas의 내부 해상도로 clear
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      for (let i = 0; i < count; i++) {
-        const level = levels[i]; // 0~1
-        const barHeight = level * (height * 0.9);
-        const x = i * (barWidth + GAP);
-        const y = centerY - barHeight / 2;
-
-        // 재생 진행률에 따라 색상 변경
-        const barProgress = (i + 1) / count;
-        if (playbackProgress > 0 && barProgress <= playbackProgress) {
-          ctx.fillStyle = "#e60023"; // primary-700
-        } else {
-          ctx.fillStyle = "#111827"; // gray-900
-        }
-
-        ctx.fillRect(x, y, barWidth, barHeight);
-      }
-    },
-    [GAP],
-  );
 
   const drawFullTimeline = useCallback(
     (visibleRatio = 1) => {
@@ -160,9 +128,10 @@ export function useRecordingSession() {
   const updatePlaybackProgress = useCallback(
     (progress: number) => {
       playbackProgressRef.current = progress;
-      drawFullTimeline();
+      const full = fullLevelsRef.current;
+      updatePlaybackProgressFromHook(progress, full);
     },
-    [drawFullTimeline],
+    [updatePlaybackProgressFromHook],
   );
 
   // loop (bar waveform sampling)
@@ -330,7 +299,7 @@ export function useRecordingSession() {
     if (audioContext.state === "suspended") {
       try {
         await audioContext.resume();
-      } catch (err) {
+      } catch {
         // ignore
       }
     }
@@ -471,13 +440,7 @@ export function useRecordingSession() {
     lastSampleTimeRef.current = 0;
 
     // canvas clear
-    const canvas = canvasRef.current;
-    if (canvas) {
-      const ctx = canvas.getContext("2d");
-      if (ctx) {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-      }
-    }
+    clearCanvas();
 
     setAudioBlob(null);
     setRecordingTime(0); // 녹음 시간 초기화
@@ -488,6 +451,7 @@ export function useRecordingSession() {
     cleanupRAF,
     cleanupTimelineAnimation,
     cleanupTimer,
+    clearCanvas,
     setStatus,
     setAudioBlob,
   ]);
