@@ -1,14 +1,12 @@
 "use client";
 
-import { useMemo, useEffect } from "react";
-import { useSetAtom } from "jotai";
+import { useMemo } from "react";
 import WaveformCanvas from "./WaveformCanvas";
 import WaveformController from "./WaveformController";
 import RecordingTimer from "./RecordingTimer";
 import { useRecordingSession } from "@/hooks/record/useRecordingSession";
 import { useAudioPlayback } from "@/hooks/record/useAudioPlayback";
 import { useWaveformControllerPreset } from "@/hooks/record/useWaveformControllerPreset";
-import { recordingStatusAtom, audioBlobAtom } from "@/store/recordingAtoms";
 
 export default function VoiceRecorderContainer() {
   //Recording FSM
@@ -24,20 +22,6 @@ export default function VoiceRecorderContainer() {
     reset,
     updatePlaybackProgress,
   } = useRecordingSession();
-
-  // Jotai atom 동기화
-  const setRecordingStatus = useSetAtom(recordingStatusAtom);
-  const setAudioBlob = useSetAtom(audioBlobAtom);
-
-  // 녹음 상태 변경 시 atom 업데이트
-  useEffect(() => {
-    setRecordingStatus(recordingStatus);
-  }, [recordingStatus, setRecordingStatus]);
-
-  // 오디오 Blob 변경 시 atom 업데이트
-  useEffect(() => {
-    setAudioBlob(audioBlob);
-  }, [audioBlob, setAudioBlob]);
 
   //Playback FSM
   const {

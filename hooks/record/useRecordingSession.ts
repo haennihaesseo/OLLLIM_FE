@@ -1,6 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useAtom } from "jotai";
+import { recordingStatusAtom, audioBlobAtom } from "@/store/recordingAtoms";
 
 export type RecordingStatus = "idle" | "recording" | "paused" | "stopped";
 
@@ -61,9 +63,9 @@ export function useRecordingSession() {
   const chunksRef = useRef<BlobPart[]>([]);
   const mimeTypeRef = useRef<string>("");
 
-  const [status, setStatus] = useState<RecordingStatus>("idle");
+  const [status, setStatus] = useAtom(recordingStatusAtom);
   const statusRef = useRef<RecordingStatus>("idle"); // RAF loop에서 최신 상태 참조용
-  const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
+  const [audioBlob, setAudioBlob] = useAtom(audioBlobAtom);
   const [error, setError] = useState<string | null>(null);
 
   // Playback progress for canvas visualization
@@ -400,7 +402,7 @@ export function useRecordingSession() {
 
     // 타이머 시작
     startTimer();
-  }, [BAR_COUNT, cleanupRAF, startTimer, status]);
+  }, [BAR_COUNT, cleanupRAF, startTimer, status, setStatus, setAudioBlob]);
 
   const pause = useCallback(() => {
     if (status !== "recording") return;
@@ -415,7 +417,7 @@ export function useRecordingSession() {
     cleanupRAF();
     cleanupTimer(); // 타이머 정지 (시간은 유지)
     // stream/context 유지, canvas 유지
-  }, [cleanupRAF, cleanupTimer, status]);
+  }, [cleanupRAF, cleanupTimer, status, setStatus]);
 
   const resume = useCallback(() => {
     if (status !== "paused") return;
@@ -433,7 +435,7 @@ export function useRecordingSession() {
 
     // 타이머 재시작 (이전 시간부터 이어서)
     startTimer();
-  }, [cleanupRAF, startTimer, status]);
+  }, [cleanupRAF, startTimer, status, setStatus]);
 
   const stop = useCallback(() => {
     if (status === "idle") return;
@@ -464,7 +466,7 @@ export function useRecordingSession() {
 
     statusRef.current = "stopped";
     setStatus("stopped");
-  }, [animateTimelineDraw, cleanupRAF, cleanupTimer, status]);
+  }, [animateTimelineDraw, cleanupRAF, cleanupTimer, status, setStatus]);
 
   const reset = useCallback(() => {
     // 진행중이면 정리
@@ -504,7 +506,14 @@ export function useRecordingSession() {
     setRecordingTime(0); // 녹음 시간 초기화
     statusRef.current = "idle";
     setStatus("idle");
-  }, [cleanupMedia, cleanupRAF, cleanupTimelineAnimation, cleanupTimer]);
+  }, [
+    cleanupMedia,
+    cleanupRAF,
+    cleanupTimelineAnimation,
+    cleanupTimer,
+    setStatus,
+    setAudioBlob,
+  ]);
 
   // unmount cleanup
   useEffect(() => {
