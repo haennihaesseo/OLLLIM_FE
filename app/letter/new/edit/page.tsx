@@ -1,7 +1,13 @@
+import { LetterEditor } from "@/components/edit/LetterEditor";
+import { VoicePlayer } from "@/components/edit/VoicePlayer";
+
 export default function EditPage() {
   return (
-    <div>
-      <h1>Edit Page</h1>
-    </div>
+    <article className="bg-gray-50 h-full">
+      <section className="flex flex-col p-5 gap-4">
+        <LetterEditor />
+        <VoicePlayer />
+      </section>
+    </article>
   );
 }
