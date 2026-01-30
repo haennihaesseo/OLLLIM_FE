@@ -1,8 +1,9 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-
-export type RecordingStatus = "idle" | "recording" | "paused" | "stopped";
+import { useAtom } from "jotai";
+import { recordingStatusAtom, audioBlobAtom } from "@/store/recordingAtoms";
+import type { RecordingStatus } from "@/types/recording";
 
 type RecorderMime =
   | "audio/webm;codecs=opus"
@@ -61,9 +62,9 @@ export function useRecordingSession() {
   const chunksRef = useRef<BlobPart[]>([]);
   const mimeTypeRef = useRef<string>("");
 
-  const [status, setStatus] = useState<RecordingStatus>("idle");
+  const [status, setStatus] = useAtom(recordingStatusAtom);
   const statusRef = useRef<RecordingStatus>("idle"); // RAF loop에서 최신 상태 참조용
-  const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
+  const [audioBlob, setAudioBlob] = useAtom(audioBlobAtom);
   const [error, setError] = useState<string | null>(null);
 
   // Playback progress for canvas visualization
@@ -179,10 +180,6 @@ export function useRecordingSession() {
       // 첫 실행 시 기준 시간 설정
       if (lastSampleTimeRef.current === 0) {
         lastSampleTimeRef.current = t;
-        console.log(
-          "[useRecordingSession] RAF loop first run, statusRef.current:",
-          statusRef.current,
-        );
         // 첫 실행은 샘플링하지 않고 다음 RAF로 진행
       } else if (t - lastSampleTimeRef.current >= SAMPLE_INTERVAL) {
         lastSampleTimeRef.current = t;
@@ -321,7 +318,6 @@ export function useRecordingSession() {
         err instanceof Error
           ? err.message
           : "마이크 접근 권한을 얻을 수 없습니다.";
-      console.error("[useRecordingSession] getUserMedia failed:", err);
       setError(errorMessage);
       // streamRef.current는 할당하지 않고, status는 idle로 유지
       return;
@@ -329,24 +325,13 @@ export function useRecordingSession() {
 
     // WebAudio analyser
     const audioContext = new AudioContext();
-    console.log(
-      "[useRecordingSession] AudioContext initial state:",
-      audioContext.state,
-    );
 
     // iOS에서 AudioContext가 suspended 상태로 시작되므로 resume 필요
     if (audioContext.state === "suspended") {
       try {
         await audioContext.resume();
-        console.log(
-          "[useRecordingSession] AudioContext resumed, new state:",
-          audioContext.state,
-        );
       } catch (err) {
-        console.error(
-          "[useRecordingSession] Failed to resume AudioContext:",
-          err,
-        );
+        // ignore
       }
     }
 
@@ -360,8 +345,6 @@ export function useRecordingSession() {
     audioContextRef.current = audioContext;
     analyserRef.current = analyser;
     dataArrayRef.current = new Uint8Array(analyser.frequencyBinCount);
-
-    console.log("[useRecordingSession] Audio visualization setup complete");
 
     // MediaRecorder (real recording)
     const mimeType = pickSupportedMime();
@@ -393,14 +376,10 @@ export function useRecordingSession() {
 
     cleanupRAF();
     animationRef.current = requestAnimationFrame((t) => loopRef.current?.(t));
-    console.log(
-      "[useRecordingSession] RAF started, statusRef.current:",
-      statusRef.current,
-    );
 
     // 타이머 시작
     startTimer();
-  }, [BAR_COUNT, cleanupRAF, startTimer, status]);
+  }, [BAR_COUNT, cleanupRAF, startTimer, status, setStatus, setAudioBlob]);
 
   const pause = useCallback(() => {
     if (status !== "recording") return;
@@ -415,7 +394,7 @@ export function useRecordingSession() {
     cleanupRAF();
     cleanupTimer(); // 타이머 정지 (시간은 유지)
     // stream/context 유지, canvas 유지
-  }, [cleanupRAF, cleanupTimer, status]);
+  }, [cleanupRAF, cleanupTimer, status, setStatus]);
 
   const resume = useCallback(() => {
     if (status !== "paused") return;
@@ -433,7 +412,7 @@ export function useRecordingSession() {
 
     // 타이머 재시작 (이전 시간부터 이어서)
     startTimer();
-  }, [cleanupRAF, startTimer, status]);
+  }, [cleanupRAF, startTimer, status, setStatus]);
 
   const stop = useCallback(() => {
     if (status === "idle") return;
@@ -464,7 +443,7 @@ export function useRecordingSession() {
 
     statusRef.current = "stopped";
     setStatus("stopped");
-  }, [animateTimelineDraw, cleanupRAF, cleanupTimer, status]);
+  }, [animateTimelineDraw, cleanupRAF, cleanupTimer, status, setStatus]);
 
   const reset = useCallback(() => {
     // 진행중이면 정리
@@ -504,7 +483,14 @@ export function useRecordingSession() {
     setRecordingTime(0); // 녹음 시간 초기화
     statusRef.current = "idle";
     setStatus("idle");
-  }, [cleanupMedia, cleanupRAF, cleanupTimelineAnimation, cleanupTimer]);
+  }, [
+    cleanupMedia,
+    cleanupRAF,
+    cleanupTimelineAnimation,
+    cleanupTimer,
+    setStatus,
+    setAudioBlob,
+  ]);
 
   // unmount cleanup
   useEffect(() => {

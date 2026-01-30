@@ -1,29 +1,17 @@
 import { useMemo } from "react";
+import { useAtomValue } from "jotai";
 import type React from "react";
-
-export type Status = "idle" | "recording" | "paused" | "stopped";
-export type PlaybackStatus = "idle" | "playing" | "paused";
-
-export type ControlVariant =
-  | "record"
-  | "stop"
-  | "pause"
-  | "play"
-  | "reset"
-  | "disabled";
-
-export type ControlPreset = {
-  variant: ControlVariant;
-  ariaLabel: string;
-  size?: "sm" | "md";
-  onClick?: () => void;
-  disabled?: boolean;
-};
+import { recordingStatusAtom } from "@/store/recordingAtoms";
+import type {
+  RecordingStatus,
+  PlaybackStatus,
+  ControlPreset,
+} from "@/types/recording";
 
 type ActionKey = "start" | "pause" | "resume" | "stop" | "reset";
 
 function buildPreset(args: {
-  status: Status;
+  status: RecordingStatus;
   actions: Record<ActionKey, () => void>;
   playback: {
     canPlayback: boolean;
@@ -159,7 +147,6 @@ function buildPreset(args: {
 }
 
 export function useWaveformControllerPreset(params: {
-  recordingStatus: Status;
   actions: Record<ActionKey, () => void>;
   playback: {
     canPlayback: boolean;
@@ -169,7 +156,8 @@ export function useWaveformControllerPreset(params: {
     stopPlayback: () => void;
   };
 }) {
-  const { recordingStatus, actions, playback } = params;
+  const { actions, playback } = params;
+  const recordingStatus = useAtomValue(recordingStatusAtom);
 
   return useMemo(
     () =>

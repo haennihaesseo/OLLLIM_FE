@@ -1,5 +1,5 @@
 import { atom } from "jotai";
-import type { RecordingStatus } from "@/hooks/record/useRecordingSession";
+import type { RecordingStatus } from "@/types/recording";
 
 /**
  * 녹음 상태를 관리하는 atom
