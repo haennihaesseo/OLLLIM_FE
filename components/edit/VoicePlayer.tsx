@@ -19,12 +19,8 @@ export function VoicePlayer({ audioUrl }: VoicePlayerProps) {
   const [currentTime, setCurrentTime] = useState(0);
 
   // 오디오 분석하여 waveform levels 생성
-  const {
-    levels,
-    duration: analyzedDuration,
-    isLoading,
-    error,
-  } = useAudioWaveformAnalysis(audioUrl);
+  const { levels, duration: analyzedDuration } =
+    useAudioWaveformAnalysis(audioUrl);
 
   // Waveform 시각화
   const { drawFullTimeline, updatePlaybackProgress } = useWaveformVisualization(
