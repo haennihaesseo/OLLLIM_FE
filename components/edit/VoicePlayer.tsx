@@ -26,17 +26,6 @@ export function VoicePlayer({ audioUrl }: VoicePlayerProps) {
     error,
   } = useAudioWaveformAnalysis(audioUrl);
 
-  // 디버깅: 오디오 분석 상태 확인
-  useEffect(() => {
-    console.log("[VoicePlayer] Audio Analysis State:", {
-      audioUrl,
-      levelsLength: levels.length,
-      duration: analyzedDuration,
-      isLoading,
-      error,
-    });
-  }, [audioUrl, levels, analyzedDuration, isLoading, error]);
-
   // Waveform 시각화
   const { drawFullTimeline, updatePlaybackProgress } = useWaveformVisualization(
     {
@@ -64,10 +53,6 @@ export function VoicePlayer({ audioUrl }: VoicePlayerProps) {
       if (audio.duration > 0 && levels.length > 0) {
         const progress = current / audio.duration;
         updatePlaybackProgress(progress, levels);
-      } else if (levels.length === 0) {
-        console.warn(
-          "[VoicePlayer] Cannot update playback progress: levels is empty",
-        );
       }
     };
 
@@ -94,17 +79,8 @@ export function VoicePlayer({ audioUrl }: VoicePlayerProps) {
 
   // Waveform 초기 그리기
   useEffect(() => {
-    console.log("[VoicePlayer] Attempting to draw waveform:", {
-      levelsLength: levels.length,
-      canvasRefCurrent: canvasRef.current,
-      sampleLevels: levels.slice(0, 5),
-    });
-
     if (levels.length > 0) {
       drawFullTimeline(levels);
-      console.log("[VoicePlayer] drawFullTimeline called");
-    } else {
-      console.warn("[VoicePlayer] Levels array is empty, cannot draw waveform");
     }
   }, [levels, drawFullTimeline]);
 
@@ -120,48 +96,46 @@ export function VoicePlayer({ audioUrl }: VoicePlayerProps) {
       try {
         await audio.play();
         setIsPlaying(true);
-      } catch (error) {
-        console.error("Playback failed", error);
+      } catch {
+        // Playback failed
       }
     }
   }, [isPlaying]);
 
   return (
-    <div className="bg-white rounded-lg p-5">
-      <div className="flex items-center gap-2 w-full">
-        {/* Play/Pause 버튼 */}
-        <button
-          type="button"
-          onClick={togglePlayPause}
-          aria-label={isPlaying ? "일시정지" : "재생"}
-          className="relative flex items-center justify-center cursor-pointer hover:opacity-80 transition-opacity disabled:opacity-40 disabled:cursor-not-allowed w-12 h-12 shrink-0"
-        >
-          <div className="absolute w-11 h-11 rounded-full border-2 border-gray-300" />
-          {isPlaying ? (
-            <Pause
-              size={24}
-              className="text-primary-700"
-              fill="currentColor"
-              aria-hidden="true"
-            />
-          ) : (
-            <Play
-              size={24}
-              className="text-primary-700"
-              fill="currentColor"
-              aria-hidden="true"
-            />
-          )}
-        </button>
+    <div className="flex items-center gap-2 w-full">
+      {/* Play/Pause 버튼 */}
+      <button
+        type="button"
+        onClick={togglePlayPause}
+        aria-label={isPlaying ? "일시정지" : "재생"}
+        className="relative flex items-center justify-center cursor-pointer hover:opacity-80 transition-opacity disabled:opacity-40 disabled:cursor-not-allowed w-12 h-12 shrink-0"
+      >
+        <div className="absolute w-11 h-11 rounded-full border-2 border-gray-300" />
+        {isPlaying ? (
+          <Pause
+            size={24}
+            className="text-gray-900"
+            fill="currentColor"
+            aria-hidden="true"
+          />
+        ) : (
+          <Play
+            size={24}
+            className="text-gray-900"
+            fill="currentColor"
+            aria-hidden="true"
+          />
+        )}
+      </button>
 
-        {/* Waveform */}
-        <div className="flex-1">
-          <WaveformCanvas canvasRef={canvasRef} />
-        </div>
-
-        {/* Timer */}
-        <RecordingTimer timeInSeconds={currentTime} />
+      {/* Waveform */}
+      <div className="flex-1">
+        <WaveformCanvas canvasRef={canvasRef} />
       </div>
+
+      {/* Timer */}
+      <RecordingTimer timeInSeconds={currentTime} />
     </div>
   );
 }
