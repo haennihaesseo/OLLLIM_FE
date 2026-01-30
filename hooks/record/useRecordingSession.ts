@@ -180,10 +180,6 @@ export function useRecordingSession() {
       // 첫 실행 시 기준 시간 설정
       if (lastSampleTimeRef.current === 0) {
         lastSampleTimeRef.current = t;
-        console.log(
-          "[useRecordingSession] RAF loop first run, statusRef.current:",
-          statusRef.current,
-        );
         // 첫 실행은 샘플링하지 않고 다음 RAF로 진행
       } else if (t - lastSampleTimeRef.current >= SAMPLE_INTERVAL) {
         lastSampleTimeRef.current = t;
@@ -322,7 +318,6 @@ export function useRecordingSession() {
         err instanceof Error
           ? err.message
           : "마이크 접근 권한을 얻을 수 없습니다.";
-      console.error("[useRecordingSession] getUserMedia failed:", err);
       setError(errorMessage);
       // streamRef.current는 할당하지 않고, status는 idle로 유지
       return;
@@ -330,24 +325,13 @@ export function useRecordingSession() {
 
     // WebAudio analyser
     const audioContext = new AudioContext();
-    console.log(
-      "[useRecordingSession] AudioContext initial state:",
-      audioContext.state,
-    );
 
     // iOS에서 AudioContext가 suspended 상태로 시작되므로 resume 필요
     if (audioContext.state === "suspended") {
       try {
         await audioContext.resume();
-        console.log(
-          "[useRecordingSession] AudioContext resumed, new state:",
-          audioContext.state,
-        );
       } catch (err) {
-        console.error(
-          "[useRecordingSession] Failed to resume AudioContext:",
-          err,
-        );
+        // ignore
       }
     }
 
@@ -361,8 +345,6 @@ export function useRecordingSession() {
     audioContextRef.current = audioContext;
     analyserRef.current = analyser;
     dataArrayRef.current = new Uint8Array(analyser.frequencyBinCount);
-
-    console.log("[useRecordingSession] Audio visualization setup complete");
 
     // MediaRecorder (real recording)
     const mimeType = pickSupportedMime();
@@ -394,10 +376,6 @@ export function useRecordingSession() {
 
     cleanupRAF();
     animationRef.current = requestAnimationFrame((t) => loopRef.current?.(t));
-    console.log(
-      "[useRecordingSession] RAF started, statusRef.current:",
-      statusRef.current,
-    );
 
     // 타이머 시작
     startTimer();
