@@ -54,24 +54,16 @@ export function useAudioWaveformAnalysis(
       setIsLoading(true);
       setError(null);
 
-      console.log("[useAudioWaveformAnalysis] Starting analysis:", audioUrl);
-
       try {
         // 오디오 파일 fetch (axios 사용)
-        console.log("[useAudioWaveformAnalysis] Fetching audio...");
         const response = await client.get(audioUrl, {
           responseType: "arraybuffer",
           // withCredentials: false, // CORS 설정
         });
 
         const arrayBuffer = response.data;
-        console.log(
-          "[useAudioWaveformAnalysis] Audio fetched, size:",
-          arrayBuffer.byteLength,
-        );
 
         // AudioContext 생성 및 디코딩
-        console.log("[useAudioWaveformAnalysis] Decoding audio...");
         audioContext = new AudioContext();
         const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
 
@@ -80,10 +72,6 @@ export function useAudioWaveformAnalysis(
         // Duration 추출
         const audioDuration = audioBuffer.duration;
         setDuration(audioDuration);
-        console.log(
-          "[useAudioWaveformAnalysis] Audio duration:",
-          audioDuration,
-        );
 
         // 오디오 채널 데이터 가져오기 (첫 번째 채널 사용)
         const channelData = audioBuffer.getChannelData(0);
@@ -106,11 +94,6 @@ export function useAudioWaveformAnalysis(
         }
 
         if (!isCancelled) {
-          console.log("[useAudioWaveformAnalysis] Analysis complete:", {
-            levelsCount: waveformLevels.length,
-            sampleLevels: waveformLevels.slice(0, 5),
-            duration: audioDuration,
-          });
           setLevels(waveformLevels);
           setIsLoading(false);
         }
@@ -118,7 +101,6 @@ export function useAudioWaveformAnalysis(
         if (!isCancelled) {
           const errorMessage =
             err instanceof Error ? err.message : "Failed to analyze audio";
-          console.error("[useAudioWaveformAnalysis] Error:", errorMessage, err);
           setError(errorMessage);
           setIsLoading(false);
         }
