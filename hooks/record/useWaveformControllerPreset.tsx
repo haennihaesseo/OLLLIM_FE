@@ -5,7 +5,6 @@ import { recordingStatusAtom } from "@/store/recordingAtoms";
 import type {
   RecordingStatus,
   PlaybackStatus,
-  ControlVariant,
   ControlPreset,
 } from "@/types/recording";
 
@@ -167,6 +166,6 @@ export function useWaveformControllerPreset(params: {
         actions,
         playback,
       }),
-    [recordingStatus, actions, playback],
+    [recordingStatus, actions, playback]
   );
 }
