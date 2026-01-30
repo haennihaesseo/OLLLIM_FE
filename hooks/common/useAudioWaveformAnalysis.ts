@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { client } from "@/lib/axiosInstance";
+import { computeRMSFromFloat32 } from "@/lib/audioUtils";
 
 type UseAudioWaveformAnalysisReturn = {
   levels: number[];
@@ -9,20 +10,6 @@ type UseAudioWaveformAnalysisReturn = {
   isLoading: boolean;
   error: string | null;
 };
-
-/**
- * RMS 계산 (Root Mean Square)
- * @param data Float32Array 오디오 샘플 데이터
- * @returns 0~1 사이의 RMS 값
- */
-function computeRMS(data: Float32Array): number {
-  let sumSquares = 0;
-  for (let i = 0; i < data.length; i++) {
-    const v = data[i];
-    sumSquares += v * v;
-  }
-  return Math.sqrt(sumSquares / data.length);
-}
 
 /**
  * 오디오 파일을 분석하여 waveform levels를 생성합니다
@@ -87,7 +74,7 @@ export function useAudioWaveformAnalysis(
           const bucketData = channelData.slice(start, end);
 
           // RMS 계산
-          const rms = computeRMS(bucketData);
+          const rms = computeRMSFromFloat32(bucketData);
           // 레벨 조정 (0~1 범위로 정규화, 약간 증폭)
           const level = Math.min(1, rms * 2.2);
           waveformLevels.push(level);
