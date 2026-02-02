@@ -1,15 +1,22 @@
 "use client";
 
-import { useState } from "react";
-
 interface LetterEditorProps {
-  initialContent: string;
+  title: string;
+  onTitleChange: (value: string) => void;
+  sender: string;
+  onSenderChange: (value: string) => void;
+  content: string;
+  onContentChange: (value: string) => void;
 }
 
-export function LetterEditor({ initialContent }: LetterEditorProps) {
-  const [title, setTitle] = useState("");
-  const [sender, setSender] = useState("");
-  const [content, setContent] = useState(initialContent);
+export function LetterEditor({
+  title,
+  onTitleChange,
+  sender,
+  onSenderChange,
+  content,
+  onContentChange,
+}: LetterEditorProps) {
 
   return (
     <div className="relative bg-white rounded-[0.5rem] py-10 px-5 h-125 flex flex-col">
@@ -19,7 +26,7 @@ export function LetterEditor({ initialContent }: LetterEditorProps) {
         <input
           type="text"
           value={title}
-          onChange={(e) => setTitle(e.target.value)}
+          onChange={(e) => onTitleChange(e.target.value)}
           style={{ width: title ? `${title.length + 3}ch` : "3ch" }}
           className="max-w-full border-b border-gray-400 outline-none typo-body1-base text-gray-900 mb-1"
         />
@@ -28,8 +35,8 @@ export function LetterEditor({ initialContent }: LetterEditorProps) {
       {/* Content 편집 영역 */}
       <textarea
         value={content}
-        onChange={(e) => setContent(e.target.value)}
-        className="flex-1 text-gray-800 typo-body1-base whitespace-pre-wrap outline-none resize-none"
+        onChange={(e) => onContentChange(e.target.value)}
+        className="flex-1 text-gray-800 typo-body1-base outline-none resize-none"
         placeholder="편지 내용을 입력하세요"
       />
 
@@ -39,7 +46,7 @@ export function LetterEditor({ initialContent }: LetterEditorProps) {
         <input
           type="text"
           value={sender}
-          onChange={(e) => setSender(e.target.value)}
+          onChange={(e) => onSenderChange(e.target.value)}
           style={{ width: sender ? `${sender.length + 3}ch` : "3ch" }}
           className="max-w-full border-b border-gray-400 outline-none typo-body1-base text-gray-900 mb-1 text-right"
         />
