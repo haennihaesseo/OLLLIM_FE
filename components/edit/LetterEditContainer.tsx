@@ -1,16 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { useSearchParams } from "next/navigation";
 import { useGetLetterData } from "@/hooks/apis/get/useGetLetterData";
 import { LetterEditor } from "./LetterEditor";
 import { VoicePlayer } from "./VoicePlayer";
 import CompleteButtonContainer from "./CompleteButtonContainer";
 
 export function LetterEditContainer() {
-  const searchParams = useSearchParams();
-  const letterId = searchParams.get("letterId");
-  const { data } = useGetLetterData(letterId);
+  const { data } = useGetLetterData();
 
   const [title, setTitle] = useState("");
   const [sender, setSender] = useState("");
@@ -40,7 +37,6 @@ export function LetterEditContainer() {
         title={title}
         sender={sender}
         content={content}
-        letterId={letterId!}
       />
     </article>
   );

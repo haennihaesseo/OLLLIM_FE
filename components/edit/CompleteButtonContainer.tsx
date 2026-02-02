@@ -9,18 +9,16 @@ interface CompleteButtonContainerProps {
   title: string;
   sender: string;
   content: string;
-  letterId: string;
 }
 
 export default function CompleteButtonContainer({
   title,
   sender,
   content,
-  letterId,
 }: CompleteButtonContainerProps) {
   const router = useRouter();
   const pathname = usePathname();
-  const { mutate, isPending } = usePatchLetter(letterId);
+  const { mutate, isPending } = usePatchLetter();
 
   const isNextDisabled = !title.trim() || !content.trim() || !sender.trim();
 
@@ -35,11 +33,15 @@ export default function CompleteButtonContainer({
       },
       {
         onSuccess: () => {
+          console.log("#1 - success");
           const basePathname = "/letter/new/edit";
           const nextStep = getNextStep(basePathname);
-          
           if (nextStep) {
-            router.push(`${nextStep}?letterId=${letterId}`);
+            console.log("#2 - nextStep", nextStep);
+            // mutation이 완전히 완료된 후 페이지 이동
+            setTimeout(() => {
+              router.push(nextStep);
+            }, 100);
           }
         },
       }
@@ -49,7 +51,7 @@ export default function CompleteButtonContainer({
   const handlePrev = () => {
     const prevStep = getPrevStep(pathname);
     if (prevStep) {
-      router.push(`${prevStep}?letterId=${letterId}`);
+      router.push(prevStep);
     }
   };
 

@@ -3,14 +3,8 @@
 import { usePostFontRefresh } from "@/hooks/apis/post/usePostFontRefresh";
 import ReanalyzeButton from "./ReanalyzeButton";
 
-interface ReanalyzeButtonContainerProps {
-  letterId: string;
-}
-
-export default function ReanalyzeButtonContainer({
-  letterId,
-}: ReanalyzeButtonContainerProps) {
-  const { mutate, isPending } = usePostFontRefresh(letterId);
+export default function ReanalyzeButtonContainer() {
+  const { mutate, isPending } = usePostFontRefresh();
 
   const handleReanalyze = () => {
     mutate();

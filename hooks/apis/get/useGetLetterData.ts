@@ -1,8 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
+import { useAtom } from "jotai";
+import { letterIdAtom } from "@/store/letterAtoms";
 import { client } from "@/lib/axiosInstance";
 import type { ApiResponse, LetterData } from "@/types/letter";
 
-export function useGetLetterData(letterId: string | null) {
+export function useGetLetterData() {
+  const [letterId] = useAtom(letterIdAtom);
+
   return useQuery({
     queryKey: ["letter", letterId],
     queryFn: async () => {

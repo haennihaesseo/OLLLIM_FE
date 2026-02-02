@@ -1,8 +1,11 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useAtom } from "jotai";
+import { letterIdAtom } from "@/store/letterAtoms";
 import { client } from "@/lib/axiosInstance";
 import type { ApiResponse, FontRefreshResponse } from "@/types/letter";
 
-export function usePostFontRefresh(letterId: string) {
+export function usePostFontRefresh() {
+  const [letterId] = useAtom(letterIdAtom);
   const queryClient = useQueryClient();
 
   return useMutation({

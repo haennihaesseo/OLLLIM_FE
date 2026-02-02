@@ -1,4 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
+import { useAtom } from "jotai";
+import { letterIdAtom } from "@/store/letterAtoms";
 import { client } from "@/lib/axiosInstance";
 import type { ApiResponse } from "@/types/letter";
 
@@ -8,7 +10,9 @@ type PatchLetterData = {
   content: string;
 };
 
-export function usePatchLetter(letterId: string) {
+export function usePatchLetter() {
+  const [letterId] = useAtom(letterIdAtom);
+
   return useMutation({
     mutationFn: async (data: PatchLetterData) => {
       const response = await client.patch<ApiResponse<null>>(

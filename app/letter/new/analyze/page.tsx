@@ -1,6 +1,5 @@
 "use client";
 
-import { useSearchParams } from "next/navigation";
 import { useGetLetterVoice } from "@/hooks/apis/get/useGetLetterVoice";
 import { useGetLetterFont } from "@/hooks/apis/get/useGetLetterFont";
 import FontCards from "@/components/analyze/FontCards";
@@ -8,13 +7,8 @@ import CompleteButtonContainer from "@/components/analyze/CompleteButtonContaine
 import ReanalyzeButtonContainer from "@/components/analyze/ReanalyzeButtonContainer";
 
 export default function AnalyzePage() {
-  const searchParams = useSearchParams();
-  const letterId = searchParams.get("letterId");
-
-  const { data: voiceData, isSuccess: isVoiceSuccess } =
-    useGetLetterVoice(letterId);
+  const { data: voiceData, isSuccess: isVoiceSuccess } = useGetLetterVoice();
   const { data: fontData, isLoading: isFontLoading } = useGetLetterFont(
-    letterId,
     isVoiceSuccess
   );
 
@@ -31,7 +25,7 @@ export default function AnalyzePage() {
         </h3>
         <FontCards cards={fontData.voiceFonts} />
       </section>
-      <ReanalyzeButtonContainer letterId={letterId!} />
+      <ReanalyzeButtonContainer />
       <CompleteButtonContainer />
     </article>
   );
