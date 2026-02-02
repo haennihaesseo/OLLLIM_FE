@@ -34,6 +34,23 @@ export type VoiceUploadResponse = {
 };
 
 /**
+ * 폰트 정보 타입
+ */
+export type FontInfo = {
+  fontId: number;
+  name: string;
+  fontUrl: string;
+};
+
+/**
+ * 목소리 분석 응답 타입 (GET /api/letter/voice 응답)
+ */
+export type LetterVoiceResponse = {
+  result: string;
+  fonts: FontInfo[];
+};
+
+/**
  * API 공통 응답 래퍼
  */
 export type ApiResponse<T> = {

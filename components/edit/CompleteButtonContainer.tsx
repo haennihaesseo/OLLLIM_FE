@@ -2,7 +2,7 @@
 
 import { useRouter, usePathname } from "next/navigation";
 import { usePatchLetter } from "@/hooks/apis/patch/usePatchLetter";
-import { getPrevStep } from "@/lib/letterSteps";
+import { getPrevStep, getNextStep } from "@/lib/letterSteps";
 import CompleteButton from "./CompleteButton";
 
 interface CompleteButtonContainerProps {
@@ -27,11 +27,23 @@ export default function CompleteButtonContainer({
   const handleNext = () => {
     if (isNextDisabled) return;
 
-    mutate({
-      title: title.trim(),
-      sender: sender.trim(),
-      content: content.trim(),
-    });
+    mutate(
+      {
+        title: title.trim(),
+        sender: sender.trim(),
+        content: content.trim(),
+      },
+      {
+        onSuccess: () => {
+          const basePathname = "/letter/new/edit";
+          const nextStep = getNextStep(basePathname);
+          
+          if (nextStep) {
+            router.push(`${nextStep}/loading?letterId=${letterId}`);
+          }
+        },
+      }
+    );
   };
 
   const handlePrev = () => {
