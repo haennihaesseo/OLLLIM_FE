@@ -11,7 +11,7 @@ export default function AnalyzePage() {
   const { data: voiceData, isSuccess: isVoiceSuccess } = useGetLetterVoice();
   const { data: fontData, isLoading: isFontLoading } =
     useGetLetterFont(isVoiceSuccess);
-  const [selectedFontId, setSelectedFontId] = useState<number | null>(null);
+  const [selectedFontId, setSelectedFontId] = useState<number | undefined>(undefined);
 
   if (isFontLoading || !voiceData || !fontData) return <div>loading</div>;
 
@@ -30,7 +30,7 @@ export default function AnalyzePage() {
           onSelectFont={setSelectedFontId}
         />
       </section>
-      <ReanalyzeButtonContainer />
+      <ReanalyzeButtonContainer onReanalyze={() => setSelectedFontId(undefined)} />
       <CompleteButtonContainer selectedFontId={selectedFontId} />
     </article>
   );
