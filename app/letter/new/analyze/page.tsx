@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useGetLetterVoice } from "@/hooks/apis/get/useGetLetterVoice";
 import { useGetLetterFont } from "@/hooks/apis/get/useGetLetterFont";
 import FontCards from "@/components/analyze/FontCards";
@@ -8,11 +9,11 @@ import ReanalyzeButtonContainer from "@/components/analyze/ReanalyzeButtonContai
 
 export default function AnalyzePage() {
   const { data: voiceData, isSuccess: isVoiceSuccess } = useGetLetterVoice();
-  const { data: fontData, isLoading: isFontLoading } = useGetLetterFont(
-    isVoiceSuccess
-  );
+  const { data: fontData, isLoading: isFontLoading } =
+    useGetLetterFont(isVoiceSuccess);
+  const [selectedFontId, setSelectedFontId] = useState<number | null>(null);
 
-  if (isFontLoading || !voiceData || !fontData) return null;
+  if (isFontLoading || !voiceData || !fontData) return <div>loading</div>;
 
   return (
     <article className="flex flex-col items-center justify-center h-full px-5">
@@ -23,10 +24,14 @@ export default function AnalyzePage() {
           <br />
           {voiceData.result}
         </h3>
-        <FontCards cards={fontData.voiceFonts} />
+        <FontCards
+          cards={fontData.voiceFonts}
+          selectedFontId={selectedFontId}
+          onSelectFont={setSelectedFontId}
+        />
       </section>
       <ReanalyzeButtonContainer />
-      <CompleteButtonContainer />
+      <CompleteButtonContainer selectedFontId={selectedFontId} />
     </article>
   );
 }

@@ -33,15 +33,10 @@ export default function CompleteButtonContainer({
       },
       {
         onSuccess: () => {
-          console.log("#1 - success");
           const basePathname = "/letter/new/edit";
           const nextStep = getNextStep(basePathname);
           if (nextStep) {
-            console.log("#2 - nextStep", nextStep);
-            // mutation이 완전히 완료된 후 페이지 이동
-            setTimeout(() => {
-              router.push(nextStep);
-            }, 100);
+            router.push(nextStep);
           }
         },
       }
