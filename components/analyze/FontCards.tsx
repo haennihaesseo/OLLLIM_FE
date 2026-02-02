@@ -10,8 +10,11 @@ export default function FontCards({ cards }: { cards: FontInfo[] }) {
   return (
     <div className="flex items-center gap-2 w-full h-25">
       {cards.map((card) => (
-        <Card key={card.fontId} className="bg-gray-50 border-gray-200 h-25">
-          <CardContent className="flex items-center justify-center">
+        <Card
+          key={card.fontId}
+          className="bg-gray-50 border-gray-200 h-25 flex-1 justify-center"
+        >
+          <CardContent className="flex items-center justify-center w-full px-0">
             <div
               style={{ fontFamily: fontFamilyMap.get(card.fontId) }}
               className="text-gray-800 text-center wrap-break-words w-full"

@@ -14,7 +14,7 @@ export default function AnalyzePage() {
   if (isLoading || !data) return null;
 
   return (
-    <article className="flex flex-col items-center justify-center h-full gap-4 px-5">
+    <article className="flex flex-col items-center justify-center h-full px-5">
       <h2 className="text-gray-400 text-center typo-h2-lg">목소리 분석 결과</h2>
       <section className="flex flex-col items-center justify-center py-7 gap-3">
         <h3 className="text-gray-800 text-center typo-h2-2xl">
