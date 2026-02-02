@@ -39,7 +39,7 @@ export default function CompleteButtonContainer({
           const nextStep = getNextStep(basePathname);
           
           if (nextStep) {
-            router.push(`${nextStep}/loading?letterId=${letterId}`);
+            router.push(`${nextStep}?letterId=${letterId}`);
           }
         },
       }
