@@ -40,6 +40,7 @@ export type FontInfo = {
   fontId: number;
   name: string;
   fontUrl: string;
+  keywords?: string[];
 };
 
 /**
@@ -47,6 +48,22 @@ export type FontInfo = {
  */
 export type LetterVoiceResponse = {
   result: string;
+  fonts: FontInfo[];
+};
+
+/**
+ * 추천 폰트 리스트 응답 타입 (GET /api/letter/font 응답)
+ */
+export type LetterFontResponse = {
+  voiceFonts: FontInfo[];
+  contextFonts: FontInfo[];
+};
+
+/**
+ * 폰트 새로고침 응답 타입 (POST /api/letter/font/refresh 응답)
+ */
+export type FontRefreshResponse = {
+  type?: string;
   fonts: FontInfo[];
 };
 

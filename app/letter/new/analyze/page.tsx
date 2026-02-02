@@ -2,16 +2,23 @@
 
 import { useSearchParams } from "next/navigation";
 import { useGetLetterVoice } from "@/hooks/apis/get/useGetLetterVoice";
+import { useGetLetterFont } from "@/hooks/apis/get/useGetLetterFont";
 import FontCards from "@/components/analyze/FontCards";
-import ReanalyzeButton from "@/components/analyze/ReanalyzeButton";
 import CompleteButtonContainer from "@/components/analyze/CompleteButtonContainer";
+import ReanalyzeButtonContainer from "@/components/analyze/ReanalyzeButtonContainer";
 
 export default function AnalyzePage() {
   const searchParams = useSearchParams();
   const letterId = searchParams.get("letterId");
 
-  const { data, isLoading } = useGetLetterVoice(letterId);
-  if (isLoading || !data) return null;
+  const { data: voiceData, isSuccess: isVoiceSuccess } =
+    useGetLetterVoice(letterId);
+  const { data: fontData, isLoading: isFontLoading } = useGetLetterFont(
+    letterId,
+    isVoiceSuccess
+  );
+
+  if (isFontLoading || !voiceData || !fontData) return null;
 
   return (
     <article className="flex flex-col items-center justify-center h-full px-5">
@@ -20,11 +27,11 @@ export default function AnalyzePage() {
         <h3 className="text-gray-800 text-center typo-h2-2xl">
           당신의 목소리는
           <br />
-          {data.result}
+          {voiceData.result}
         </h3>
-        <FontCards cards={data.fonts} />
+        <FontCards cards={fontData.voiceFonts} />
       </section>
-      <ReanalyzeButton />
+      <ReanalyzeButtonContainer letterId={letterId!} />
       <CompleteButtonContainer />
     </article>
   );
