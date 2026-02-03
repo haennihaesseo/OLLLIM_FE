@@ -1,4 +1,4 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useAtom } from "jotai";
 import { letterIdAtom } from "@/store/letterAtoms";
@@ -8,6 +8,7 @@ import type { ApiResponse } from "@/types/letter";
 
 export function usePostLetterFont() {
   const router = useRouter();
+  const queryClient = useQueryClient();
   const [letterId] = useAtom(letterIdAtom);
 
   return useMutation({
@@ -24,6 +25,11 @@ export function usePostLetterFont() {
       return response.data;
     },
     onSuccess: () => {
+      // letter 데이터 쿼리 무효화
+      queryClient.invalidateQueries({
+        queryKey: ["letter", letterId],
+      });
+
       const nextStep = getNextStep("/letter/new/analyze");
       if (nextStep) {
         router.push(nextStep);
