@@ -31,6 +31,9 @@ export default function LetterOptionsBottomSheet({
 }: LetterOptionsBottomSheetProps) {
   const [activeTab, setActiveTab] = useState<TabType>("font");
   const [selectedFont, setSelectedFont] = useState("font1");
+  const [selectedPaper, setSelectedPaper] = useState("1");
+  const [selectedBgm, setSelectedBgm] = useState("1");
+  const [volume, setVolume] = useState(50);
 
   return (
     <Sheet open={isOpen} onOpenChange={onOpenChange}>
@@ -74,8 +77,20 @@ export default function LetterOptionsBottomSheet({
               onFontChange={setSelectedFont}
             />
           )}
-          {activeTab === "paper" && <PaperTab />}
-          {activeTab === "bgm" && <BgmTab />}
+          {activeTab === "paper" && (
+            <PaperTab
+              selectedPaper={selectedPaper}
+              onPaperChange={setSelectedPaper}
+            />
+          )}
+          {activeTab === "bgm" && (
+            <BgmTab
+              selectedBgm={selectedBgm}
+              onBgmChange={setSelectedBgm}
+              volume={volume}
+              onVolumeChange={setVolume}
+            />
+          )}
         </div>
 
         {/* 하단 버튼 - 적용하기 */}
