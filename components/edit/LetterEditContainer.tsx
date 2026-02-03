@@ -1,24 +1,21 @@
 "use client";
 
 import { useState } from "react";
-import { useGetLetterData } from "@/hooks/apis/get/useGetLetterData";
 import { LetterEditor } from "./LetterEditor";
 import { VoicePlayer } from "./VoicePlayer";
 import CompleteButtonContainer from "./CompleteButtonContainer";
 
-export function LetterEditContainer() {
-  const { data } = useGetLetterData();
+interface LetterEditContainerProps {
+  initialData: {
+    content: string;
+    voiceUrl: string;
+  };
+}
 
+export function LetterEditContainer({ initialData }: LetterEditContainerProps) {
   const [title, setTitle] = useState("");
   const [sender, setSender] = useState("");
-  const [content, setContent] = useState("");
-
-  // data가 로드되면 content 초기화
-  if (data && content === "") {
-    setContent(data.content);
-  }
-
-  if (!data) return null;
+  const [content, setContent] = useState(initialData.content);
 
   return (
     <article>
@@ -31,7 +28,7 @@ export function LetterEditContainer() {
           content={content}
           onContentChange={setContent}
         />
-        <VoicePlayer audioUrl={data.voiceUrl} />
+        <VoicePlayer audioUrl={initialData.voiceUrl} />
       </section>
       <CompleteButtonContainer
         title={title}

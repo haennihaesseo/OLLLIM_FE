@@ -1,12 +1,16 @@
-import { Suspense } from "react";
+"use client";
+
+import { useGetLetterData } from "@/hooks/apis/get/useGetLetterData";
 import { LetterEditContainer } from "@/components/edit/LetterEditContainer";
 
 export default function EditPage() {
+  const { data } = useGetLetterData();
+
+  if (!data) return null;
+
   return (
     <article className="bg-gray-50 h-full">
-      <Suspense fallback={null}>
-        <LetterEditContainer />
-      </Suspense>
+      <LetterEditContainer initialData={data} />
     </article>
   );
 }
