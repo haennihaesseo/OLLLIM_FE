@@ -14,6 +14,7 @@ export type LetterData = {
   voiceUrl: string;
   duration: number;
   fontId: number;
+  fontUrl: string;
   fontName: string;
   content: string;
   title: string;
@@ -65,6 +66,39 @@ export type LetterFontResponse = {
 export type FontRefreshResponse = {
   type?: string;
   fonts: FontInfo[];
+};
+
+/**
+ * 편지지 정보 타입
+ */
+export type TemplateInfo = {
+  templateId: number;
+  name: string;
+  previewImageUrl: string;
+};
+
+/**
+ * 편지지 목록 조회 응답 타입 (GET /api/deco/template 응답)
+ */
+export type LetterTemplateResponse = {
+  templates: TemplateInfo[];
+};
+
+/**
+ * 배경음 정보 타입
+ */
+export type BgmInfo = {
+  bgmId: number;
+  bgmUrl: string;
+  keyword: string[];
+  name: string;
+};
+
+/**
+ * 배경음 목록 조회 응답 타입 (GET /api/deco/bgm 응답)
+ */
+export type LetterBgmResponse = {
+  bgms: BgmInfo[];
 };
 
 /**

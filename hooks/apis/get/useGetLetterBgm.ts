@@ -2,16 +2,16 @@ import { useQuery } from "@tanstack/react-query";
 import { useAtom } from "jotai";
 import { letterIdAtom } from "@/store/letterAtoms";
 import { client } from "@/lib/axiosInstance";
-import type { ApiResponse, LetterFontResponse } from "@/types/letter";
+import type { ApiResponse, LetterBgmResponse } from "@/types/letter";
 
-export function useGetLetterFont(enabled: boolean = true) {
+export function useGetLetterBgm(enabled: boolean = true) {
   const [letterId] = useAtom(letterIdAtom);
 
   return useQuery({
-    queryKey: ["letterFont", letterId],
+    queryKey: ["letterBgm", letterId],
     queryFn: async () => {
-      const response = await client.get<ApiResponse<LetterFontResponse>>(
-        "/api/letter/font",
+      const response = await client.get<ApiResponse<LetterBgmResponse>>(
+        "/api/deco/bgm",
         {
           headers: {
             letterId: letterId,
