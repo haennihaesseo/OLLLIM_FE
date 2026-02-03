@@ -45,7 +45,7 @@ export default function AudioPlayer({ voiceUrl, duration }: AudioPlayerProps) {
   };
 
   return (
-    <section className="flex flex-col gap-5">
+    <section className="flex flex-col gap-5 px-2">
       <div className="flex items-center gap-3 w-full">
         {/* Progress Bar */}
         <div
