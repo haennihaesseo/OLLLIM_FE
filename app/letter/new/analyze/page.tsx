@@ -6,14 +6,17 @@ import { useGetLetterFont } from "@/hooks/apis/get/useGetLetterFont";
 import FontCards from "@/components/analyze/FontCards";
 import CompleteButtonContainer from "@/components/analyze/CompleteButtonContainer";
 import ReanalyzeButtonContainer from "@/components/analyze/ReanalyzeButtonContainer";
+import AnalyzeLoading from "./loading";
 
 export default function AnalyzePage() {
   const { data: voiceData, isSuccess: isVoiceSuccess } = useGetLetterVoice();
   const { data: fontData, isLoading: isFontLoading } =
     useGetLetterFont(isVoiceSuccess);
-  const [selectedFontId, setSelectedFontId] = useState<number | undefined>(undefined);
+  const [selectedFontId, setSelectedFontId] = useState<number | undefined>(
+    undefined
+  );
 
-  if (isFontLoading || !voiceData || !fontData) return <div>loading</div>;
+  if (isFontLoading || !voiceData || !fontData) return <AnalyzeLoading />;
 
   return (
     <article className="flex flex-col items-center justify-center h-full px-5">
@@ -30,7 +33,9 @@ export default function AnalyzePage() {
           onSelectFont={setSelectedFontId}
         />
       </section>
-      <ReanalyzeButtonContainer onReanalyze={() => setSelectedFontId(undefined)} />
+      <ReanalyzeButtonContainer
+        onReanalyze={() => setSelectedFontId(undefined)}
+      />
       <CompleteButtonContainer selectedFontId={selectedFontId} />
     </article>
   );
