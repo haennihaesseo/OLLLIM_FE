@@ -3,7 +3,7 @@
 import { useRouter, usePathname } from "next/navigation";
 import { usePatchLetter } from "@/hooks/apis/patch/usePatchLetter";
 import { getPrevStep, getNextStep } from "@/lib/letterSteps";
-import CompleteButton from "./CompleteButton";
+import CompleteButton from "@/components/common/CompleteButton";
 
 interface CompleteButtonContainerProps {
   title: string;

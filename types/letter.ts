@@ -14,6 +14,7 @@ export type LetterData = {
   voiceUrl: string;
   duration: number;
   fontId: number;
+  fontUrl: string;
   fontName: string;
   content: string;
   title: string;
