@@ -3,11 +3,11 @@
 import { usePathname } from "next/navigation";
 import { Header } from "@/components/common/Header";
 import { Progress } from "@/components/ui/progress";
-import { STEP_CONFIG } from "@/lib/letterSteps";
+import { getStepConfig } from "@/lib/letterSteps";
 
 export function LetterNewHeader() {
   const pathname = usePathname();
-  const config = STEP_CONFIG[pathname] || { title: "편지 작성", progress: 0 };
+  const config = getStepConfig(pathname);
 
   return (
     <>
