@@ -1,10 +1,12 @@
 "use client";
 
+import { useMemo } from "react";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
 import { Volume2, VolumeX } from "lucide-react";
 import { useGetLetterBgm } from "@/hooks/apis/get/useGetLetterBgm";
+import { useBgmPlayer } from "@/hooks/common/useBgmPlayer";
 import type { BgmInfo } from "@/types/letter";
 
 interface BgmTabProps {
@@ -22,6 +24,23 @@ export default function BgmTab({
 }: BgmTabProps) {
   const { data } = useGetLetterBgm();
 
+  // 선택된 BGM의 URL 계산
+  const currentBgmUrl = useMemo(() => {
+    if (!selectedBgm || !data?.bgms) return null;
+
+    const currentBgm = data.bgms.find(
+      (bgm) => String(bgm.bgmId) === selectedBgm
+    );
+    return currentBgm?.bgmUrl || null;
+  }, [selectedBgm, data]);
+
+  // BGM 플레이어 훅 사용
+  useBgmPlayer({
+    bgmUrl: currentBgmUrl,
+    volume,
+    autoPlay: true,
+  });
+
   if (!data) {
     return null;
   }
@@ -32,6 +51,8 @@ export default function BgmTab({
     const percentage = (clickX / rect.width) * 100;
     onVolumeChange(Math.max(0, Math.min(100, percentage)));
   };
+
+  console.log(data.bgms);
 
   const renderBgmItem = (bgm: BgmInfo) => {
     const bgmIdStr = String(bgm.bgmId);

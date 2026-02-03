@@ -14,11 +14,12 @@ export default function FloatingButton({ onClick }: FloatingButtonProps) {
       aria-label="편집 옵션 열기"
     >
       <Image
-        src="/icons/edit-magic.svg"
+        src="/gif/edit_motion.gif"
         alt="편집"
         width={30}
         height={30}
         className="w-8 h-8"
+        unoptimized
       />
     </button>
   );
