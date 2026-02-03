@@ -8,7 +8,7 @@ export default function Page() {
   return (
     <main className="h-dvh flex flex-col">
       <HomeHeader />
-      <main className="flex-1 overflow-auto">
+      <article className="flex-1 overflow-auto">
         <section className="px-5 py-10 bg-[#FFF0F2] flex flex-col items-start justify-center gap-2">
           <Mail size={25} className="text-primary-700" />
           <h1 className="typo-h2-4xl text-gray-900 pt-3">
@@ -63,7 +63,7 @@ export default function Page() {
             </div>
           </div>
         </section>
-      </main>
+      </article>
     </main>
   );
 }

@@ -14,7 +14,7 @@ export function HomeHeader({ title = "" }: HeaderProps) {
       {/* Center Title */}
       <h1 className="typo-body1-lg">{title}</h1>
 
-      {/* Right Exit (Client) */}
+      {/* Right Login (Client) */}
       <Button variant="ghost" size="icon" className="w-10 h-10 rounded-full">
         로그인
       </Button>
