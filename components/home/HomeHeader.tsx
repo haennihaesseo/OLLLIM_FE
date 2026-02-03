@@ -1,11 +1,11 @@
 import Image from "next/image";
-import { HeaderActions } from "./HeaderActions";
+import { Button } from "@/components/ui/button";
 
 type HeaderProps = {
   title?: string;
 };
 
-export function Header({ title = "" }: HeaderProps) {
+export function HomeHeader({ title = "" }: HeaderProps) {
   return (
     <header className="flex items-center justify-between gap-5 px-5 py-[0.62rem]">
       {/* Left Logo */}
@@ -15,7 +15,9 @@ export function Header({ title = "" }: HeaderProps) {
       <h1 className="typo-body1-lg">{title}</h1>
 
       {/* Right Exit (Client) */}
-      <HeaderActions />
+      <Button variant="ghost" size="icon" className="w-10 h-10 rounded-full">
+        로그인
+      </Button>
     </header>
   );
 }
