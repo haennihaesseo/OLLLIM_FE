@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useRef } from "react";
 import { RotateCcw, Play, Pause } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { useAudioPlayer } from "@/hooks/common/useAudioPlayer";
@@ -7,22 +8,109 @@ import { useAudioPlayer } from "@/hooks/common/useAudioPlayer";
 type AudioPlayerProps = {
   voiceUrl: string;
   duration: number;
+  bgmUrl?: string | null;
 };
 
-export default function AudioPlayer({ voiceUrl, duration }: AudioPlayerProps) {
+export default function AudioPlayer({
+  voiceUrl,
+  duration,
+  bgmUrl,
+}: AudioPlayerProps) {
+  const bgmRef = useRef<HTMLAudioElement | null>(null);
+
   // 범용 오디오 플레이어 훅 사용
   const {
     status,
     currentTime,
     progress,
     duration: actualDuration,
-    togglePlayPause,
-    stop,
-    seek,
+    togglePlayPause: originalTogglePlayPause,
+    stop: originalStop,
+    seek: originalSeek,
   } = useAudioPlayer({
     audioUrl: voiceUrl,
     initialDuration: duration,
   });
+
+  // BGM 오디오 엘리먼트 생성 및 관리
+  useEffect(() => {
+    // cleanup previous bgm instance
+    if (bgmRef.current) {
+      bgmRef.current.pause();
+      bgmRef.current.src = "";
+      bgmRef.current = null;
+    }
+
+    // bgmUrl이 없으면 종료
+    if (!bgmUrl) return;
+
+    const bgm = new Audio(bgmUrl);
+    bgm.crossOrigin = "anonymous";
+    bgm.loop = true; // 반복 재생
+    bgmRef.current = bgm;
+
+    return () => {
+      if (bgmRef.current) {
+        bgmRef.current.pause();
+        bgmRef.current.src = "";
+        bgmRef.current = null;
+      }
+    };
+  }, [bgmUrl]);
+
+  // voice 재생 상태에 따라 BGM 정지
+  useEffect(() => {
+    if (!bgmRef.current) return;
+
+    // voice가 끝나면 (status가 idle이 되면) BGM도 정지
+    if (status === "idle") {
+      bgmRef.current.pause();
+      bgmRef.current.currentTime = 0;
+    }
+  }, [status]);
+
+  // BGM과 동기화된 플레이어 제어 함수들
+  const togglePlayPause = async () => {
+    const wasPlaying = status === "playing";
+
+    await originalTogglePlayPause();
+
+    if (!bgmRef.current) return;
+
+    if (wasPlaying) {
+      // 재생 중이었으면 일시정지
+      bgmRef.current.pause();
+    } else {
+      // 정지 중이었으면 재생
+      try {
+        await bgmRef.current.play();
+      } catch (error) {
+        console.error("BGM 재생 실패:", error);
+      }
+    }
+  };
+
+  const stop = () => {
+    originalStop();
+
+    if (!bgmRef.current) return;
+
+    bgmRef.current.pause();
+    bgmRef.current.currentTime = 0;
+  };
+
+  const seek = (time: number) => {
+    originalSeek(time);
+
+    if (!bgmRef.current) return;
+
+    // BGM의 재생 위치도 동기화
+    const bgmDuration = bgmRef.current.duration;
+    if (bgmDuration > 0) {
+      // BGM이 loop이므로 전체 길이로 나눈 나머지로 설정
+      bgmRef.current.currentTime = time % bgmDuration;
+    }
+  };
 
   // 타임 포맷팅 함수 (mm:ss)
   const formatTime = (seconds: number): string => {

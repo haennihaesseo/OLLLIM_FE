@@ -23,8 +23,13 @@ export default function SelectPage() {
           content={data.content}
           fontId={data.fontId}
           fontUrl={data.fontUrl}
+          templateUrl={data.templateUrl}
         />
-        <AudioPlayer voiceUrl={data.voiceUrl} duration={data.duration} />
+        <AudioPlayer
+          voiceUrl={data.voiceUrl}
+          duration={data.duration}
+          bgmUrl={data.bgmUrl}
+        />
         <CompleteButtonContainer />
       </section>
 

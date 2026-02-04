@@ -8,6 +8,7 @@ interface LetterBoxProps {
   content: string;
   fontId: number;
   fontUrl: string;
+  templateUrl: string;
 }
 
 export default function LetterBox({
@@ -16,12 +17,18 @@ export default function LetterBox({
   content,
   fontId,
   fontUrl,
+  templateUrl,
 }: LetterBoxProps) {
   const fontFamilyName = useDynamicFont(fontId, fontUrl);
 
   return (
     <div
-      style={{ fontFamily: fontFamilyName }}
+      style={{
+        fontFamily: fontFamilyName,
+        backgroundImage: `url(${templateUrl})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+      }}
       className="relative bg-white rounded-[0.5rem] py-10 px-5 h-122.5 flex flex-col border-2 border-dashed border-primary-700"
     >
       <h3 className="mb-4">{title}</h3>
