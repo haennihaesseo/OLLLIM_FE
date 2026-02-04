@@ -34,7 +34,7 @@ export default function LetterBox({
       <h3 className="mb-4">{title}</h3>
 
       <div className="flex-1 overflow-y-auto">
-        <p className="text-gray-900">{content}</p>
+        <p className="text-gray-900 whitespace-pre-line">{content}</p>
         <p className="text-gray-900 text-right mt-4 mb-5">From. {sender}</p>
       </div>
 
