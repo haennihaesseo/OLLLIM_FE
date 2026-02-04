@@ -5,6 +5,7 @@ interface CompleteButtonProps {
   onNext: () => void;
   isNextDisabled: boolean;
   isLoading: boolean;
+  nextText?: string;
 }
 
 export default function CompleteButton({
@@ -12,6 +13,7 @@ export default function CompleteButton({
   onNext,
   isNextDisabled,
   isLoading,
+  nextText = "다음",
 }: CompleteButtonProps) {
   return (
     <nav className="fixed bottom-15 left-0 right-0 px-5">
@@ -30,7 +32,7 @@ export default function CompleteButton({
           onClick={onNext}
           disabled={isNextDisabled || isLoading}
         >
-          {isLoading ? "저장 중..." : "다음"}
+          {isLoading ? "저장 중..." : nextText}
         </Button>
       </div>
     </nav>

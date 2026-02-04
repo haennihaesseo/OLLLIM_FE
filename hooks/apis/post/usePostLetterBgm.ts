@@ -1,26 +1,27 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useRouter } from "next/navigation";
 import { useAtom } from "jotai";
 import { letterIdAtom } from "@/store/letterAtoms";
 import { client } from "@/lib/axiosInstance";
-import { getNextStep } from "@/lib/letterSteps";
-import type { ApiResponse } from "@/types/letter";
+import type { ApiResponse, BgmSelectResponse } from "@/types/letter";
 
-interface UsePostLetterFontOptions {
-  skipInvalidate?: boolean;
-  skipNavigation?: boolean;
+interface PostBgmParams {
+  bgmId: string;
+  bgmSize: number;
 }
 
-export function usePostLetterFont(options?: UsePostLetterFontOptions) {
-  const router = useRouter();
+interface UsePostLetterBgmOptions {
+  skipInvalidate?: boolean;
+}
+
+export function usePostLetterBgm(options?: UsePostLetterBgmOptions) {
   const queryClient = useQueryClient();
   const [letterId] = useAtom(letterIdAtom);
 
   return useMutation({
-    mutationFn: async (fontId: number) => {
-      const response = await client.post<ApiResponse<null>>(
-        "/api/letter/font",
-        { fontId },
+    mutationFn: async ({ bgmId, bgmSize }: PostBgmParams) => {
+      const response = await client.post<ApiResponse<BgmSelectResponse>>(
+        `/api/deco/bgm/select?bgmId=${bgmId}&bgmSize=${bgmSize}`,
+        null,
         {
           headers: {
             letterId: letterId,
@@ -35,13 +36,6 @@ export function usePostLetterFont(options?: UsePostLetterFontOptions) {
         queryClient.invalidateQueries({
           queryKey: ["letter", letterId],
         });
-      }
-
-      if (!options?.skipNavigation) {
-        const nextStep = getNextStep("/letter/new/analyze");
-        if (nextStep) {
-          router.push(nextStep);
-        }
       }
     },
   });

@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
+import { Suspense } from "react";
 import "@/app/globals.css";
 import { QueryProvider } from "@/providers/QueryProvider";
+import { AuthProvider } from "@/providers/AuthProvider";
+import { Toaster } from "@/components/ui/sonner";
 
 export const metadata: Metadata = {
   title: "OLLLIM",
@@ -30,7 +33,14 @@ export default function RootLayout({
   return (
     <html lang="ko" className={pretendard.variable}>
       <body>
-        <QueryProvider>{children}</QueryProvider>
+        <QueryProvider>
+          <Suspense fallback={null}>
+            <AuthProvider>
+              {children}
+              <Toaster />
+            </AuthProvider>
+          </Suspense>
+        </QueryProvider>
       </body>
     </html>
   );

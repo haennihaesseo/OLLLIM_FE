@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import { useAtom } from "jotai";
 import {
   Sheet,
   SheetContent,
@@ -11,6 +13,10 @@ import { Button } from "@/components/ui/button";
 import FontTab from "./tabs/FontTab";
 import PaperTab from "./tabs/PaperTab";
 import BgmTab from "./tabs/BgmTab";
+import { usePostLetterFont } from "@/hooks/apis/post/usePostLetterFont";
+import { usePostLetterBgm } from "@/hooks/apis/post/usePostLetterBgm";
+import { usePostLetterTemplate } from "@/hooks/apis/post/usePostLetterTemplate";
+import { letterIdAtom } from "@/store/letterAtoms";
 
 interface LetterOptionsBottomSheetProps {
   isOpen: boolean;
@@ -29,14 +35,87 @@ export default function LetterOptionsBottomSheet({
   isOpen,
   onOpenChange,
 }: LetterOptionsBottomSheetProps) {
+  const queryClient = useQueryClient();
+  const [letterId] = useAtom(letterIdAtom);
+
   const [activeTab, setActiveTab] = useState<TabType>("font");
   const [selectedFont, setSelectedFont] = useState("font1");
   const [selectedPaper, setSelectedPaper] = useState("1");
   const [selectedBgm, setSelectedBgm] = useState("1");
   const [volume, setVolume] = useState(50);
 
+  // 초기값 저장 (변경 감지용)
+  const [initialValues, setInitialValues] = useState({
+    font: "font1",
+    paper: "1",
+    bgm: "1",
+    volume: 50,
+  });
+
+  // Sheet 열림 상태 변경 핸들러 (열릴 때 초기값 저장)
+  const handleOpenChange = (open: boolean) => {
+    if (open) {
+      // Sheet가 열릴 때 현재 값을 초기값으로 저장
+      setInitialValues({
+        font: selectedFont,
+        paper: selectedPaper,
+        bgm: selectedBgm,
+        volume: volume,
+      });
+    }
+    onOpenChange(open);
+  };
+
+  // API hooks (skipInvalidate: true로 중복 invalidate 방지)
+  const postFont = usePostLetterFont({
+    skipInvalidate: true,
+    skipNavigation: true,
+  });
+  const postBgm = usePostLetterBgm({ skipInvalidate: true });
+  const postTemplate = usePostLetterTemplate({ skipInvalidate: true });
+
+  const isLoading =
+    postFont.isPending || postBgm.isPending || postTemplate.isPending;
+
+  const handleApply = async () => {
+    try {
+      // 폰트가 변경된 경우
+      if (selectedFont !== initialValues.font) {
+        await postFont.mutateAsync(Number(selectedFont));
+      }
+
+      // BGM이 변경되었거나 볼륨이 변경된 경우
+      if (
+        selectedBgm !== initialValues.bgm ||
+        volume !== initialValues.volume
+      ) {
+        await postBgm.mutateAsync({
+          bgmId: selectedBgm,
+          bgmSize: volume,
+        });
+      }
+
+      // 편지지가 변경된 경우
+      if (selectedPaper !== initialValues.paper) {
+        await postTemplate.mutateAsync({
+          templateId: selectedPaper,
+        });
+      }
+
+      // letter 데이터 쿼리 무효화
+      await queryClient.invalidateQueries({
+        queryKey: ["letter", letterId],
+      });
+
+      // 성공 시 BottomSheet 닫기
+      onOpenChange(false);
+    } catch (error) {
+      console.error("편지 설정 적용 중 오류:", error);
+    }
+  };
+
   return (
-    <Sheet open={isOpen} onOpenChange={onOpenChange}>
+    <Sheet open={isOpen} onOpenChange={handleOpenChange}>
       <SheetContent
         side="bottom"
         className="rounded-t-[0.75rem] px-5 pb-28"
@@ -98,8 +177,10 @@ export default function LetterOptionsBottomSheet({
           <Button
             variant="default"
             className="w-full typo-h1-base h-11 bg-[#E6002314] text-primary-700 border border-primary-700"
+            onClick={handleApply}
+            disabled={isLoading}
           >
-            적용하기
+            {isLoading ? "적용 중..." : "적용하기"}
           </Button>
         </section>
       </SheetContent>
