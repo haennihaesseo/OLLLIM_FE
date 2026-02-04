@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "@/app/globals.css";
 import { QueryProvider } from "@/providers/QueryProvider";
+import { AuthProvider } from "@/providers/AuthProvider";
 
 export const metadata: Metadata = {
   title: "OLLLIM",
@@ -30,7 +31,9 @@ export default function RootLayout({
   return (
     <html lang="ko" className={pretendard.variable}>
       <body>
-        <QueryProvider>{children}</QueryProvider>
+        <QueryProvider>
+          <AuthProvider>{children}</AuthProvider>
+        </QueryProvider>
       </body>
     </html>
   );

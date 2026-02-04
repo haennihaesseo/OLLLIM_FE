@@ -11,7 +11,7 @@ export default function useGetToken(tmpToken: string) {
         "/api/token",
         {
           headers: {
-            tmpToken: tmpToken,
+            tmpKey: tmpToken,
           },
         }
       );
