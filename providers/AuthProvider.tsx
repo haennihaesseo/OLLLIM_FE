@@ -1,7 +1,7 @@
 "use client";
 
-import { useTokenRefresh } from "@/hooks/auth/useTokenRefresh";
 import { useTmpKeyLogin } from "@/hooks/auth/useTmpKeyLogin";
+import { useTokenRefresh } from "@/hooks/auth/useTokenRefresh";
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   // tmpKey로 자동 로그인 처리

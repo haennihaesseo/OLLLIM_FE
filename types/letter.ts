@@ -114,6 +114,13 @@ export type TemplateSelectResponse = {
 };
 
 /**
+ * 편지 공유 링크 생성 응답 타입 (POST /api/letter/share 응답)
+ */
+export type ShareLinkResponse = {
+  secretLetterId: string;
+};
+
+/**
  * API 공통 응답 래퍼
  */
 export type ApiResponse<T> = {
