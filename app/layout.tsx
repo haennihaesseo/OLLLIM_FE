@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
+import { Suspense } from "react";
 import "@/app/globals.css";
 import { QueryProvider } from "@/providers/QueryProvider";
 import { AuthProvider } from "@/providers/AuthProvider";
@@ -33,10 +34,12 @@ export default function RootLayout({
     <html lang="ko" className={pretendard.variable}>
       <body>
         <QueryProvider>
-          <AuthProvider>
-            {children}
-            <Toaster />
-          </AuthProvider>
+          <Suspense fallback={null}>
+            <AuthProvider>
+              {children}
+              <Toaster />
+            </AuthProvider>
+          </Suspense>
         </QueryProvider>
       </body>
     </html>
