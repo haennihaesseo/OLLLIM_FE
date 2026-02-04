@@ -1,30 +1,14 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useSetAtom } from "jotai";
-import { accessTokenAtom, refreshTokenStorage } from "@/store/auth";
-import useGetTokenReissue from "@/hooks/apis/get/useGetTokenReissue";
+import { useTokenRefresh } from "@/hooks/auth/useTokenRefresh";
+import { useTmpKeyLogin } from "@/hooks/auth/useTmpKeyLogin";
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const setAccessToken = useSetAtom(accessTokenAtom);
-  const [refreshToken] = useState(() => refreshTokenStorage.get());
-  
-  const { data: tokenData, isSuccess, isError } = useGetTokenReissue(refreshToken);
+  // tmpKey로 자동 로그인 처리
+  useTmpKeyLogin();
 
-  useEffect(() => {
-    if (isSuccess && tokenData) {
-      // accessToken 재발급 성공
-      setAccessToken(tokenData.accessToken);
-    }
-  }, [isSuccess, tokenData, setAccessToken]);
-
-  useEffect(() => {
-    if (isError) {
-      // refreshToken이 만료되었거나 유효하지 않은 경우 초기화
-      refreshTokenStorage.clear();
-      setAccessToken(null);
-    }
-  }, [isError, setAccessToken]);
+  // refreshToken으로 accessToken 자동 재발급
+  useTokenRefresh();
 
   return <>{children}</>;
 }

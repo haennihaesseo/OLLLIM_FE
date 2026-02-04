@@ -5,27 +5,13 @@ import Image from "next/image";
 import { useKakaoLogin } from "@/hooks/auth/useKakaoLogin";
 import { useSearchParams } from "next/navigation";
 import { Spinner } from "@/components/ui/spinner";
-import useGetToken from "@/hooks/apis/get/useGetToken";
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
-  const router = useRouter();
-  const { handleKakaoLogin } = useKakaoLogin();
   const searchParams = useSearchParams();
+  const redirectUrl = searchParams.get("redirectUrl") ?? "/";
+  const { handleKakaoLogin } = useKakaoLogin(redirectUrl);
   const tmpKey = searchParams.get("tmpKey");
   const isProcessing = !!tmpKey;
-
-  const { data: tokenData, isSuccess: isTokenSuccess } = useGetToken(
-    tmpKey ?? ""
-  );
-
-  useEffect(() => {
-    if (isTokenSuccess) {
-      //토큰 저장
-      router.push(`/letter/new`);
-    }
-  }, [isTokenSuccess, router]);
 
   return (
     <main className="h-dvh flex flex-col">
