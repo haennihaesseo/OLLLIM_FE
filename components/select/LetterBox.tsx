@@ -41,9 +41,6 @@ export default function LetterBox({
         <p className="text-gray-900 whitespace-pre-line">{content}</p>
         <p className="text-gray-900 text-right mt-4 mb-5">From. {sender}</p>
       </div>
-
-      {/* 하단 그라디언트 */}
-      <div className="absolute bottom-0 left-0 right-0 h-24 pointer-events-none bg-[linear-gradient(180deg,rgba(255,255,255,0)0%,#FFF_80%)]" />
     </div>
   );
 }
