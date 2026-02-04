@@ -1,26 +1,26 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useRouter } from "next/navigation";
 import { useAtom } from "jotai";
 import { letterIdAtom } from "@/store/letterAtoms";
 import { client } from "@/lib/axiosInstance";
-import { getNextStep } from "@/lib/letterSteps";
-import type { ApiResponse } from "@/types/letter";
+import type { ApiResponse, TemplateSelectResponse } from "@/types/letter";
 
-interface UsePostLetterFontOptions {
-  skipInvalidate?: boolean;
-  skipNavigation?: boolean;
+interface PostTemplateParams {
+  templateId: string;
 }
 
-export function usePostLetterFont(options?: UsePostLetterFontOptions) {
-  const router = useRouter();
+interface UsePostLetterTemplateOptions {
+  skipInvalidate?: boolean;
+}
+
+export function usePostLetterTemplate(options?: UsePostLetterTemplateOptions) {
   const queryClient = useQueryClient();
   const [letterId] = useAtom(letterIdAtom);
 
   return useMutation({
-    mutationFn: async (fontId: number) => {
-      const response = await client.post<ApiResponse<null>>(
-        "/api/letter/font",
-        { fontId },
+    mutationFn: async ({ templateId }: PostTemplateParams) => {
+      const response = await client.post<ApiResponse<TemplateSelectResponse>>(
+        `/api/deco/template?templateId=${templateId}`,
+        null,
         {
           headers: {
             letterId: letterId,
@@ -35,13 +35,6 @@ export function usePostLetterFont(options?: UsePostLetterFontOptions) {
         queryClient.invalidateQueries({
           queryKey: ["letter", letterId],
         });
-      }
-
-      if (!options?.skipNavigation) {
-        const nextStep = getNextStep("/letter/new/analyze");
-        if (nextStep) {
-          router.push(nextStep);
-        }
       }
     },
   });

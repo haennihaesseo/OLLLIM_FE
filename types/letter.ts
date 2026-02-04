@@ -102,6 +102,18 @@ export type LetterBgmResponse = {
 };
 
 /**
+ * BGM 선택 응답 타입 (POST /api/deco/bgm/select 응답)
+ */
+export type BgmSelectResponse = null;
+
+/**
+ * 편지지 선택 응답 타입 (POST /api/deco/template 응답)
+ */
+export type TemplateSelectResponse = {
+  imageUrl: string;
+};
+
+/**
  * API 공통 응답 래퍼
  */
 export type ApiResponse<T> = {
