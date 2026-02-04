@@ -27,7 +27,7 @@ export default function FontCards({
             onClick={() => onSelectFont?.(card.fontId)}
             className={`h-25 flex-1 justify-center transition-all cursor-pointer border-2 ${
               isSelected
-                ? "bg-[#E6002314] border-primary-700 "
+                ? "bg-[#E6002314] border-primary-700"
                 : "bg-gray-50 border-gray-200"
             }`}
           >
