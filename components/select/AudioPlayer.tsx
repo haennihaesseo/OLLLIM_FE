@@ -3,34 +3,30 @@
 import { useEffect, useRef } from "react";
 import { RotateCcw, Play, Pause } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
-import { useAudioPlayer } from "@/hooks/common/useAudioPlayer";
+import type { PlaybackStatus } from "@/types/recording";
 
 type AudioPlayerProps = {
-  voiceUrl: string;
-  duration: number;
   bgmUrl?: string | null;
+  status: PlaybackStatus;
+  currentTime: number;
+  progress: number;
+  duration: number;
+  togglePlayPause: () => Promise<void>;
+  stop: () => void;
+  seek: (time: number) => void;
 };
 
 export default function AudioPlayer({
-  voiceUrl,
-  duration,
   bgmUrl,
+  status,
+  currentTime,
+  progress,
+  duration,
+  togglePlayPause: originalTogglePlayPause,
+  stop: originalStop,
+  seek: originalSeek,
 }: AudioPlayerProps) {
   const bgmRef = useRef<HTMLAudioElement | null>(null);
-
-  // 범용 오디오 플레이어 훅 사용
-  const {
-    status,
-    currentTime,
-    progress,
-    duration: actualDuration,
-    togglePlayPause: originalTogglePlayPause,
-    stop: originalStop,
-    seek: originalSeek,
-  } = useAudioPlayer({
-    audioUrl: voiceUrl,
-    initialDuration: duration,
-  });
 
   // BGM 오디오 엘리먼트 생성 및 관리
   useEffect(() => {
@@ -128,7 +124,7 @@ export default function AudioPlayer({
     const rect = e.currentTarget.getBoundingClientRect();
     const clickX = e.clientX - rect.left;
     const percentage = clickX / rect.width;
-    const newTime = percentage * actualDuration;
+    const newTime = percentage * duration;
     seek(newTime);
   };
 
@@ -142,7 +138,7 @@ export default function AudioPlayer({
           role="slider"
           aria-label="재생 위치 조절"
           aria-valuemin={0}
-          aria-valuemax={actualDuration}
+          aria-valuemax={duration}
           aria-valuenow={currentTime}
         >
           <Progress

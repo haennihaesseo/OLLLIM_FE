@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useGetLetterData } from "@/hooks/apis/get/useGetLetterData";
+import { useAudioPlayer } from "@/hooks/common/useAudioPlayer";
 import CompleteButtonContainer from "@/components/select/CompleteButtonContainer";
 import LetterBox from "@/components/select/LetterBox";
 import AudioPlayer from "@/components/select/AudioPlayer";
@@ -11,6 +12,19 @@ import FloatingButton from "@/components/select/FloatingButton";
 export default function SelectPage() {
   const { data } = useGetLetterData();
   const [isSheetOpen, setIsSheetOpen] = useState(false);
+
+  const {
+    status,
+    currentTime,
+    progress,
+    duration,
+    togglePlayPause,
+    stop,
+    seek,
+  } = useAudioPlayer({
+    audioUrl: data?.voiceUrl || null,
+    initialDuration: data?.duration || 0,
+  });
 
   if (!data) return null;
 
@@ -25,11 +39,18 @@ export default function SelectPage() {
           fontUrl={data.fontUrl}
           templateUrl={data.templateUrl}
           isEdit={true}
+          words={data.words}
+          currentTime={currentTime}
         />
         <AudioPlayer
-          voiceUrl={data.voiceUrl}
-          duration={data.duration}
           bgmUrl={data.bgmUrl}
+          status={status}
+          currentTime={currentTime}
+          progress={progress}
+          duration={duration}
+          togglePlayPause={togglePlayPause}
+          stop={stop}
+          seek={seek}
         />
         <CompleteButtonContainer />
       </section>

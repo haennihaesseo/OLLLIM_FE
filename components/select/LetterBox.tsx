@@ -1,6 +1,7 @@
 "use client";
 
 import { useDynamicFont } from "@/hooks/common/useDynamicFont";
+import type { Word } from "@/types/letter";
 
 interface LetterBoxProps {
   title: string;
@@ -10,6 +11,8 @@ interface LetterBoxProps {
   fontUrl: string;
   templateUrl: string;
   isEdit?: boolean;
+  words?: Word[];
+  currentTime?: number;
 }
 
 export default function LetterBox({
@@ -20,6 +23,8 @@ export default function LetterBox({
   fontUrl,
   templateUrl,
   isEdit = false,
+  words,
+  currentTime = 0,
 }: LetterBoxProps) {
   const fontFamilyName = useDynamicFont(fontId, fontUrl);
 
@@ -38,7 +43,28 @@ export default function LetterBox({
       <h3 className="mb-4">{title}</h3>
 
       <div className="flex-1 overflow-y-auto">
-        <p className="text-gray-900 whitespace-pre-line">{content}</p>
+        <p className="whitespace-pre-line">
+          {words ? (
+            words.map((wordObj, index) => {
+              const isActive =
+                wordObj.startTime !== null &&
+                wordObj.endTime !== null &&
+                currentTime >= wordObj.startTime &&
+                currentTime <= wordObj.endTime;
+
+              return (
+                <span
+                  key={index}
+                  className={isActive ? "text-primary-700" : "text-gray-900"}
+                >
+                  {wordObj.word}
+                </span>
+              );
+            })
+          ) : (
+            <span className="text-gray-900">{content}</span>
+          )}
+        </p>
         <p className="text-gray-900 text-right mt-4 mb-5">From. {sender}</p>
       </div>
     </div>
