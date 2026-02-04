@@ -24,6 +24,7 @@ export default function SelectPage() {
           fontId={data.fontId}
           fontUrl={data.fontUrl}
           templateUrl={data.templateUrl}
+          isEdit={true}
         />
         <AudioPlayer
           voiceUrl={data.voiceUrl}

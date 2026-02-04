@@ -3,7 +3,7 @@
 import { useGetLetterData } from "@/hooks/apis/get/useGetLetterData";
 import LetterBox from "@/components/select/LetterBox";
 import AudioPlayer from "@/components/select/AudioPlayer";
-import CompleteButtonContainer from "@/components/select/CompleteButtonContainer";
+import CompleteButtonContainer from "@/components/share/CompleteButtonContainer";
 
 export default function SharePage() {
   const { data } = useGetLetterData();
@@ -20,6 +20,7 @@ export default function SharePage() {
           fontId={data.fontId}
           fontUrl={data.fontUrl}
           templateUrl={data.templateUrl}
+          isEdit={false}
         />
         <AudioPlayer
           voiceUrl={data.voiceUrl}

@@ -9,6 +9,7 @@ interface LetterBoxProps {
   fontId: number;
   fontUrl: string;
   templateUrl: string;
+  isEdit?: boolean;
 }
 
 export default function LetterBox({
@@ -18,6 +19,7 @@ export default function LetterBox({
   fontId,
   fontUrl,
   templateUrl,
+  isEdit = false,
 }: LetterBoxProps) {
   const fontFamilyName = useDynamicFont(fontId, fontUrl);
 
@@ -29,7 +31,9 @@ export default function LetterBox({
         backgroundSize: "cover",
         backgroundPosition: "center",
       }}
-      className="relative bg-white rounded-[0.5rem] py-10 px-5 h-122.5 flex flex-col border-2 border-dashed border-primary-700"
+      className={`relative bg-white rounded-[0.5rem] py-10 px-5 h-122.5 flex flex-col ${
+        isEdit ? "border-2 border-dashed border-primary-700" : ""
+      }`}
     >
       <h3 className="mb-4">{title}</h3>
 
