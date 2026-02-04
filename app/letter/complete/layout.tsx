@@ -1,13 +1,13 @@
-import { LetterNewHeader } from "@/components/letter/LetterNewHeader";
+import { HomeHeader } from "@/components/home/HomeHeader";
 
-export default function LetterNewLayout({
+export default function LetterCompleteLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   return (
     <div className="h-dvh flex flex-col">
-      <LetterNewHeader />
+      <HomeHeader />
       <main className="flex-1 overflow-auto">{children}</main>
     </div>
   );
