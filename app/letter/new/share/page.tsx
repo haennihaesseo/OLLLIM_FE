@@ -37,6 +37,7 @@ export default function SharePage() {
           isEdit={false}
           words={data.words}
           currentTime={currentTime}
+          status={status}
         />
         <AudioPlayer
           bgmUrl={data.bgmUrl}

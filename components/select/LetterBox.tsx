@@ -2,6 +2,7 @@
 
 import { useDynamicFont } from "@/hooks/common/useDynamicFont";
 import type { Word } from "@/types/letter";
+import type { PlaybackStatus } from "@/types/recording";
 
 interface LetterBoxProps {
   title: string;
@@ -13,6 +14,7 @@ interface LetterBoxProps {
   isEdit?: boolean;
   words?: Word[];
   currentTime?: number;
+  status?: PlaybackStatus;
 }
 
 export default function LetterBox({
@@ -25,6 +27,7 @@ export default function LetterBox({
   isEdit = false,
   words,
   currentTime = 0,
+  status = "idle",
 }: LetterBoxProps) {
   const fontFamilyName = useDynamicFont(fontId, fontUrl);
 
@@ -60,7 +63,9 @@ export default function LetterBox({
       }
 
       // 현재 단어 추가 (하이라이트 적용)
+      // status가 idle일 때는 하이라이트하지 않음
       const isActive =
+        status !== "idle" &&
         currentWord.startTime !== null &&
         currentWord.endTime !== null &&
         currentTime >= currentWord.startTime &&

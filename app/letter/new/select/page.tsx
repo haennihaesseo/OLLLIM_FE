@@ -41,6 +41,7 @@ export default function SelectPage() {
           isEdit={true}
           words={data.words}
           currentTime={currentTime}
+          status={status}
         />
         <AudioPlayer
           bgmUrl={data.bgmUrl}
