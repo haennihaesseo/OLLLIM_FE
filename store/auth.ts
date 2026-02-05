@@ -2,6 +2,12 @@ import { atom } from "jotai";
 
 export const accessTokenAtom = atom<string | null>(null);
 
+// 로그인 여부를 확인하는 파생 atom
+export const isLoggedInAtom = atom((get) => {
+  const accessToken = get(accessTokenAtom);
+  return accessToken !== null && accessToken !== "";
+});
+
 const REFRESH_KEY = "refreshToken";
 
 export const refreshTokenStorage = {

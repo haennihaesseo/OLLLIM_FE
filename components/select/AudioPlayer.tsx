@@ -7,6 +7,7 @@ import type { PlaybackStatus } from "@/types/recording";
 
 type AudioPlayerProps = {
   bgmUrl?: string | null;
+  bgmSize?: number; // 0-100 사이의 BGM 볼륨 크기
   status: PlaybackStatus;
   currentTime: number;
   progress: number;
@@ -18,6 +19,7 @@ type AudioPlayerProps = {
 
 export default function AudioPlayer({
   bgmUrl,
+  bgmSize = 50, // 기본값 50
   status,
   currentTime,
   progress,
@@ -43,6 +45,7 @@ export default function AudioPlayer({
     const bgm = new Audio(bgmUrl);
     bgm.crossOrigin = "anonymous";
     bgm.loop = true; // 반복 재생
+    bgm.volume = Math.max(0, Math.min(100, bgmSize)) / 100; // 0-100을 0-1로 변환
     bgmRef.current = bgm;
 
     return () => {
@@ -52,7 +55,7 @@ export default function AudioPlayer({
         bgmRef.current = null;
       }
     };
-  }, [bgmUrl]);
+  }, [bgmUrl, bgmSize]);
 
   // voice 재생 상태에 따라 BGM 정지
   useEffect(() => {

@@ -1,15 +1,23 @@
+"use client";
+
 import { HomeHeader } from "@/components/home/HomeHeader";
-import { Mail, Nfc, Pencil } from "lucide-react";
+import { Archive, Mail, Nfc, Pencil } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import Link from "next/link";
+import { useGetLetterCount } from "@/hooks/apis/get/useGetLetterCount";
+import { useAtom } from "jotai";
+import { isLoggedInAtom } from "@/store/auth";
 
 export default function Page() {
+  const [isLoggedIn] = useAtom(isLoggedInAtom);
+  const { data: letterCount } = useGetLetterCount();
+
   return (
     <main className="h-dvh flex flex-col">
       <HomeHeader />
       <article className="flex-1 overflow-auto">
-        <section className="px-5 py-10 bg-[#FFF0F2] flex flex-col items-start justify-center gap-2">
+        <section className="px-5 pt-10 pb-5 bg-[#FFF0F2] flex flex-col items-start justify-center gap-2">
           <Mail size={25} className="text-primary-700" />
           <h1 className="typo-h2-4xl text-gray-900 pt-3">
             목소리로 <br />
@@ -42,16 +50,31 @@ export default function Page() {
           </div>
         </section>
         <section className="p-5 flex flex-col items-start justify-center w-full gap-5">
-          <div className="flex flex-col w-full items-start justify-center gap-2 border-gray-300 border rounded-lg px-5 py-7 shadow-md">
-            <Pencil size={28} className="text-primary-700" />
-            <div className="flex items-center justify-between gap-2 w-full">
-              <h3 className="typo-h2-lg text-gray-900">
-                지금까지 올림을 통해 보내진 편지
-              </h3>
-              <p className="typo-h2-2xl text-primary-700">10개</p>
+          {isLoggedIn ? (
+            <Link
+              href="/letter/archive"
+              className="flex flex-col w-full items-start justify-center gap-2 bg-white border-gray-300 border rounded-lg px-5 py-5 shadow-md"
+            >
+              <Archive size={28} />
+              <h3 className="typo-h2-lg text-gray-900 ">올림 보관함</h3>
+              <p className="typo-body1-sm text-gray-500">
+                {letterCount?.count}개 보관중
+              </p>
+            </Link>
+          ) : (
+            <div className="flex flex-col w-full items-start justify-center gap-2 border-gray-300 border rounded-lg px-5 py-7 shadow-md">
+              <Pencil size={28} className="text-primary-700" />
+              <div className="flex items-center justify-between gap-2 w-full">
+                <h3 className="typo-h2-lg text-gray-900">
+                  지금까지 올림을 통해 보내진 편지
+                </h3>
+                <p className="typo-h2-2xl text-primary-700">
+                  {letterCount?.count}개
+                </p>
+              </div>
             </div>
-          </div>
-          <div className="flex w-full items-start justify-center gap-2 bg-gray-100 border-gray-300 border rounded-lg px-5 py-7 shadow-md">
+          )}
+          <div className="flex w-full items-start justify-center gap-2 bg-gray-100 border-gray-300 border rounded-lg px-5 py-5 shadow-md">
             <Nfc size={28} />
             <div className="flex flex-col items-start justify-between gap-2 w-full">
               <h3 className="typo-h2-lg text-gray-900 ">

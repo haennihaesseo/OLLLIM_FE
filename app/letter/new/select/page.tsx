@@ -30,28 +30,33 @@ export default function SelectPage() {
 
   return (
     <article className="bg-gray-50 h-full relative">
-      <section className="flex flex-col p-5 gap-5">
-        <LetterBox
-          title={data.title}
-          sender={data.sender}
-          content={data.content}
-          fontId={data.fontId}
-          fontUrl={data.fontUrl}
-          templateUrl={data.templateUrl}
-          isEdit={true}
-          words={data.words}
-          currentTime={currentTime}
-        />
-        <AudioPlayer
-          bgmUrl={data.bgmUrl}
-          status={status}
-          currentTime={currentTime}
-          progress={progress}
-          duration={duration}
-          togglePlayPause={togglePlayPause}
-          stop={stop}
-          seek={seek}
-        />
+      <section className="flex flex-col p-5 gap-5 h-full justify-between">
+        <div className="flex flex-col gap-5">
+          <LetterBox
+            title={data.title}
+            sender={data.sender}
+            content={data.content}
+            fontId={data.fontId}
+            fontUrl={data.fontUrl}
+            templateUrl={data.templateUrl}
+            isEdit={true}
+            words={data.words}
+            currentTime={currentTime}
+            status={status}
+          />
+          <AudioPlayer
+            bgmUrl={data.bgmUrl}
+            bgmSize={data.bgmSize}
+            status={status}
+            currentTime={currentTime}
+            progress={progress}
+            duration={duration}
+            togglePlayPause={togglePlayPause}
+            stop={stop}
+            seek={seek}
+          />
+        </div>
+
         <CompleteButtonContainer />
       </section>
 

@@ -18,7 +18,7 @@ export function LetterEditContainer({ initialData }: LetterEditContainerProps) {
   const [content, setContent] = useState(initialData.content);
 
   return (
-    <article>
+    <article className="flex flex-col justify-between h-full">
       <section className="flex flex-col p-5 gap-4">
         <LetterEditor
           title={title}

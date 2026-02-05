@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter, usePathname } from "next/navigation";
-import CompleteButton from "@/components/common/CompleteButton";
+import NavigationButton from "@/components/common/NavigationButton";
 import { getNextStep, getPrevStep } from "@/lib/letterSteps";
 
 export default function CompleteButtonContainer() {
@@ -23,7 +23,7 @@ export default function CompleteButtonContainer() {
   };
 
   return (
-    <CompleteButton
+    <NavigationButton
       onPrev={handlePrev}
       onNext={handleNext}
       isNextDisabled={false}
