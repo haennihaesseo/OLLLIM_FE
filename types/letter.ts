@@ -20,6 +20,7 @@ export type LetterData = {
   title: string;
   sender: string;
   bgmUrl: string | null;
+  bgmSize?: number; // 0-100 사이의 BGM 볼륨 크기
   templateUrl: string;
   words: Word[];
 };

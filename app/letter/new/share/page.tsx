@@ -40,6 +40,7 @@ export default function SharePage() {
         />
         <AudioPlayer
           bgmUrl={data.bgmUrl}
+          bgmSize={data.bgmSize}
           status={status}
           currentTime={currentTime}
           progress={progress}

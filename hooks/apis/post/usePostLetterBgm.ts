@@ -20,7 +20,7 @@ export function usePostLetterBgm(options?: UsePostLetterBgmOptions) {
   return useMutation({
     mutationFn: async ({ bgmId, bgmSize }: PostBgmParams) => {
       const response = await client.post<ApiResponse<BgmSelectResponse>>(
-        `/api/deco/bgm/select?bgmId=${bgmId}&bgmSize=${bgmSize}`,
+        `/api/deco/bgm/select?bgmId=${bgmId}&bgmSize=${Math.ceil(bgmSize)}`,
         null,
         {
           headers: {
