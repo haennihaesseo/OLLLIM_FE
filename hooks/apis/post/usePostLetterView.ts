@@ -17,7 +17,7 @@ export function usePostLetterView() {
         `/api/letter/view`,
         { secretLetterId, password }
       );
-      return response.data;
+      return response.data.data;
     },
   });
 }

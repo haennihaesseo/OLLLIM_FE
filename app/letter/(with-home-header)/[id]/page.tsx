@@ -6,12 +6,29 @@ import { usePostLetterView } from "@/hooks/apis/post/usePostLetterView";
 import LetterLoading from "./loading";
 import Image from "next/image";
 import CompleteButton from "@/components/common/CompleteButton";
+import LetterBox from "@/components/select/LetterBox";
+import AudioPlayer from "@/components/select/AudioPlayer";
+import { useAudioPlayer } from "@/hooks/common/useAudioPlayer";
+import { Button } from "@/components/ui/button";
+import { ArchiveIcon, Mail, Link2 } from "lucide-react";
 
 export default function LetterPage() {
   const params = useParams();
   const id = decodeURIComponent(params.id as string);
   const [isLetterOpen, setIsLetterOpen] = useState(false);
-  const { mutate, data, isPending, isError, error } = usePostLetterView();
+  const { mutate, data, isPending } = usePostLetterView();
+
+  const {
+    status,
+    currentTime,
+    progress,
+    duration,
+    togglePlayPause,
+    stop,
+    seek,
+  } = useAudioPlayer({
+    audioUrl: data?.voice.voiceUrl || null,
+  });
 
   useEffect(() => {
     mutate({
@@ -24,7 +41,54 @@ export default function LetterPage() {
 
   switch (isLetterOpen) {
     case true:
-      return <article></article>;
+      return (
+        <article className="bg-gray-50 h-full relative">
+          <section className="flex flex-col p-5 gap-5">
+            <LetterBox
+              title={data.title}
+              sender={data.sender}
+              content={data.content}
+              fontId={data.font.fontId}
+              fontUrl={data.font.fontUrl}
+              templateUrl={data.template.templateUrl}
+              isEdit={false}
+              words={data.words}
+              currentTime={currentTime}
+              status={status}
+            />
+            <AudioPlayer
+              bgmUrl={data.bgm.bgmUrl}
+              bgmSize={data.bgm.bgmSize}
+              status={status}
+              currentTime={currentTime}
+              progress={progress}
+              duration={duration}
+              togglePlayPause={togglePlayPause}
+              stop={stop}
+              seek={seek}
+            />
+          </section>
+          <section className="flex flex-col items-center justify-center gap-2 p-5 typo-h1-base">
+            <Button
+              className="w-full h-12 text-white bg-primary-700"
+              disabled={isPending}
+            >
+              <ArchiveIcon />
+              <p>로그인 후 편지 보관</p>
+            </Button>
+            <div className="flex items-center justify-center gap-2 w-full">
+              <Button className="h-12 flex-1 bg-[#E6002314] border-primary-700 border text-primary-700">
+                <Mail />
+                <p>편지 작성</p>
+              </Button>
+              <Button className="h-12 flex-1 bg-[#E6002314] border-primary-700 border text-primary-700">
+                <Link2 />
+                <p>링크 복사</p>
+              </Button>
+            </div>
+          </section>
+        </article>
+      );
     default:
       return (
         <article className="h-full px-5">
@@ -37,7 +101,7 @@ export default function LetterPage() {
               unoptimized
             />
             <h1 className="typo-h2-3xl text-gray-900">
-              {data.data.sender}님으로부터 온 올림레터
+              {data.sender}님으로부터 온 올림레터
             </h1>
           </div>
           <CompleteButton
