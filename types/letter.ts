@@ -157,6 +157,24 @@ export type LetterCountResponse = {
   count: number;
 };
 
+export type SimpleLetterData = {
+  letterId: string;
+  sender: string;
+  createdAt: string;
+};
+
+/**
+ * 보낸 편지 목록 조회 응답 타입 (GET /api/letter/sent 응답)
+ */
+export type SentLetterResponse = SimpleLetterData[];
+
+/**
+ * 비밀 편지 아이디 조회 응답 타입 (GET /api/letter/secret/{secretId} 응답)
+ */
+export type SecretIdResponse = {
+  secretLetterId: string;
+};
+
 /**
  * API 공통 응답 래퍼
  */
