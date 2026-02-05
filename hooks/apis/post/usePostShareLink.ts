@@ -14,8 +14,6 @@ export function usePostShareLink(options?: UsePostShareLinkOptions) {
   const [letterId] = useAtom(letterIdAtom);
   const [accessToken] = useAtom(accessTokenAtom);
 
-  console.log(letterId, accessToken);
-
   return useMutation({
     mutationFn: async () => {
       const response = await client.post<ApiResponse<ShareLinkResponse>>(
@@ -26,7 +24,7 @@ export function usePostShareLink(options?: UsePostShareLinkOptions) {
             letterId: letterId,
             Authorization: `Bearer ${accessToken}`,
           },
-        }
+        },
       );
       return response.data;
     },

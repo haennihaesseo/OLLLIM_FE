@@ -14,16 +14,19 @@ import { ArchiveIcon, Mail, Link2 } from "lucide-react";
 import { useAtom } from "jotai";
 import { isLoggedInAtom } from "@/store/auth";
 import { useRouter, useSearchParams } from "next/navigation";
+import { toast } from "sonner";
+import { usePostLetterArchive } from "@/hooks/apis/post/usePostLetterArchive";
 
 export default function LetterPage() {
   const params = useParams();
   const router = useRouter();
   const searchParams = useSearchParams();
   const initialIsLetterOpen = searchParams.get("isLetterOpen") === "true";
-  const id = decodeURIComponent(params.id as string);
+  const secretId = decodeURIComponent(params.id as string);
   const [isLetterOpen, setIsLetterOpen] = useState(initialIsLetterOpen);
   const [isLoggedIn] = useAtom(isLoggedInAtom);
   const { mutate, data, isPending } = usePostLetterView();
+  const { mutate: saveLetter } = usePostLetterArchive();
 
   const {
     status,
@@ -39,20 +42,29 @@ export default function LetterPage() {
 
   useEffect(() => {
     mutate({
-      secretLetterId: id,
+      secretLetterId: secretId,
       password: null,
     });
-  }, [id, mutate]);
+  }, [secretId, mutate]);
 
   const handleSaveLetter = () => {
     switch (isLoggedIn) {
       case true:
-        console.log("편지 보관");
+        saveLetter(data!.letterId);
         break;
       case false:
-        router.push(`/login?redirectUrl=/letter/${id}?isLetterOpen=true`);
+        router.push(`/login?redirectUrl=/letter/${secretId}?isLetterOpen=true`);
         break;
     }
+  };
+
+  const handleWriteLetter = () => {
+    router.push(`/letter/new/record`);
+  };
+
+  const handleCopyLink = () => {
+    navigator.clipboard.writeText(window.location.href);
+    toast.success("링크가 복사되었습니다");
   };
 
   if (!data) return <LetterLoading />;
@@ -96,11 +108,17 @@ export default function LetterPage() {
               <p>{isLoggedIn ? "편지 보관" : "로그인 후 편지 보관"}</p>
             </Button>
             <div className="flex items-center justify-center gap-2 w-full">
-              <Button className="h-12 flex-1 bg-[#E6002314] border-primary-700 border text-primary-700">
+              <Button
+                className="h-12 flex-1 bg-[#E6002314] border-primary-700 border text-primary-700"
+                onClick={handleWriteLetter}
+              >
                 <Mail />
                 <p>편지 작성</p>
               </Button>
-              <Button className="h-12 flex-1 bg-[#E6002314] border-primary-700 border text-primary-700">
+              <Button
+                className="h-12 flex-1 bg-[#E6002314] border-primary-700 border text-primary-700"
+                onClick={handleCopyLink}
+              >
                 <Link2 />
                 <p>링크 복사</p>
               </Button>
