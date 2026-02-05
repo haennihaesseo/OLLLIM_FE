@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import CompleteButton from "@/components/common/CompleteButton";
+import NavigationButton from "@/components/common/NavigationButton";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -31,7 +31,7 @@ export default function CompleteButtonContainer() {
 
   return (
     <>
-      <CompleteButton
+      <NavigationButton
         onPrev={() => {}}
         onNext={handleNextClick}
         isNextDisabled={false}

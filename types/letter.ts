@@ -2,6 +2,7 @@
  * 단어 타이밍 정보
  */
 export type Word = {
+  wordId?: number;
   word: string;
   startTime: number | null;
   endTime: number | null;
@@ -119,6 +120,34 @@ export type TemplateSelectResponse = {
  */
 export type ShareLinkResponse = {
   secretLetterId: string;
+};
+
+/**
+ * 편지 조회 응답 타입 (POST /api/letter/view 응답)
+ */
+export type LetterViewResponse = {
+  letterId: string;
+  title: string;
+  sender: string;
+  content: string;
+  bgm: {
+    bgmId: number;
+    bgmUrl: string;
+    bgmSize: number;
+  };
+  template: {
+    templateId: number;
+    templateUrl: string;
+  };
+  font: {
+    fontId: number;
+    fontUrl: string;
+  };
+  voice: {
+    voiceId: number;
+    voiceUrl: string;
+  };
+  words: Word[];
 };
 
 /**
