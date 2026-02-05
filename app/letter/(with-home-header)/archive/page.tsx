@@ -24,11 +24,13 @@ const formatDate = (dateString: string) => {
 const LetterListItem = ({ letter }: { letter: SimpleLetterData }) => {
   const router = useRouter();
   const { data: secretId } = useGetSecretId(letter.letterId);
-  console.log(secretId);
+
   return (
     <div
       className="w-full"
-      onClick={() => router.push(`/letter/${secretId?.secretLetterId}`)}
+      onClick={() =>
+        router.push(`/letter/${secretId?.secretLetterId}?isLetterOpen=true`)
+      }
     >
       <div className="flex items-center justify-between py-4">
         <div className="flex items-center gap-3">
@@ -115,7 +117,7 @@ export default function ArchivePage() {
           )}
         </div>
         <Button className="fixed bottom-15 left-0 right-0 w-[90%] mx-auto h-11.5 bg-[#E6002314] border-primary-700 border text-primary-700 typo-h1-base">
-          <Link href="/letter/create">편지 작성하기</Link>
+          <Link href="/letter/new/record">편지 작성하기</Link>
         </Button>
       </section>
     </article>

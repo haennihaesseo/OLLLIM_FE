@@ -87,8 +87,8 @@ export default function LetterPage() {
               status={status}
             />
             <AudioPlayer
-              bgmUrl={data.bgm.bgmUrl}
-              bgmSize={data.bgm.bgmSize}
+              bgmUrl={data.bgm?.bgmUrl}
+              bgmSize={data.bgm?.bgmSize}
               status={status}
               currentTime={currentTime}
               progress={progress}

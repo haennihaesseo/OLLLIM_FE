@@ -12,7 +12,7 @@ export default function CompleteButton({
   title = "완료",
 }: CompleteButtonProps) {
   return (
-    <nav className="fixed bottom-15 left-0 right-0 px-5">
+    <nav className="px-5 mb-15 w-full">
       <Button
         onClick={onClick}
         disabled={disabled}

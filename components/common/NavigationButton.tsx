@@ -16,7 +16,7 @@ export default function NavigationButton({
   nextText = "다음",
 }: NavigationButtonProps) {
   return (
-    <nav className="fixed bottom-15 left-0 right-0 px-5">
+    <nav className="mb-15 w-full">
       <div className="flex items-start gap-4 w-full">
         <Button
           variant="outline"

@@ -5,6 +5,7 @@ import "@/app/globals.css";
 import { QueryProvider } from "@/providers/QueryProvider";
 import { AuthProvider } from "@/providers/AuthProvider";
 import { Toaster } from "@/components/ui/sonner";
+import { ResponsiveLayout } from "@/components/layout/ResponsiveLayout";
 
 export const metadata: Metadata = {
   title: "OLLLIM",
@@ -36,7 +37,7 @@ export default function RootLayout({
         <QueryProvider>
           <Suspense fallback={null}>
             <AuthProvider>
-              {children}
+              <ResponsiveLayout>{children}</ResponsiveLayout>
               <Toaster />
             </AuthProvider>
           </Suspense>
