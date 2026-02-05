@@ -12,10 +12,9 @@ export function usePostLetterView() {
       secretLetterId,
       password = null,
     }: UsePostLetterViewParams) => {
-      console.log(secretLetterId, password);
       const response = await client.post<ApiResponse<LetterViewResponse>>(
         `/api/letter/view`,
-        { secretLetterId, password }
+        { secretLetterId, password },
       );
       return response.data.data;
     },

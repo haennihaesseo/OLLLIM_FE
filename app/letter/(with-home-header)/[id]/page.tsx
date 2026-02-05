@@ -10,7 +10,7 @@ import LetterBox from "@/components/select/LetterBox";
 import AudioPlayer from "@/components/select/AudioPlayer";
 import { useAudioPlayer } from "@/hooks/common/useAudioPlayer";
 import { Button } from "@/components/ui/button";
-import { ArchiveIcon, Mail, Link2, X } from "lucide-react";
+import { ArchiveIcon, Mail, Link2 } from "lucide-react";
 import { useAtom } from "jotai";
 import { isLoggedInAtom } from "@/store/auth";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -151,7 +151,7 @@ export default function LetterPage() {
           <section className="flex flex-col items-center justify-center gap-2 p-5 typo-h1-base">
             <Button
               className="w-full h-12 text-white bg-primary-700"
-              disabled={isPending}
+              disabled={isPending || !data}
               onClick={handleSaveLetter}
             >
               <ArchiveIcon />
