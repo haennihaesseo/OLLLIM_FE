@@ -3,7 +3,7 @@
 import { useRouter, usePathname } from "next/navigation";
 import { usePatchLetter } from "@/hooks/apis/patch/usePatchLetter";
 import { getPrevStep, getNextStep } from "@/lib/letterSteps";
-import CompleteButton from "@/components/common/CompleteButton";
+import NavigationButton from "@/components/common/NavigationButton";
 
 interface CompleteButtonContainerProps {
   title: string;
@@ -51,7 +51,7 @@ export default function CompleteButtonContainer({
   };
 
   return (
-    <CompleteButton
+    <NavigationButton
       onPrev={handlePrev}
       onNext={handleNext}
       isNextDisabled={isNextDisabled}

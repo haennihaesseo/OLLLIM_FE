@@ -2,6 +2,7 @@
  * 단어 타이밍 정보
  */
 export type Word = {
+  wordId?: number;
   word: string;
   startTime: number | null;
   endTime: number | null;
@@ -20,6 +21,7 @@ export type LetterData = {
   title: string;
   sender: string;
   bgmUrl: string | null;
+  bgmSize?: number; // 0-100 사이의 BGM 볼륨 크기
   templateUrl: string;
   words: Word[];
 };
@@ -117,6 +119,59 @@ export type TemplateSelectResponse = {
  * 편지 공유 링크 생성 응답 타입 (POST /api/letter/share 응답)
  */
 export type ShareLinkResponse = {
+  secretLetterId: string;
+};
+
+/**
+ * 편지 조회 응답 타입 (POST /api/letter/view 응답)
+ */
+export type LetterViewResponse = {
+  letterId: string;
+  title: string;
+  sender: string;
+  content: string;
+  bgm: {
+    bgmId: number;
+    bgmUrl: string;
+    bgmSize: number;
+  };
+  template: {
+    templateId: number;
+    templateUrl: string;
+  };
+  font: {
+    fontId: number;
+    fontUrl: string;
+  };
+  voice: {
+    voiceId: number;
+    voiceUrl: string;
+  };
+  words: Word[];
+};
+
+/**
+ * 편지 개수 조회 응답 타입 (GET /api/letter/count 응답)
+ */
+export type LetterCountResponse = {
+  count: number;
+};
+
+export type SimpleLetterData = {
+  letterId: string;
+  sender: string;
+  createdAt: string;
+};
+
+/**
+ * 보낸 편지 목록 조회 응답 타입 (GET /api/letter/sent 응답)
+ */
+export type SentLetterResponse = SimpleLetterData[];
+
+/**
+ * 비밀 편지 아이디 조회 응답 타입 (GET /api/letter/secret/{secretId} 응답)
+ */
+export type SecretIdResponse = {
   secretLetterId: string;
 };
 

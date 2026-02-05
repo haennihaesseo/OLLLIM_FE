@@ -1,7 +1,7 @@
 "use client";
 
 import { usePostLetterFont } from "@/hooks/apis/post/usePostLetterFont";
-import CompleteButton from "./CompleteButton";
+import CompleteButton from "../common/CompleteButton";
 
 interface CompleteButtonContainerProps {
   selectedFontId?: number;

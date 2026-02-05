@@ -4,7 +4,7 @@ import { useAtomValue } from "jotai";
 import { useRouter, usePathname } from "next/navigation";
 import { recordingStatusAtom, audioBlobAtom } from "@/store/recordingAtoms";
 import { usePostLetterVoice } from "@/hooks/apis/post/usePostLetterVoice";
-import CompleteButton from "./CompleteButton";
+import CompleteButton from "../common/CompleteButton";
 
 export default function CompleteButtonContainer() {
   const router = useRouter();
@@ -25,5 +25,5 @@ export default function CompleteButtonContainer() {
 
   if (!showButton) return null;
 
-  return <CompleteButton onClick={handleComplete} isLoading={isPending} />;
+  return <CompleteButton onClick={handleComplete} disabled={isPending} />;
 }
