@@ -151,6 +151,13 @@ export type LetterViewResponse = {
 };
 
 /**
+ * 편지 개수 조회 응답 타입 (GET /api/letter/count 응답)
+ */
+export type LetterCountResponse = {
+  count: number;
+};
+
+/**
  * API 공통 응답 래퍼
  */
 export type ApiResponse<T> = {
