@@ -10,7 +10,7 @@ export function useGetLetterCount() {
   const [isLoggedIn] = useAtom(isLoggedInAtom);
 
   return useQuery({
-    queryKey: ["letterCount"],
+    queryKey: ["letterCount", isLoggedIn],
 
     queryFn: async () => {
       const response = await client.get<ApiResponse<LetterCountResponse>>(
