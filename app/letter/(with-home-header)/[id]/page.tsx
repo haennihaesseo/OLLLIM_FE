@@ -11,11 +11,18 @@ import AudioPlayer from "@/components/select/AudioPlayer";
 import { useAudioPlayer } from "@/hooks/common/useAudioPlayer";
 import { Button } from "@/components/ui/button";
 import { ArchiveIcon, Mail, Link2 } from "lucide-react";
+import { useAtom } from "jotai";
+import { isLoggedInAtom } from "@/store/auth";
+import { useRouter, useSearchParams } from "next/navigation";
 
 export default function LetterPage() {
   const params = useParams();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const initialIsLetterOpen = searchParams.get("isLetterOpen") === "true";
   const id = decodeURIComponent(params.id as string);
-  const [isLetterOpen, setIsLetterOpen] = useState(false);
+  const [isLetterOpen, setIsLetterOpen] = useState(initialIsLetterOpen);
+  const [isLoggedIn] = useAtom(isLoggedInAtom);
   const { mutate, data, isPending } = usePostLetterView();
 
   const {
@@ -36,6 +43,17 @@ export default function LetterPage() {
       password: null,
     });
   }, [id, mutate]);
+
+  const handleSaveLetter = () => {
+    switch (isLoggedIn) {
+      case true:
+        console.log("편지 보관");
+        break;
+      case false:
+        router.push(`/login?redirectUrl=/letter/${id}?isLetterOpen=true`);
+        break;
+    }
+  };
 
   if (!data) return <LetterLoading />;
 
@@ -72,9 +90,10 @@ export default function LetterPage() {
             <Button
               className="w-full h-12 text-white bg-primary-700"
               disabled={isPending}
+              onClick={handleSaveLetter}
             >
               <ArchiveIcon />
-              <p>로그인 후 편지 보관</p>
+              <p>{isLoggedIn ? "편지 보관" : "로그인 후 편지 보관"}</p>
             </Button>
             <div className="flex items-center justify-center gap-2 w-full">
               <Button className="h-12 flex-1 bg-[#E6002314] border-primary-700 border text-primary-700">
