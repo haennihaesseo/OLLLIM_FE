@@ -10,7 +10,7 @@ export default function FloatingButton({ onClick }: FloatingButtonProps) {
   return (
     <button
       onClick={onClick}
-      className="fixed bottom-75 right-10 lg:right-[40%] lg:bottom-[50%] w-12 h-12 rounded-full bg-white shadow-lg border border-gray-200 transition-colors flex items-center justify-center z-50"
+      className="fixed bottom-[30%] right-10 lg:right-[40%] lg:bottom-[50%] w-12 h-12 rounded-full bg-white shadow-lg border border-gray-200 transition-colors flex items-center justify-center z-50"
       aria-label="편집 옵션 열기"
     >
       <Image
