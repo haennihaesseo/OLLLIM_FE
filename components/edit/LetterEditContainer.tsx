@@ -19,7 +19,7 @@ export function LetterEditContainer({ initialData }: LetterEditContainerProps) {
 
   return (
     <article className="flex flex-col justify-between h-full">
-      <section className="flex flex-col p-5 gap-4">
+      <section className="flex flex-col pt-5 px-5 gap-4 h-full justify-between">
         <LetterEditor
           title={title}
           onTitleChange={setTitle}
@@ -29,12 +29,12 @@ export function LetterEditContainer({ initialData }: LetterEditContainerProps) {
           onContentChange={setContent}
         />
         <VoicePlayer audioUrl={initialData.voiceUrl} />
+        <CompleteButtonContainer
+          title={title}
+          sender={sender}
+          content={content}
+        />
       </section>
-      <CompleteButtonContainer
-        title={title}
-        sender={sender}
-        content={content}
-      />
     </article>
   );
 }

@@ -17,9 +17,8 @@ export function LetterEditor({
   content,
   onContentChange,
 }: LetterEditorProps) {
-
   return (
-    <div className="relative bg-white rounded-[0.5rem] py-10 px-5 h-125 flex flex-col">
+    <div className="relative bg-white rounded-[0.5rem] py-10 px-5 min-h-125 flex flex-col">
       {/* To 입력 */}
       <div className="flex items-center gap-2 mb-4">
         <label className="text-gray-400 typo-h2-xl shrink-0">To.</label>
