@@ -26,7 +26,7 @@ export default function SharePage() {
 
   return (
     <article className="bg-gray-50 h-full relative">
-      <section className="flex flex-col p-5 gap-5">
+      <section className="flex flex-col px-5 pt-5 gap-5 h-full justify-between">
         <LetterBox
           title={data.title}
           sender={data.sender}

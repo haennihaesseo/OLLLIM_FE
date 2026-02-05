@@ -10,12 +10,19 @@ import LetterBox from "@/components/select/LetterBox";
 import AudioPlayer from "@/components/select/AudioPlayer";
 import { useAudioPlayer } from "@/hooks/common/useAudioPlayer";
 import { Button } from "@/components/ui/button";
-import { ArchiveIcon, Mail, Link2 } from "lucide-react";
+import { ArchiveIcon, Mail, Link2, X } from "lucide-react";
 import { useAtom } from "jotai";
 import { isLoggedInAtom } from "@/store/auth";
 import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import { usePostLetterArchive } from "@/hooks/apis/post/usePostLetterArchive";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
 
 export default function LetterPage() {
   const params = useParams();
@@ -25,6 +32,9 @@ export default function LetterPage() {
   const secretId = decodeURIComponent(params.id as string);
   const [isLetterOpen, setIsLetterOpen] = useState(initialIsLetterOpen);
   const [isLoggedIn] = useAtom(isLoggedInAtom);
+  const [passwordDialogOpen, setPasswordDialogOpen] = useState(false);
+  const [password, setPassword] = useState("");
+  const [needsPassword, setNeedsPassword] = useState(false);
   const { mutate, data, isPending } = usePostLetterView();
   const { mutate: saveLetter } = usePostLetterArchive();
 
@@ -41,10 +51,22 @@ export default function LetterPage() {
   });
 
   useEffect(() => {
-    mutate({
-      secretLetterId: secretId,
-      password: null,
-    });
+    mutate(
+      {
+        secretLetterId: secretId,
+        password: null,
+      },
+      {
+        onError: (error: unknown) => {
+          const axiosError = error as {
+            response?: { data?: { code?: string } };
+          };
+          if (axiosError?.response?.data?.code === "LETTER_NEED_PASSWORD") {
+            setNeedsPassword(true);
+          }
+        },
+      },
+    );
   }, [secretId, mutate]);
 
   const handleSaveLetter = () => {
@@ -67,10 +89,38 @@ export default function LetterPage() {
     toast.success("링크가 복사되었습니다");
   };
 
-  if (!data) return <LetterLoading />;
+  const handleOpenLetter = () => {
+    if (needsPassword) {
+      setPasswordDialogOpen(true);
+    } else {
+      setIsLetterOpen(true);
+    }
+  };
+
+  const handlePasswordSubmit = () => {
+    mutate(
+      {
+        secretLetterId: secretId,
+        password: password,
+      },
+      {
+        onSuccess: () => {
+          setPasswordDialogOpen(false);
+          setIsLetterOpen(true);
+          setNeedsPassword(false);
+        },
+        onError: () => {
+          toast.error("비밀번호가 올바르지 않습니다");
+        },
+      },
+    );
+  };
+
+  if (!data && !needsPassword) return <LetterLoading />;
 
   switch (isLetterOpen) {
     case true:
+      if (!data) return <LetterLoading />;
       return (
         <article className="bg-gray-50 h-full relative">
           <section className="flex flex-col p-5 gap-5">
@@ -128,25 +178,63 @@ export default function LetterPage() {
       );
     default:
       return (
-        <article className="h-full px-5">
-          <div className="flex flex-col items-center justify-center h-[75%] gap-3">
-            <Image
-              src="/gif/receive-motion.gif"
-              alt="receive-motion"
-              width={100}
-              height={100}
-              unoptimized
+        <>
+          <article className="h-full px-5">
+            <div className="flex flex-col items-center justify-center h-[75%] gap-3">
+              <Image
+                src="/gif/receive-motion.gif"
+                alt="receive-motion"
+                width={100}
+                height={100}
+                unoptimized
+              />
+              <h1 className="typo-h2-3xl text-gray-900">
+                {needsPassword
+                  ? "도착한 올림레터"
+                  : `${data?.sender}님으로부터 온 올림레터`}
+              </h1>
+            </div>
+            <CompleteButton
+              onClick={handleOpenLetter}
+              disabled={isPending}
+              title="열어 보기"
             />
-            <h1 className="typo-h2-3xl text-gray-900">
-              {data.sender}님으로부터 온 올림레터
-            </h1>
-          </div>
-          <CompleteButton
-            onClick={() => setIsLetterOpen(true)}
-            disabled={isPending}
-            title="열어 보기"
-          />
-        </article>
+          </article>
+
+          <Dialog
+            open={passwordDialogOpen}
+            onOpenChange={setPasswordDialogOpen}
+          >
+            <DialogContent className="w-[90%] max-w-[400px] rounded-lg p-0 gap-0">
+              <DialogHeader className="flex items-center justify-start w-full">
+                <DialogTitle className="flex px-7 text-center justify-start typo-h2-base text-gray-900 mt-5 w-full">
+                  비밀번호 입력하기
+                </DialogTitle>
+              </DialogHeader>
+              <div className="p-5 flex items-center justify-center gap-2 w-full h-full">
+                <Input
+                  type="password"
+                  placeholder="비밀번호를 입력해주세요."
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      handlePasswordSubmit();
+                    }
+                  }}
+                  className="w-full h-full"
+                />
+                <Button
+                  onClick={handlePasswordSubmit}
+                  disabled={!password || isPending}
+                  className="h-full bg-[#E6002314] border-primary-700 border text-primary-700"
+                >
+                  확인
+                </Button>
+              </div>
+            </DialogContent>
+          </Dialog>
+        </>
       );
   }
 }

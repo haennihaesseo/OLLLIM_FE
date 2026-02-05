@@ -6,7 +6,7 @@ import { client } from "@/lib/axiosInstance";
 import type { ApiResponse, ShareLinkResponse } from "@/types/letter";
 
 type UsePostShareLinkOptions = {
-  onSuccess?: (shareUrl: string) => void;
+  onSuccess?: (secretLetterId: string) => void;
   onError?: () => void;
 };
 
@@ -29,8 +29,7 @@ export function usePostShareLink(options?: UsePostShareLinkOptions) {
       return response.data;
     },
     onSuccess: (data) => {
-      const shareUrl = `${window.location.origin}/letter/${data.data.secretLetterId}`;
-      options?.onSuccess?.(shareUrl);
+      options?.onSuccess?.(data.data.secretLetterId);
     },
     onError: (error) => {
       console.error("링크 생성 실패:", error);
