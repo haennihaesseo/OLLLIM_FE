@@ -28,6 +28,69 @@ export default function LetterBox({
 }: LetterBoxProps) {
   const fontFamilyName = useDynamicFont(fontId, fontUrl);
 
+  // content를 기반으로 words 배열과 매칭하여 렌더링
+  const renderContent = () => {
+    if (!words || words.length === 0) {
+      return content;
+    }
+
+    // content를 줄바꿈 유지하면서 처리
+    const parts: React.ReactNode[] = [];
+    let contentIndex = 0;
+    let wordIndex = 0;
+
+    while (contentIndex < content.length && wordIndex < words.length) {
+      const currentWord = words[wordIndex];
+      const wordStartIndex = content.indexOf(currentWord.word, contentIndex);
+
+      // 현재 단어를 찾을 수 없으면 다음 단어로
+      if (wordStartIndex === -1) {
+        wordIndex++;
+        continue;
+      }
+
+      // 단어 이전의 텍스트(공백, 줄바꿈 등) 추가
+      if (wordStartIndex > contentIndex) {
+        const beforeText = content.substring(contentIndex, wordStartIndex);
+        parts.push(
+          <span key={`before-${wordIndex}`} className="text-gray-900">
+            {beforeText}
+          </span>
+        );
+      }
+
+      // 현재 단어 추가 (하이라이트 적용)
+      const isActive =
+        currentWord.startTime !== null &&
+        currentWord.endTime !== null &&
+        currentTime >= currentWord.startTime &&
+        currentTime <= currentWord.endTime;
+
+      parts.push(
+        <span
+          key={`word-${wordIndex}`}
+          className={isActive ? "text-primary-700" : "text-gray-900"}
+        >
+          {currentWord.word}
+        </span>
+      );
+
+      contentIndex = wordStartIndex + currentWord.word.length;
+      wordIndex++;
+    }
+
+    // 남은 텍스트 추가
+    if (contentIndex < content.length) {
+      parts.push(
+        <span key="after" className="text-gray-900">
+          {content.substring(contentIndex)}
+        </span>
+      );
+    }
+
+    return parts;
+  };
+
   return (
     <div
       style={{
@@ -43,28 +106,7 @@ export default function LetterBox({
       <h3 className="mb-4">{title}</h3>
 
       <div className="flex-1 overflow-y-auto">
-        <p className="whitespace-pre-line">
-          {words ? (
-            words.map((wordObj, index) => {
-              const isActive =
-                wordObj.startTime !== null &&
-                wordObj.endTime !== null &&
-                currentTime >= wordObj.startTime &&
-                currentTime <= wordObj.endTime;
-
-              return (
-                <span
-                  key={index}
-                  className={isActive ? "text-primary-700" : "text-gray-900"}
-                >
-                  {wordObj.word}
-                </span>
-              );
-            })
-          ) : (
-            <span className="text-gray-900">{content}</span>
-          )}
-        </p>
+        <p className="whitespace-pre-wrap">{renderContent()}</p>
         <p className="text-gray-900 text-right mt-4 mb-5">From. {sender}</p>
       </div>
     </div>
