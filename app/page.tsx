@@ -18,7 +18,6 @@ export default function Page() {
       <HomeHeader />
       <article className="flex-1 overflow-auto">
         <section className="px-5 pt-5 pb-5 bg-[#FFF0F2] flex flex-col items-start justify-center gap-2">
-          <Mail size={25} className="text-primary-700" />
           <h1 className="typo-h2-3xl text-gray-900">
             목소리로 마음을 전하는 편지,{" "}
             <span className="text-primary-700 whitespace-nowrap">올림</span>
@@ -73,13 +72,15 @@ export default function Page() {
             </div>
           )}
           <div className="flex w-full items-start justify-center gap-2 bg-gray-100 border-gray-300 border rounded-lg p-5 shadow-md">
-            <Nfc size={28} />
-            <div className="flex flex-col items-start justify-between gap-2 w-full">
+            <Mail size={28} className="text-primary-700" />
+            <div className="flex flex-col items-start justify-between gap-2 w-full mt-0.5">
               <h3 className="typo-h2-lg text-gray-900 ">
-                NFC 굿즈로 실물 전달
+                편지를 실물 굿즈에 담아 선물해보세요
               </h3>
               <p className="typo-body1-sm text-gray-500">
-                작성한 편지를 카세트 테이프 키링으로 제작해 선물할 수 있어요
+                작성한 편지를 NFC 태그가 가능한 카세트테이프
+                <br />
+                키링으로 제작하여 선물할 수 있어요
               </p>
             </div>
           </div>
