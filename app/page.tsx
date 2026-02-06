@@ -42,7 +42,7 @@ export default function Page() {
               당신의 마음을 <br />
               목소리로 전해보세요
             </p>
-            <Link href="/letter/new/record" className="w-full">
+            <Link href="/letter/onboarding" className="w-full">
               <Button className="bg-white text-primary-700 h-11 w-full mt-5">
                 시작하기
               </Button>
