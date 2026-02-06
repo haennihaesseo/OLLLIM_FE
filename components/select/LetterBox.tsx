@@ -58,7 +58,7 @@ export default function LetterBox({
         parts.push(
           <span key={`before-${wordIndex}`} className="text-gray-900">
             {beforeText}
-          </span>
+          </span>,
         );
       }
 
@@ -77,7 +77,7 @@ export default function LetterBox({
           className={isActive ? "text-primary-700" : "text-gray-900"}
         >
           {currentWord.word}
-        </span>
+        </span>,
       );
 
       contentIndex = wordStartIndex + currentWord.word.length;
@@ -89,7 +89,7 @@ export default function LetterBox({
       parts.push(
         <span key="after" className="text-gray-900">
           {content.substring(contentIndex)}
-        </span>
+        </span>,
       );
     }
 
@@ -104,7 +104,7 @@ export default function LetterBox({
         backgroundSize: "cover",
         backgroundPosition: "center",
       }}
-      className={`relative bg-white rounded-[0.5rem] py-10 px-5 h-122.5 flex flex-col ${
+      className={`relative bg-white rounded-[0.5rem] py-10 px-5 h-full  flex flex-col ${
         isEdit ? "border-2 border-dashed border-primary-700" : ""
       }`}
     >

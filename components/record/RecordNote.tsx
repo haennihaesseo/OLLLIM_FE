@@ -10,7 +10,7 @@ export default function RecordNote() {
   const [note, setNote] = useState("");
 
   return (
-    <div className="min-h-84">
+    <div className="h-[30%]">
       <div className="bg-gray-100 rounded-lg p-5">
         <header className="flex justify-between items-center">
           <h3 className="typo-h2-xl text-gray-900">Note</h3>
@@ -50,7 +50,7 @@ export default function RecordNote() {
                   }
                 }}
                 placeholder="말할내용을 미리 정리해보세요"
-                className="w-full h-55 resize-none typo-body1-base outline-none"
+                className="w-full typo-body1-base outline-none min-h-36 max-h-55 overflow-y-auto resize-none"
                 maxLength={1500}
               />
               <div className="mt-2 text-right text-xs text-gray-400">

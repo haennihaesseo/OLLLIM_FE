@@ -42,7 +42,7 @@ export default function Page() {
               당신의 마음을 <br />
               목소리로 전해보세요
             </p>
-            <Link href="/letter/new/record" className="w-full">
+            <Link href="/letter/onboarding" className="w-full">
               <Button className="bg-white text-primary-700 h-11 w-full mt-5">
                 시작하기
               </Button>
@@ -69,7 +69,7 @@ export default function Page() {
                   지금까지 올림을 통해 보내진 편지
                 </h3>
                 <p className="typo-h2-2xl text-primary-700">
-                  {letterCount?.count}개
+                  {letterCount?.count ? letterCount.count : 0}개
                 </p>
               </div>
             </div>

@@ -30,8 +30,8 @@ export default function SelectPage() {
 
   return (
     <article className="bg-gray-50 h-full relative">
-      <section className="flex flex-col p-5 gap-5 h-full justify-between">
-        <div className="flex flex-col gap-5">
+      <section className="flex flex-col p-5 gap-8 h-full justify-between">
+        <div className="flex flex-col gap-5 justify-between h-full">
           <LetterBox
             title={data.title}
             sender={data.sender}

@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { HeaderActions } from "./HeaderActions";
+import Link from "next/link";
 
 type HeaderProps = {
   title?: string;
@@ -7,9 +8,11 @@ type HeaderProps = {
 
 export function Header({ title = "" }: HeaderProps) {
   return (
-    <header className="flex items-center justify-between gap-5 px-5 py-[0.62rem]">
+    <header className="flex items-center justify-between gap-5 px-5 py-2 h-13">
       {/* Left Logo */}
-      <Image src="/logo.svg" alt="Logo" width={28} height={28} priority />
+      <Link href="/">
+        <Image src="/logo.svg" alt="Logo" width={28} height={28} priority />
+      </Link>
 
       {/* Center Title */}
       <h1 className="typo-body1-lg">{title}</h1>

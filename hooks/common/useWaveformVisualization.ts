@@ -45,8 +45,8 @@ export function useWaveformVisualization({
 
       const barWidth = Math.max(2, (width - gap * (count - 1)) / count);
 
-      // Canvas의 내부 해상도로 clear
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      // CSS 픽셀 기준으로 clear (변환 행렬이 적용된 상태에서)
+      ctx.clearRect(0, 0, width, height);
 
       for (let i = 0; i < count; i++) {
         const level = levels[i]; // 0~1
@@ -123,7 +123,10 @@ export function useWaveformVisualization({
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    // CSS 픽셀 기준으로 clear (변환 행렬이 적용된 상태에서)
+    const rect = canvas.getBoundingClientRect();
+    ctx.clearRect(0, 0, rect.width, rect.height);
   }, [canvasRef]);
 
   return {

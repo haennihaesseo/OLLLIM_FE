@@ -5,6 +5,7 @@ import { letterIdAtom } from "@/store/letterAtoms";
 import { client } from "@/lib/axiosInstance";
 import { getNextStep } from "@/lib/letterSteps";
 import type { ApiResponse, VoiceUploadResponse } from "@/types/letter";
+import { toast } from "sonner";
 
 export function usePostLetterVoice() {
   const router = useRouter();
@@ -16,7 +17,7 @@ export function usePostLetterVoice() {
       formData.append("voice", audioBlob, "recording.webm");
       const response = await client.post<ApiResponse<VoiceUploadResponse>>(
         "/api/letter/voice",
-        formData
+        formData,
       );
       return response.data;
     },
@@ -32,10 +33,8 @@ export function usePostLetterVoice() {
         router.push(nextStep);
       }
     },
-    onError: (error) => {
-      console.error("음성 업로드 실패:", error);
-      // 에러 시 record 페이지로 복귀
-      router.push("/letter/new/record");
+    onError: () => {
+      toast.error("녹음된 내용이 너무 짧습니다. 다시 녹음해주세요.");
     },
   });
 }
