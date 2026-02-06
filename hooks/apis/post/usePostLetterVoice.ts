@@ -34,7 +34,7 @@ export function usePostLetterVoice() {
       }
     },
     onError: () => {
-      toast.error("녹음된 내용이 너무 짧습니다.");
+      toast.error("녹음된 내용이 너무 짧습니다. 다시 녹음해주세요.");
     },
   });
 }
