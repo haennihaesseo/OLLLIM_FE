@@ -72,7 +72,12 @@ export default function Page() {
             </div>
           )}
           <div className="flex w-full items-start justify-center gap-2 bg-gray-100 border-gray-300 border rounded-lg p-5 shadow-md">
-            <Mail size={28} className="text-primary-700" />
+            <Image
+              src="/gif/mail-motion.gif"
+              alt="mail-img"
+              width={30}
+              height={30}
+            />
             <div className="flex flex-col items-start justify-between gap-2 w-full mt-0.5">
               <h3 className="typo-h2-lg text-gray-900 ">
                 편지를 실물 굿즈에 담아 선물해보세요
