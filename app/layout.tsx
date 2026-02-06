@@ -20,7 +20,7 @@ export const metadata: Metadata = {
     siteName: "올림",
     images: [
       {
-        url: "https://www.olllim.site/og-img.png",
+        url: "https://www.olllim.site/og-img.svg",
         width: 1200,
         height: 630,
       },
