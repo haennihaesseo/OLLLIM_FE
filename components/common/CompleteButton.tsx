@@ -2,13 +2,13 @@ import { Button } from "../ui/button";
 
 interface CompleteButtonProps {
   onClick: () => void;
-  disabled: boolean;
+  disabled?: boolean;
   title?: string;
 }
 
 export default function CompleteButton({
   onClick,
-  disabled,
+  disabled = false,
   title = "완료",
 }: CompleteButtonProps) {
   return (
