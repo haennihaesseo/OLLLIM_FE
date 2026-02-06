@@ -30,21 +30,24 @@ export default function RecordPage() {
     );
 
   return (
-    <article className="flex flex-col justify-between h-full">
-      <div>
-        <section className="flex flex-col p-5 gap-4">
+    <article className="flex flex-col justify-between h-full gap-4">
+      <section className="flex flex-col justify-between h-full">
+        <div className="flex flex-col p-5 gap-4">
           <p className="typo-body1-base text-gray-900">
             Tip! 바로 녹음하기 어렵다면, 초안 작성해보기
           </p>
           <RecordNote />
-        </section>
-
-        <section className="flex flex-col px-5">
+        </div>
+        <div className="flex flex-col px-5">
           <VoiceRecorderContainer />
-        </section>
-      </div>
-
-      <CompleteButtonContainer onClick={handleComplete} disabled={isPending} />
+        </div>
+      </section>
+      <section className="h-[20%]">
+        <CompleteButtonContainer
+          onClick={handleComplete}
+          disabled={isPending}
+        />
+      </section>
     </article>
   );
 }

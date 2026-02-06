@@ -1,9 +1,7 @@
 "use client";
 
 import { useAtomValue } from "jotai";
-import { useRouter, usePathname } from "next/navigation";
 import { recordingStatusAtom, audioBlobAtom } from "@/store/recordingAtoms";
-import { usePostLetterVoice } from "@/hooks/apis/post/usePostLetterVoice";
 import CompleteButton from "../common/CompleteButton";
 
 export default function CompleteButtonContainer({

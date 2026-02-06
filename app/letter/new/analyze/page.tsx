@@ -19,8 +19,8 @@ export default function AnalyzePage() {
   if (isFontLoading || !voiceData || !fontData) return <AnalyzeLoading />;
 
   return (
-    <article className="flex flex-col h-full px-5">
-      <div className="flex-1 flex flex-col items-center justify-center">
+    <article className="flex flex-col h-full">
+      <div className="flex-1 flex flex-col items-center justify-center px-5">
         <h2 className="text-gray-400 text-center typo-h2-lg">
           목소리 분석 결과
         </h2>
