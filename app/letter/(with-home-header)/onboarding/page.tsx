@@ -18,7 +18,7 @@ export default function OnboardingPage() {
     {
       id: 2,
       title: "편지 꾸미기",
-      description: "목소리를 분석하여 어울리는 폰트를 추천받습니다",
+      description: `목소리를 분석하여 어울리는 폰트를 추천받고, 편지지와 \n 배경음을 넣어 완성합니다`,
     },
     {
       id: 3,
@@ -43,7 +43,7 @@ export default function OnboardingPage() {
                   </Badge>
                   <h2 className="typo-h2-base">{step.title}</h2>
                 </div>
-                <p className="typo-body1-sm text-gray-900 pl-8">
+                <p className="typo-body1-sm text-gray-900 pl-8 whitespace-pre-line">
                   {step.description}
                 </p>
               </div>
