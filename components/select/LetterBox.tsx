@@ -108,7 +108,7 @@ export default function LetterBox({
         isEdit ? "border-2 border-dashed border-primary-700" : ""
       }`}
     >
-      <h3 className="mb-4">{title}</h3>
+      <h3 className="mb-4">To. {title}</h3>
 
       <div className="flex-1 overflow-y-auto">
         <p className="whitespace-pre-wrap">{renderContent()}</p>

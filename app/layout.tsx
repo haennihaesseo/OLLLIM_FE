@@ -8,8 +8,25 @@ import { Toaster } from "@/components/ui/sonner";
 import { ResponsiveLayout } from "@/components/layout/ResponsiveLayout";
 
 export const metadata: Metadata = {
-  title: "OLLLIM",
+  title: "올림",
   description: "voice letter service",
+  icons: {
+    icon: "/logo.svg",
+  },
+  openGraph: {
+    title: "올림 편지가 도착했어요!",
+    description: "목소리로 전하는 편지, 올림에서 열어보세요",
+    url: "https://www.olllim.site",
+    siteName: "올림",
+    images: [
+      {
+        url: "https://www.olllim.site/og-img.png",
+        width: 1200,
+        height: 630,
+      },
+    ],
+    type: "website",
+  },
 };
 
 export const viewport = {
