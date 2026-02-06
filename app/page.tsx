@@ -17,18 +17,17 @@ export default function Page() {
     <main className="h-dvh flex flex-col">
       <HomeHeader />
       <article className="flex-1 overflow-auto">
-        <section className="px-5 pt-10 pb-5 bg-[#FFF0F2] flex flex-col items-start justify-center gap-2">
+        <section className="px-5 pt-5 pb-5 bg-[#FFF0F2] flex flex-col items-start justify-center gap-2">
           <Mail size={25} className="text-primary-700" />
-          <h1 className="typo-h2-4xl text-gray-900 pt-3">
-            목소리로 <br />
-            마음을 전하는 편지,{" "}
+          <h1 className="typo-h2-3xl text-gray-900">
+            목소리로 마음을 전하는 편지,{" "}
             <span className="text-primary-700 whitespace-nowrap">올림</span>
           </h1>
           <p className="typo-body1-md text-gray-900">
             글자로는 담기 어려웠던 감정들에 <br />
             당신의 목소리를 담아 소중한 사람에게 전달해보세요
           </p>
-          <div className="relative flex flex-col w-full items-start justify-center gap-2 p-5 bg-primary-700 rounded-lg shadow-lg mt-5">
+          <div className="relative flex flex-col w-full items-start justify-center gap-2 p-5 bg-primary-700 rounded-lg shadow-lg mt-2">
             <Image
               src="/gif/message.gif"
               alt="message"
@@ -39,17 +38,16 @@ export default function Page() {
             />
             <h3 className="typo-h1-3xl text-white">새 편지 쓰기</h3>
             <p className="typo-body1-sm text-white">
-              당신의 마음을 <br />
-              목소리로 전해보세요
+              당신의 마음을 목소리로 전해보세요
             </p>
             <Link href="/letter/onboarding" className="w-full">
-              <Button className="bg-white text-primary-700 h-11 w-full mt-5">
+              <Button className="bg-white text-primary-700 h-11 w-full mt-2">
                 시작하기
               </Button>
             </Link>
           </div>
         </section>
-        <section className="p-5 flex flex-col items-start justify-center w-full gap-5">
+        <section className="p-4 flex flex-col items-start justify-center w-full gap-5">
           {isLoggedIn ? (
             <Link
               href="/letter/archive"
@@ -62,7 +60,7 @@ export default function Page() {
               </p>
             </Link>
           ) : (
-            <div className="flex flex-col w-full items-start justify-center gap-2 border-gray-300 border rounded-lg px-5 py-7 shadow-md">
+            <div className="flex flex-col w-full items-start justify-center gap-2 border-gray-300 border rounded-lg p-5 shadow-md">
               <Pencil size={28} className="text-primary-700" />
               <div className="flex items-center justify-between gap-2 w-full">
                 <h3 className="typo-h2-lg text-gray-900">
@@ -74,7 +72,7 @@ export default function Page() {
               </div>
             </div>
           )}
-          <div className="flex w-full items-start justify-center gap-2 bg-gray-100 border-gray-300 border rounded-lg px-5 py-5 shadow-md">
+          <div className="flex w-full items-start justify-center gap-2 bg-gray-100 border-gray-300 border rounded-lg p-5 shadow-md">
             <Nfc size={28} />
             <div className="flex flex-col items-start justify-between gap-2 w-full">
               <h3 className="typo-h2-lg text-gray-900 ">
