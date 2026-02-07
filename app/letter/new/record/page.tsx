@@ -4,17 +4,18 @@ import RecordNote from "@/components/record/RecordNote";
 import VoiceRecorderContainer from "@/components/record/VoiceRecorderContainer";
 import CompleteButtonContainer from "@/components/record/CompleteButtonContainer";
 import { useAtomValue } from "jotai";
-import { audioBlobAtom } from "@/store/recordingAtoms";
+import { audioBlobAtom, recordingTimeAtom } from "@/store/recordingAtoms";
 import { usePostLetterVoice } from "@/hooks/apis/post/usePostLetterVoice";
 import { Spinner } from "@/components/ui/spinner";
 
 export default function RecordPage() {
   const audioBlob = useAtomValue(audioBlobAtom);
+  const recordingTime = useAtomValue(recordingTimeAtom);
   const { mutate, isPending, isSuccess } = usePostLetterVoice();
 
   const handleComplete = () => {
     if (!audioBlob) return;
-    mutate(audioBlob);
+    mutate({ audioBlob, duration: recordingTime });
   };
 
   if (isPending || isSuccess)

@@ -15,3 +15,9 @@ export const recordingStatusAtom = atom<RecordingStatus>("idle");
  * 녹음 완료 후 생성된 오디오 파일
  */
 export const audioBlobAtom = atom<Blob | null>(null);
+
+/**
+ * 녹음 시간(초)을 관리하는 atom
+ * 녹음 완료 후 API 전송에 사용
+ */
+export const recordingTimeAtom = atom<number>(0);

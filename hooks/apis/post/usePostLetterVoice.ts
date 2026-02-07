@@ -12,11 +12,11 @@ export function usePostLetterVoice() {
   const setLetterId = useSetAtom(letterIdAtom);
 
   return useMutation({
-    mutationFn: async (audioBlob: Blob) => {
+    mutationFn: async ({ audioBlob, duration }: { audioBlob: Blob; duration: number }) => {
       const formData = new FormData();
       formData.append("voice", audioBlob, "recording.webm");
       const response = await client.post<ApiResponse<VoiceUploadResponse>>(
-        "/api/letter/voice",
+        `/api/letter/voice?duration=${duration}`,
         formData,
       );
       return response.data;
