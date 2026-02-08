@@ -43,7 +43,7 @@ const LetterListItem = ({
         <div className="flex items-center gap-3">
           <Mail className="text-red-500 w-6 h-6" />
           <span className="typo-body1-md text-gray-900">
-            {isSent ? `${letter.title}` : `${letter.sender}님으로부터`}
+            {isSent ? `${letter.title}에게` : `${letter.sender}님으로부터`}
           </span>
         </div>
         <span className="typo-body2-sm text-gray-500">
