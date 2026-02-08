@@ -8,6 +8,7 @@ import { Volume2, VolumeX } from "lucide-react";
 import { useGetLetterBgm } from "@/hooks/apis/get/useGetLetterBgm";
 import { useBgmPlayer } from "@/hooks/common/useBgmPlayer";
 import type { BgmInfo } from "@/types/letter";
+import { Spinner } from "@/components/ui/spinner";
 
 interface BgmTabProps {
   selectedBgm: string;
@@ -22,7 +23,7 @@ export default function BgmTab({
   volume,
   onVolumeChange,
 }: BgmTabProps) {
-  const { data } = useGetLetterBgm();
+  const { data, isLoading } = useGetLetterBgm();
 
   // 배경음 없음 옵션을 포함한 BGM 목록
   const bgmList = useMemo(() => {
@@ -100,9 +101,16 @@ export default function BgmTab({
         <Volume2 size={20} className="text-gray-600 shrink-0" />
       </div>
 
-      <RadioGroup value={selectedBgm} onValueChange={onBgmChange}>
-        <div className="space-y-0">{bgmList.map(renderBgmItem)}</div>
-      </RadioGroup>
+      {isLoading || !data ? (
+        <div className="flex flex-col items-center justify-center py-8 gap-4">
+          <p className="text-gray-500 text-base">배경음 생성 중..</p>
+          <Spinner className="size-12 text-gray-400" />
+        </div>
+      ) : (
+        <RadioGroup value={selectedBgm} onValueChange={onBgmChange}>
+          <div className="space-y-0">{bgmList.map(renderBgmItem)}</div>
+        </RadioGroup>
+      )}
     </div>
   );
 }
