@@ -58,9 +58,9 @@ export default function PaperTab({
   };
 
   return (
-    <div className="px-4 py-2">
+    <div className="px-1 py-2">
       <RadioGroup value={selectedPaper} onValueChange={onPaperChange}>
-        <div className="flex gap-4 justify-start overflow-x-auto">
+        <div className="flex gap-3 justify-start overflow-x-scroll">
           {data.templates.map(renderPaperItem)}
         </div>
       </RadioGroup>

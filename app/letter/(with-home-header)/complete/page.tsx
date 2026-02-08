@@ -117,7 +117,10 @@ export default function CompletePage() {
           <p>링크 복사하기</p>
         </Button>
         <div className="flex items-center justify-center gap-2 w-full">
-          <Button className="h-12 flex-1 bg-[#E6002314] border-primary-700 border text-primary-700">
+          <Button
+            className="h-12 flex-1 bg-[#E6002314] border-primary-700 border text-primary-700"
+            onClick={() => router.push("/letter/shop")}
+          >
             <Nfc />
             <p>NFC 굿즈 제작</p>
           </Button>
