@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { RotateCcw, Play, Pause } from "lucide-react";
-import { Progress } from "@/components/ui/progress";
+import { Slider } from "@/components/ui/slider";
 import type { PlaybackStatus } from "@/types/recording";
 
 type AudioPlayerProps = {
@@ -122,39 +122,25 @@ export default function AudioPlayer({
 
   const isPlaying = status === "playing";
 
-  // 프로그레스바 클릭 핸들러
-  const handleProgressClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    const clickX = e.clientX - rect.left;
-    const percentage = clickX / rect.width;
-    const newTime = percentage * duration;
+  // Slider 값 변경 핸들러
+  const handleProgressChange = (value: number[]) => {
+    const percentage = value[0];
+    const newTime = (percentage / 100) * duration;
     seek(newTime);
   };
 
   return (
     <section className="flex flex-col gap-5 px-2">
       <div className="flex items-center gap-3 w-full">
-        {/* Progress Bar */}
-        <div
-          className="flex-1 cursor-pointer relative"
-          onClick={handleProgressClick}
-          role="slider"
+        {/* Progress Slider */}
+        <Slider
+          value={[progress]}
+          onValueChange={handleProgressChange}
+          max={100}
+          step={0.1}
+          className="flex-1 **:data-[slot=slider-track]:h-[2px] **:data-[slot=slider-track]:bg-gray-400 **:data-[slot=slider-range]:bg-gray-700 **:data-[slot=slider-thumb]:w-3 **:data-[slot=slider-thumb]:h-3 **:data-[slot=slider-thumb]:rounded-xs **:data-[slot=slider-thumb]:border-0 **:data-[slot=slider-thumb]:bg-gray-700 **:data-[slot=slider-thumb]:shadow-none **:data-[slot=slider-thumb]:hover:ring-0 **:data-[slot=slider-thumb]:focus-visible:ring-0"
           aria-label="재생 위치 조절"
-          aria-valuemin={0}
-          aria-valuemax={duration}
-          aria-valuenow={currentTime}
-        >
-          <Progress
-            value={progress}
-            className="h-[2px] bg-gray-400"
-            indicatorClassName="bg-gray-700"
-          />
-          {/* 재생 위치 네모 Thumb */}
-          <div
-            className="absolute top-1/2 -translate-y-1/2 w-3 h-3 bg-gray-700 rounded-xs pointer-events-none transition-all duration-100"
-            style={{ left: `calc(${progress}% - 6px)` }}
-          />
-        </div>
+        />
       </div>
       <section className="relative flex items-center w-full justify-between">
         {/* 리셋 버튼 - 왼쪽 끝 고정 */}
