@@ -90,8 +90,8 @@ export default function LetterOptionsBottomSheet({
         volume !== initialValues.volume
       ) {
         await postBgm.mutateAsync({
-          bgmId: selectedBgm,
-          bgmSize: volume,
+          bgmId: selectedBgm === "none" ? null : selectedBgm,
+          bgmSize: selectedBgm === "none" ? null : volume,
         });
       }
 

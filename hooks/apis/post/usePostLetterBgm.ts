@@ -5,8 +5,8 @@ import { client } from "@/lib/axiosInstance";
 import type { ApiResponse, BgmSelectResponse } from "@/types/letter";
 
 interface PostBgmParams {
-  bgmId: string;
-  bgmSize: number;
+  bgmId: string | null;
+  bgmSize: number | null;
 }
 
 interface UsePostLetterBgmOptions {
@@ -19,8 +19,13 @@ export function usePostLetterBgm(options?: UsePostLetterBgmOptions) {
 
   return useMutation({
     mutationFn: async ({ bgmId, bgmSize }: PostBgmParams) => {
+      // 배경음 없음일 때는 query string 없이 요청
+      const url = bgmId === null 
+        ? `/api/deco/bgm/select`
+        : `/api/deco/bgm/select?bgmId=${bgmId}&bgmSize=${Math.ceil(bgmSize!)}`;
+      
       const response = await client.post<ApiResponse<BgmSelectResponse>>(
-        `/api/deco/bgm/select?bgmId=${bgmId}&bgmSize=${Math.ceil(bgmSize)}`,
+        url,
         null,
         {
           headers: {
