@@ -104,7 +104,7 @@ export default function LetterBox({
         backgroundSize: "cover",
         backgroundPosition: "center",
       }}
-      className={`relative bg-white rounded-[0.5rem] py-10 px-5 h-full  flex flex-col ${
+      className={`relative bg-white rounded-[0.5rem] py-10 px-5 min-h-[480px] flex flex-col ${
         isEdit ? "border-2 border-dashed border-primary-700" : ""
       }`}
     >
