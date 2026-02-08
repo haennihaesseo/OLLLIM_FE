@@ -30,9 +30,7 @@ export function HomeHeader({ title = "" }: HeaderProps) {
       <h1 className="typo-body1-lg">{title}</h1>
       {/* Right Login (Client) */}
       {isLoggedIn ? (
-        <Button variant="ghost" size="icon" className="w-10 h-10">
-          <Settings size={20} className="text-gray-900" />
-        </Button>
+        <Settings size={24} className="text-gray-900" />
       ) : (
         <Button
           variant="ghost"

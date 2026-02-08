@@ -1,17 +1,19 @@
 "use client";
 
 import { HomeHeader } from "@/components/home/HomeHeader";
-import { Archive, Mail, Nfc, Pencil } from "lucide-react";
+import { Archive, Pencil } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import Link from "next/link";
 import { useGetLetterCount } from "@/hooks/apis/get/useGetLetterCount";
 import { useAtom } from "jotai";
 import { isLoggedInAtom } from "@/store/auth";
+import { useRouter } from "next/navigation";
 
 export default function Page() {
   const [isLoggedIn] = useAtom(isLoggedInAtom);
   const { data: letterCount } = useGetLetterCount();
+  const router = useRouter();
 
   return (
     <main className="h-dvh flex flex-col">
@@ -52,11 +54,13 @@ export default function Page() {
               href="/letter/archive"
               className="flex flex-col w-full items-start justify-center gap-2 bg-white border-gray-300 border rounded-lg px-5 py-5 shadow-md"
             >
-              <Archive size={28} />
-              <h3 className="typo-h2-lg text-gray-900 ">올림 보관함</h3>
-              <p className="typo-body1-sm text-gray-500">
-                {letterCount?.count}개 보관중
-              </p>
+              <Archive size={24} className="text-primary-700" />
+              <div className="flex items-center justify-between gap-2 w-full">
+                <h3 className="typo-h2-lg text-gray-900 ">올림 보관함</h3>
+                <p className="typo-body1-sm text-gray-500">
+                  {letterCount?.count}개 보관중
+                </p>
+              </div>
             </Link>
           ) : (
             <div className="flex flex-col w-full items-start justify-center gap-2 border-gray-300 border rounded-lg p-5 shadow-md">
@@ -78,7 +82,10 @@ export default function Page() {
               width={30}
               height={30}
             />
-            <div className="flex flex-col items-start justify-between gap-2 w-full mt-0.5">
+            <div
+              className="flex flex-col items-start justify-between gap-2 w-full mt-0.5"
+              onClick={() => router.push("/letter/shop")}
+            >
               <h3 className="typo-h2-lg text-gray-900 ">
                 편지를 실물 굿즈에 담아 선물해보세요
               </h3>

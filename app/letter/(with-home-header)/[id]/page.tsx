@@ -48,6 +48,7 @@ export default function LetterPage() {
     seek,
   } = useAudioPlayer({
     audioUrl: data?.voice.voiceUrl || null,
+    initialDuration: data?.voice.duration || 0,
   });
 
   useEffect(() => {
