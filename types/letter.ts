@@ -159,7 +159,8 @@ export type LetterCountResponse = {
 
 export type SimpleLetterData = {
   letterId: string;
-  sender: string;
+  title?: string;
+  sender?: string;
   createdAt: string;
 };
 

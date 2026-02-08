@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useAtom } from "jotai";
 import {
@@ -21,6 +21,7 @@ import { letterIdAtom } from "@/store/letterAtoms";
 interface LetterOptionsBottomSheetProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
+  initialTab?: TabType;
 }
 
 type TabType = "font" | "paper" | "bgm";
@@ -34,11 +35,12 @@ const tabs = [
 export default function LetterOptionsBottomSheet({
   isOpen,
   onOpenChange,
+  initialTab = "font",
 }: LetterOptionsBottomSheetProps) {
   const queryClient = useQueryClient();
   const [letterId] = useAtom(letterIdAtom);
 
-  const [activeTab, setActiveTab] = useState<TabType>("font");
+  const [activeTab, setActiveTab] = useState<TabType>(initialTab);
   const [selectedFont, setSelectedFont] = useState("font1");
   const [selectedPaper, setSelectedPaper] = useState("1");
   const [selectedBgm, setSelectedBgm] = useState("1");
@@ -51,6 +53,13 @@ export default function LetterOptionsBottomSheet({
     bgm: "1",
     volume: 50,
   });
+
+  // Sheet가 열릴 때 initialTab으로 activeTab 설정
+  useEffect(() => {
+    if (isOpen) {
+      setActiveTab(initialTab);
+    }
+  }, [isOpen, initialTab]);
 
   // Sheet 열림 상태 변경 핸들러 (열릴 때 초기값 저장)
   const handleOpenChange = (open: boolean) => {
@@ -90,8 +99,8 @@ export default function LetterOptionsBottomSheet({
         volume !== initialValues.volume
       ) {
         await postBgm.mutateAsync({
-          bgmId: selectedBgm,
-          bgmSize: volume,
+          bgmId: selectedBgm === "none" ? null : selectedBgm,
+          bgmSize: selectedBgm === "none" ? null : volume,
         });
       }
 
