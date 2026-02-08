@@ -19,6 +19,22 @@ export function HeaderActions({ onExit }: HeaderActionsProps) {
     router.push("/");
   };
 
+  // onExit이 존재하면 다이얼로그 없이 바로 실행
+  if (onExit) {
+    return (
+      <Button
+        type="button"
+        variant="ghost"
+        aria-label="닫기"
+        className="size-6 p-0"
+        onClick={handleExit}
+      >
+        <X className="size-6" />
+      </Button>
+    );
+  }
+
+  // onExit이 없으면 다이얼로그 표시
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>

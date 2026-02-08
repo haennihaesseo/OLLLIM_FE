@@ -9,9 +9,12 @@ import AudioPlayer from "@/components/select/AudioPlayer";
 import LetterOptionsBottomSheet from "@/components/select/LetterOptionsBottomSheet";
 import FloatingButton from "@/components/select/FloatingButton";
 
+type TabType = "font" | "paper" | "bgm";
+
 export default function SelectPage() {
   const { data } = useGetLetterData();
   const [isSheetOpen, setIsSheetOpen] = useState(false);
+  const [selectedTab, setSelectedTab] = useState<TabType>("font");
 
   const {
     status,
@@ -60,11 +63,17 @@ export default function SelectPage() {
         <CompleteButtonContainer />
       </section>
 
-      <FloatingButton onClick={() => setIsSheetOpen(true)} />
+      <FloatingButton
+        onOptionClick={(option) => {
+          setSelectedTab(option);
+          setIsSheetOpen(true);
+        }}
+      />
 
       <LetterOptionsBottomSheet
         isOpen={isSheetOpen}
         onOpenChange={setIsSheetOpen}
+        initialTab={selectedTab}
       />
     </article>
   );

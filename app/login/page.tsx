@@ -5,6 +5,7 @@ import Image from "next/image";
 import { useKakaoLogin } from "@/hooks/auth/useKakaoLogin";
 import { useSearchParams } from "next/navigation";
 import { Spinner } from "@/components/ui/spinner";
+import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
   const searchParams = useSearchParams();
@@ -12,10 +13,11 @@ export default function LoginPage() {
   const { handleKakaoLogin } = useKakaoLogin(redirectUrl);
   const tmpKey = searchParams.get("tmpKey");
   const isProcessing = !!tmpKey;
+  const router = useRouter();
 
   return (
     <main className="h-dvh flex flex-col">
-      <Header title="로그인" />
+      <Header title="로그인" onExit={() => router.back()} />
       {isProcessing ? (
         <div className="flex flex-col items-center justify-center h-[80%] gap-4">
           <p className="text-gray-400 text-center typo-h2-lg">로그인 중...</p>

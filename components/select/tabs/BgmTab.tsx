@@ -24,12 +24,26 @@ export default function BgmTab({
 }: BgmTabProps) {
   const { data } = useGetLetterBgm();
 
+  // 배경음 없음 옵션을 포함한 BGM 목록
+  const bgmList = useMemo(() => {
+    if (!data?.bgms) return [];
+    
+    const noBgmOption: BgmInfo = {
+      bgmId: -1, // 특별한 ID로 구분
+      name: "배경음 없음",
+      bgmUrl: "",
+      keyword: [],
+    };
+    
+    return [noBgmOption, ...data.bgms];
+  }, [data]);
+
   // 선택된 BGM의 URL 계산
   const currentBgmUrl = useMemo(() => {
-    if (!selectedBgm || !data?.bgms) return null;
+    if (!selectedBgm || selectedBgm === "none" || !data?.bgms) return null;
 
     const currentBgm = data.bgms.find(
-      (bgm) => String(bgm.bgmId) === selectedBgm
+      (bgm) => String(bgm.bgmId) === selectedBgm,
     );
     return currentBgm?.bgmUrl || null;
   }, [selectedBgm, data]);
@@ -41,10 +55,6 @@ export default function BgmTab({
     autoPlay: true,
   });
 
-  if (!data) {
-    return null;
-  }
-
   const handleVolumeClick = (e: React.MouseEvent<HTMLDivElement>) => {
     const rect = e.currentTarget.getBoundingClientRect();
     const clickX = e.clientX - rect.left;
@@ -52,10 +62,10 @@ export default function BgmTab({
     onVolumeChange(Math.max(0, Math.min(100, percentage)));
   };
 
-  console.log(data.bgms);
-
   const renderBgmItem = (bgm: BgmInfo) => {
-    const bgmIdStr = String(bgm.bgmId);
+    // "배경음 없음" 옵션은 value를 "none"으로 설정
+    const bgmIdStr = bgm.bgmId === -1 ? "none" : String(bgm.bgmId);
+    
     return (
       <div key={bgm.bgmId} className="flex items-center justify-between py-2.5">
         <div className="flex items-center gap-3">
@@ -111,7 +121,7 @@ export default function BgmTab({
       </div>
 
       <RadioGroup value={selectedBgm} onValueChange={onBgmChange}>
-        <div className="space-y-0">{data.bgms.map(renderBgmItem)}</div>
+        <div className="space-y-0">{bgmList.map(renderBgmItem)}</div>
       </RadioGroup>
     </div>
   );
