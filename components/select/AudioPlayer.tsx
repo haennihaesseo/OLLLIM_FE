@@ -187,7 +187,7 @@ export default function AudioPlayer({
 
         {/* 타임스탬프 */}
         <span className="typo-h2-base text-gray-900 min-w-[40px] text-right shrink-0">
-          {formatTime(currentTime)}
+          {formatTime(status === "idle" ? duration : currentTime)}
         </span>
       </section>
     </section>
