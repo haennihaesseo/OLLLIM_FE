@@ -4,9 +4,10 @@ import Link from "next/link";
 
 type HeaderProps = {
   title?: string;
+  onExit?: () => void;
 };
 
-export function Header({ title = "" }: HeaderProps) {
+export function Header({ title = "", onExit }: HeaderProps) {
   return (
     <header className="flex items-center justify-between gap-5 px-5 py-2 h-13">
       {/* Left Logo */}
@@ -18,7 +19,7 @@ export function Header({ title = "" }: HeaderProps) {
       <h1 className="typo-body1-lg">{title}</h1>
 
       {/* Right Exit (Client) */}
-      <HeaderActions />
+      <HeaderActions onExit={onExit} />
     </header>
   );
 }
