@@ -30,7 +30,6 @@ const LetterListItem = ({
 }) => {
   const router = useRouter();
   const { data: secretId } = useGetSecretId(letter.letterId);
-  console.log(letter);
 
   return (
     <div
