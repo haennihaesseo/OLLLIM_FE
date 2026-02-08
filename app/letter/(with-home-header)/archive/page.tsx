@@ -21,9 +21,16 @@ const formatDate = (dateString: string) => {
 };
 
 // 편지 리스트 아이템 컴포넌트
-const LetterListItem = ({ letter }: { letter: SimpleLetterData }) => {
+const LetterListItem = ({
+  letter,
+  isSent = false,
+}: {
+  letter: SimpleLetterData;
+  isSent?: boolean;
+}) => {
   const router = useRouter();
   const { data: secretId } = useGetSecretId(letter.letterId);
+  console.log(letter);
 
   return (
     <div
@@ -36,7 +43,7 @@ const LetterListItem = ({ letter }: { letter: SimpleLetterData }) => {
         <div className="flex items-center gap-3">
           <Mail className="text-red-500 w-6 h-6" />
           <span className="typo-body1-md text-gray-900">
-            {letter.sender}님으로부터
+            {isSent ? `${letter.title}` : `${letter.sender}님으로부터`}
           </span>
         </div>
         <span className="typo-body2-sm text-gray-500">
@@ -94,7 +101,11 @@ export default function ArchivePage() {
             <div className="w-full">
               {receivedLetter && receivedLetter.length > 0 ? (
                 receivedLetter.map((letter) => (
-                  <LetterListItem key={letter.letterId} letter={letter} />
+                  <LetterListItem
+                    key={letter.letterId}
+                    letter={letter}
+                    isSent={false}
+                  />
                 ))
               ) : (
                 <p className="text-center text-gray-500 py-8">
@@ -106,7 +117,11 @@ export default function ArchivePage() {
             <div className="w-full">
               {sentLetter && sentLetter.length > 0 ? (
                 sentLetter.map((letter) => (
-                  <LetterListItem key={letter.letterId} letter={letter} />
+                  <LetterListItem
+                    key={letter.letterId}
+                    letter={letter}
+                    isSent={true}
+                  />
                 ))
               ) : (
                 <p className="text-center text-gray-500 py-8">
