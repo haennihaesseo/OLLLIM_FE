@@ -8,15 +8,13 @@ export const LETTER_STEPS = [
   "/letter/new/edit",
   "/letter/new/analyze",
   "/letter/new/select",
-  "/letter/new/share",
 ] as const;
 
 export const STEP_CONFIG: Record<string, StepConfig> = {
-  "/letter/new/record": { title: "목소리 담기", progress: 20 },
-  "/letter/new/edit": { title: "내용 수정", progress: 40 },
-  "/letter/new/analyze": { title: "목소리 분석", progress: 60 },
-  "/letter/new/select": { title: "편지 설정", progress: 80 },
-  "/letter/new/share": { title: "편지 공유", progress: 100 },
+  "/letter/new/record": { title: "목소리 담기", progress: 25 },
+  "/letter/new/edit": { title: "내용 수정", progress: 50 },
+  "/letter/new/analyze": { title: "목소리 분석", progress: 75 },
+  "/letter/new/select": { title: "편지 설정", progress: 100 },
 };
 
 /**
@@ -59,9 +57,7 @@ export function getPrevStep(currentPath: string): string | null {
  * @returns 스텝 설정 또는 기본값 (매칭되는 스텝이 없는 경우)
  */
 export function getStepConfig(currentPath: string): StepConfig {
-  const matchedStep = LETTER_STEPS.find((step) =>
-    currentPath.startsWith(step),
-  );
+  const matchedStep = LETTER_STEPS.find((step) => currentPath.startsWith(step));
 
   return matchedStep
     ? STEP_CONFIG[matchedStep]
