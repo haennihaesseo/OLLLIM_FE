@@ -11,6 +11,7 @@ import { accessTokenAtom } from "@/store/auth";
 import { toast } from "sonner";
 import { usePatchLetterPassword } from "@/hooks/apis/patch/usePatchLetterPassword";
 import { Input } from "@/components/ui/input";
+import { useRouter } from "next/navigation";
 
 export default function CompletePage() {
   const [shareUrl, setShareUrl] = useState<string | null>(null);
@@ -18,6 +19,7 @@ export default function CompletePage() {
   const [isPasswordEnabled, setIsPasswordEnabled] = useState(false);
   const [accessToken] = useAtom(accessTokenAtom);
   const [password, setPassword] = useState<string>("");
+  const router = useRouter();
 
   const { mutate: createShareLink, isPending } = usePostShareLink({
     onSuccess: (secretLetterId) => {
@@ -119,7 +121,10 @@ export default function CompletePage() {
             <Nfc />
             <p>NFC 굿즈 제작</p>
           </Button>
-          <Button className="h-12 flex-1 bg-[#E6002314] border-primary-700 border text-primary-700">
+          <Button
+            className="h-12 flex-1 bg-[#E6002314] border-primary-700 border text-primary-700"
+            onClick={() => router.push("/letter/archive")}
+          >
             <Archive />
             <p>편지 보관함</p>
           </Button>
