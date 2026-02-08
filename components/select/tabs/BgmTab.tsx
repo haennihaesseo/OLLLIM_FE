@@ -3,7 +3,7 @@
 import { useMemo } from "react";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
-import { Progress } from "@/components/ui/progress";
+import { Slider } from "@/components/ui/slider";
 import { Volume2, VolumeX } from "lucide-react";
 import { useGetLetterBgm } from "@/hooks/apis/get/useGetLetterBgm";
 import { useBgmPlayer } from "@/hooks/common/useBgmPlayer";
@@ -27,14 +27,14 @@ export default function BgmTab({
   // 배경음 없음 옵션을 포함한 BGM 목록
   const bgmList = useMemo(() => {
     if (!data?.bgms) return [];
-    
+
     const noBgmOption: BgmInfo = {
       bgmId: -1, // 특별한 ID로 구분
       name: "배경음 없음",
       bgmUrl: "",
       keyword: [],
     };
-    
+
     return [noBgmOption, ...data.bgms];
   }, [data]);
 
@@ -55,17 +55,10 @@ export default function BgmTab({
     autoPlay: true,
   });
 
-  const handleVolumeClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    const clickX = e.clientX - rect.left;
-    const percentage = (clickX / rect.width) * 100;
-    onVolumeChange(Math.max(0, Math.min(100, percentage)));
-  };
-
   const renderBgmItem = (bgm: BgmInfo) => {
     // "배경음 없음" 옵션은 value를 "none"으로 설정
     const bgmIdStr = bgm.bgmId === -1 ? "none" : String(bgm.bgmId);
-    
+
     return (
       <div key={bgm.bgmId} className="flex items-center justify-between py-2.5">
         <div className="flex items-center gap-3">
@@ -97,26 +90,13 @@ export default function BgmTab({
       {/* 볼륨 조절 바 */}
       <div className="flex items-center gap-3 mb-6">
         <VolumeX size={20} className="text-gray-600 shrink-0" />
-        <div
-          className="flex-1 cursor-pointer relative"
-          onClick={handleVolumeClick}
-          role="slider"
-          aria-label="볼륨 조절"
-          aria-valuemin={0}
-          aria-valuemax={100}
-          aria-valuenow={volume}
-        >
-          <Progress
-            value={volume}
-            className="h-[2px] bg-gray-400"
-            indicatorClassName="bg-gray-700"
-          />
-          {/* 볼륨 Thumb */}
-          <div
-            className="absolute top-1/2 -translate-y-1/2 w-3 h-3 bg-gray-700 rounded-xs pointer-events-none transition-all duration-100"
-            style={{ left: `calc(${volume}% - 6px)` }}
-          />
-        </div>
+        <Slider
+          value={[volume]}
+          onValueChange={(value) => onVolumeChange(value[0])}
+          max={100}
+          step={1}
+          className="flex-1 **:data-[slot=slider-track]:h-[2px] **:data-[slot=slider-track]:bg-gray-400 **:data-[slot=slider-range]:bg-gray-700 **:data-[slot=slider-thumb]:w-3 **:data-[slot=slider-thumb]:h-3 **:data-[slot=slider-thumb]:rounded-xs **:data-[slot=slider-thumb]:border-0 **:data-[slot=slider-thumb]:bg-gray-700 **:data-[slot=slider-thumb]:shadow-none **:data-[slot=slider-thumb]:hover:ring-0 **:data-[slot=slider-thumb]:focus-visible:ring-0"
+        />
         <Volume2 size={20} className="text-gray-600 shrink-0" />
       </div>
 
