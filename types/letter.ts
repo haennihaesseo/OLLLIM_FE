@@ -146,6 +146,7 @@ export type LetterViewResponse = {
   voice: {
     voiceId: number;
     voiceUrl: string;
+    duration: number;
   };
   words: Word[];
 };

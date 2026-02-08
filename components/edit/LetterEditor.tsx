@@ -34,7 +34,8 @@ export function LetterEditor({
       {/* Content 편집 영역 */}
       <textarea
         value={content}
-        onChange={(e) => onContentChange(e.target.value)}
+        onChange={(e) => onContentChange(e.target.value.slice(0, 1000))}
+        maxLength={1000}
         className="flex-1 text-gray-800 typo-body1-base outline-none resize-none"
         placeholder="편지 내용을 입력하세요"
       />

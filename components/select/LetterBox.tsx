@@ -31,10 +31,13 @@ export default function LetterBox({
 }: LetterBoxProps) {
   const fontFamilyName = useDynamicFont(fontId, fontUrl);
 
+  // content를 최대 1000자로 제한
+  const limitedContent = content.slice(0, 1000);
+
   // content를 기반으로 words 배열과 매칭하여 렌더링
   const renderContent = () => {
     if (!words || words.length === 0) {
-      return content;
+      return limitedContent;
     }
 
     // content를 줄바꿈 유지하면서 처리
@@ -42,9 +45,9 @@ export default function LetterBox({
     let contentIndex = 0;
     let wordIndex = 0;
 
-    while (contentIndex < content.length && wordIndex < words.length) {
+    while (contentIndex < limitedContent.length && wordIndex < words.length) {
       const currentWord = words[wordIndex];
-      const wordStartIndex = content.indexOf(currentWord.word, contentIndex);
+      const wordStartIndex = limitedContent.indexOf(currentWord.word, contentIndex);
 
       // 현재 단어를 찾을 수 없으면 다음 단어로
       if (wordStartIndex === -1) {
@@ -54,7 +57,7 @@ export default function LetterBox({
 
       // 단어 이전의 텍스트(공백, 줄바꿈 등) 추가
       if (wordStartIndex > contentIndex) {
-        const beforeText = content.substring(contentIndex, wordStartIndex);
+        const beforeText = limitedContent.substring(contentIndex, wordStartIndex);
         parts.push(
           <span key={`before-${wordIndex}`} className="text-gray-900">
             {beforeText}
@@ -85,10 +88,10 @@ export default function LetterBox({
     }
 
     // 남은 텍스트 추가
-    if (contentIndex < content.length) {
+    if (contentIndex < limitedContent.length) {
       parts.push(
         <span key="after" className="text-gray-900">
-          {content.substring(contentIndex)}
+          {limitedContent.substring(contentIndex)}
         </span>,
       );
     }
@@ -104,15 +107,15 @@ export default function LetterBox({
         backgroundSize: "cover",
         backgroundPosition: "center",
       }}
-      className={`relative bg-white rounded-[0.5rem] py-10 px-5 h-[480px] flex flex-col ${
+      className={`relative bg-white rounded-[0.5rem] p-10 h-[490px] flex flex-col ${
         isEdit ? "border-2 border-dashed border-primary-700" : ""
       }`}
     >
-      <h3 className="mb-4">To. {title}</h3>
+      <h3 className="mb-5">To. {title}</h3>
 
       <div className="flex-1 overflow-y-auto">
         <p className="whitespace-pre-wrap">{renderContent()}</p>
-        <p className="text-gray-900 text-right mt-4 mb-5">From. {sender}</p>
+        <p className="text-gray-900 text-right mt-5">From. {sender}</p>
       </div>
     </div>
   );

@@ -53,7 +53,16 @@ export function useAudioPlayer({
     audio.crossOrigin = "anonymous";
     audioRef.current = audio;
 
-    const onLoaded = () => setDuration(audio.duration || initialDuration);
+    const onLoaded = () => {
+      const audioDuration = audio.duration;
+      // duration이 유효한 값인지 확인 (Infinity, NaN 방지)
+      if (audioDuration && isFinite(audioDuration) && !isNaN(audioDuration)) {
+        setDuration(audioDuration);
+      } else if (initialDuration > 0) {
+        setDuration(initialDuration);
+      }
+    };
+
     const onTime = () => {
       const currentTime = audio.currentTime || 0;
       setCurrentTime(currentTime);
@@ -127,7 +136,7 @@ export function useAudioPlayer({
       audio.currentTime = next;
       setCurrentTime(next);
     },
-    [duration]
+    [duration],
   );
 
   const togglePlayPause = useCallback(async () => {
