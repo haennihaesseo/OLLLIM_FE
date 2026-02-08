@@ -3,7 +3,9 @@
 import { useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import NavigationButton from "@/components/common/NavigationButton";
-import { getNextStep, getPrevStep } from "@/lib/letterSteps";
+import { getPrevStep } from "@/lib/letterSteps";
+import { isLoggedInAtom } from "@/store/auth";
+import { useAtomValue } from "jotai";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -17,6 +19,7 @@ export default function CompleteButtonContainer() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
+  const isLoggedIn = useAtomValue(isLoggedInAtom);
 
   const handleNext = () => {
     setIsDialogOpen(true);
@@ -31,7 +34,11 @@ export default function CompleteButtonContainer() {
 
   const handleConfirm = () => {
     setIsDialogOpen(false);
-    router.push("/login?redirectUrl=/letter/complete");
+    if (isLoggedIn) {
+      router.push("/letter/complete");
+    } else {
+      router.push("/login?redirectUrl=/letter/complete");
+    }
   };
 
   const handleCancel = () => {
@@ -45,7 +52,7 @@ export default function CompleteButtonContainer() {
         onNext={handleNext}
         isNextDisabled={false}
         isLoading={false}
-        nextText="로그인 후 편지 링크 생성하기"
+        nextText={isLoggedIn ? "링크 생성하기" : "로그인 후 편지 링크 생성하기"}
       />
 
       <AlertDialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
