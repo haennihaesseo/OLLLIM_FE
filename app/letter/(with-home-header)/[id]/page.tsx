@@ -23,6 +23,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { motion } from "framer-motion";
 
 export default function LetterPage() {
   const params = useParams();
@@ -31,6 +32,7 @@ export default function LetterPage() {
   const initialIsLetterOpen = searchParams.get("isLetterOpen") === "true";
   const secretId = decodeURIComponent(params.id as string);
   const [isLetterOpen, setIsLetterOpen] = useState(initialIsLetterOpen);
+  const [isAnimating, setIsAnimating] = useState(false);
   const [isLoggedIn] = useAtom(isLoggedInAtom);
   const [passwordDialogOpen, setPasswordDialogOpen] = useState(false);
   const [password, setPassword] = useState("");
@@ -94,7 +96,12 @@ export default function LetterPage() {
     if (needsPassword) {
       setPasswordDialogOpen(true);
     } else {
-      setIsLetterOpen(true);
+      setIsAnimating(true);
+      // receive-motion.gif 애니메이션 재생 후 편지 열기 (약 3초)
+      setTimeout(() => {
+        setIsLetterOpen(true);
+        setIsAnimating(false);
+      }, 3000);
     }
   };
 
@@ -107,8 +114,13 @@ export default function LetterPage() {
       {
         onSuccess: () => {
           setPasswordDialogOpen(false);
-          setIsLetterOpen(true);
           setNeedsPassword(false);
+          setIsAnimating(true);
+          // receive-motion.gif 애니메이션 재생 후 편지 열기 (약 3초)
+          setTimeout(() => {
+            setIsLetterOpen(true);
+            setIsAnimating(false);
+          }, 3000);
         },
         onError: () => {
           toast.error("비밀번호가 올바르지 않습니다");
@@ -124,7 +136,12 @@ export default function LetterPage() {
       if (!data) return <LetterLoading />;
       return (
         <article className="bg-gray-50 h-full relative">
-          <section className="flex flex-col p-5 gap-5">
+          <motion.section
+            className="flex flex-col p-5 gap-5"
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, ease: "easeOut" }}
+          >
             <LetterBox
               title={data.title}
               sender={data.sender}
@@ -148,8 +165,13 @@ export default function LetterPage() {
               stop={stop}
               seek={seek}
             />
-          </section>
-          <section className="flex flex-col items-center justify-center gap-2 p-5 typo-h1-base">
+          </motion.section>
+          <motion.section
+            className="flex flex-col items-center justify-center gap-2 p-5 typo-h1-base"
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, ease: "easeOut", delay: 0.5 }}
+          >
             <Button
               className="w-full h-12 text-white bg-primary-700"
               disabled={isPending || !data}
@@ -174,7 +196,7 @@ export default function LetterPage() {
                 <p>링크 복사</p>
               </Button>
             </div>
-          </section>
+          </motion.section>
         </article>
       );
     default:
@@ -183,10 +205,12 @@ export default function LetterPage() {
           <article className="h-full px-5">
             <div className="flex flex-col items-center justify-center h-[75%] gap-3">
               <Image
-                src="/gif/receive-motion.gif"
-                alt="receive-motion"
-                width={100}
-                height={100}
+                src={
+                  isAnimating ? "/gif/receive-motion.gif" : "/gif/message.gif"
+                }
+                alt={isAnimating ? "receive-motion" : "message"}
+                width={160}
+                height={160}
                 unoptimized
               />
               <h1 className="typo-h2-3xl text-gray-900">
@@ -197,7 +221,7 @@ export default function LetterPage() {
             </div>
             <CompleteButton
               onClick={handleOpenLetter}
-              disabled={isPending}
+              disabled={isPending || isAnimating}
               title="열어 보기"
             />
           </article>
