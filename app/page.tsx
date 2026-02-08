@@ -39,7 +39,8 @@ export default function Page() {
             />
             <h3 className="typo-h1-3xl text-white">새 편지 쓰기</h3>
             <p className="typo-body1-sm text-white">
-              당신의 마음을 목소리로 전해보세요
+              말의 속도와 톤을 바탕으로, <br />
+              당신의 목소리에 어울리는 글씨가 쓰여집니다.
             </p>
             <Link href="/letter/onboarding" className="w-full">
               <Button className="bg-white text-primary-700 h-11 w-full mt-2">
