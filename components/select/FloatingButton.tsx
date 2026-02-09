@@ -10,14 +10,45 @@ interface FloatingButtonProps {
 
 export default function FloatingButton({ onOptionClick }: FloatingButtonProps) {
   const [isExpanded, setIsExpanded] = useState(false);
-  const [showTooltip, setShowTooltip] = useState(true);
 
-  // 3초 후 툴팁 숨김
+  // 애니메이션 스타일 추가
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setShowTooltip(false);
-    }, 3000);
-    return () => clearTimeout(timer);
+    const style = document.createElement("style");
+    style.textContent = `
+      @keyframes slideUpFade {
+        from {
+          opacity: 0;
+          transform: translateY(10px) scale(0.95);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0) scale(1);
+        }
+      }
+      
+      @keyframes slideTooltip {
+        0% {
+          opacity: 0;
+          transform: translateX(-5px);
+        }
+        5% {
+          opacity: 1;
+          transform: translateX(0);
+        }
+        80% {
+          opacity: 1;
+          transform: translateX(0);
+        }
+        85%, 100% {
+          opacity: 0;
+          transform: translateX(-5px);
+        }
+      }
+    `;
+    document.head.appendChild(style);
+    return () => {
+      document.head.removeChild(style);
+    };
   }, []);
 
   const handleMainButtonClick = () => {
@@ -48,19 +79,25 @@ export default function FloatingButton({ onOptionClick }: FloatingButtonProps) {
   ];
 
   return (
-    <div className="fixed top-[500px] left-10 lg:left-[40%] z-50">
+    <div className="fixed top-[380px] left-10 lg:left-[40%] z-50">
       {/* 확장된 옵션 버튼들 */}
       {isExpanded && (
         <div className="absolute bottom-16 left-0 flex flex-col gap-3 mb-2">
           {options.map((option, index) => {
             const Icon = option.icon;
+            // 아래것부터 위로 나타나도록 역순 delay 계산
+            const reverseIndex = options.length - 1 - index;
             return (
               <button
                 key={option.id}
                 onClick={() => handleOptionClick(option.id)}
-                className={`w-12 h-12 rounded-full bg-[#E6002314] border-2 border-primary-700 flex items-center justify-center text-primary-700 transition-all duration-300 ease-out animate-in fade-in slide-in-from-bottom-4`}
+                className={`w-12 h-12 rounded-full bg-[#FFF0F2] border-2 border-primary-700 flex items-center justify-center text-primary-700 transition-all will-change-transform`}
                 style={{
-                  animationDelay: `${index * 50}ms`,
+                  animation:
+                    "slideUpFade 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards",
+                  animationDelay: `${reverseIndex * 80}ms`,
+                  opacity: 0,
+                  transform: "translateY(10px)",
                 }}
                 aria-label={option.label}
               >
@@ -74,11 +111,11 @@ export default function FloatingButton({ onOptionClick }: FloatingButtonProps) {
       {/* 메인 버튼 */}
       <div className="relative">
         {/* 툴팁 */}
-        {showTooltip && (
+        {!isExpanded && (
           <div
-            className="absolute left-14 top-1/2 -translate-y-1/2 typo-h2-base whitespace-nowrap animate-in fade-in slide-in-from-left-2"
+            className="absolute left-14 top-1/2 -translate-y-1/2 typo-h2-base whitespace-nowrap"
             style={{
-              animation: "fadeIn 0.3s ease-out",
+              animation: "slideTooltip 4s ease-in-out infinite",
             }}
           >
             탭하여 꾸미기

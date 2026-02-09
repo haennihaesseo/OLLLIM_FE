@@ -47,7 +47,10 @@ export default function LetterBox({
 
     while (contentIndex < limitedContent.length && wordIndex < words.length) {
       const currentWord = words[wordIndex];
-      const wordStartIndex = limitedContent.indexOf(currentWord.word, contentIndex);
+      const wordStartIndex = limitedContent.indexOf(
+        currentWord.word,
+        contentIndex,
+      );
 
       // 현재 단어를 찾을 수 없으면 다음 단어로
       if (wordStartIndex === -1) {
@@ -57,7 +60,10 @@ export default function LetterBox({
 
       // 단어 이전의 텍스트(공백, 줄바꿈 등) 추가
       if (wordStartIndex > contentIndex) {
-        const beforeText = limitedContent.substring(contentIndex, wordStartIndex);
+        const beforeText = limitedContent.substring(
+          contentIndex,
+          wordStartIndex,
+        );
         parts.push(
           <span key={`before-${wordIndex}`} className="text-gray-900">
             {beforeText}
@@ -107,7 +113,7 @@ export default function LetterBox({
         backgroundSize: "cover",
         backgroundPosition: "center",
       }}
-      className={`relative bg-white rounded-[0.5rem] p-10 h-[490px] flex flex-col ${
+      className={`relative bg-white rounded-[0.5rem] p-10 h-[370px] flex flex-col ${
         isEdit ? "border-2 border-dashed border-primary-700" : ""
       }`}
     >
