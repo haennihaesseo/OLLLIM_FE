@@ -82,7 +82,7 @@ export default function FloatingButton({ onOptionClick }: FloatingButtonProps) {
     <div className="fixed top-[380px] left-10 lg:left-[40%] z-50">
       {/* 확장된 옵션 버튼들 */}
       {isExpanded && (
-        <div className="absolute bottom-16 left-0 flex flex-col gap-3 mb-2">
+        <div className="absolute bottom-15 left-0 flex flex-col gap-2">
           {options.map((option, index) => {
             const Icon = option.icon;
             // 아래것부터 위로 나타나도록 역순 delay 계산

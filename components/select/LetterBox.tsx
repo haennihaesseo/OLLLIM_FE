@@ -113,9 +113,7 @@ export default function LetterBox({
         backgroundSize: "cover",
         backgroundPosition: "center",
       }}
-      className={`relative bg-white rounded-[0.5rem] p-10 h-[370px] flex flex-col ${
-        isEdit ? "border-2 border-dashed border-primary-700" : ""
-      }`}
+      className="relative bg-white rounded-[0.5rem] p-10 h-[370px] flex flex-col"
     >
       <h3 className="mb-5">To. {title}</h3>
 
