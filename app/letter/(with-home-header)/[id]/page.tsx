@@ -78,7 +78,7 @@ export default function LetterPage() {
         saveLetter(data!.letterId);
         break;
       case false:
-        router.push(`/login?redirectUrl=/letter/${secretId}?isLetterOpen=true`);
+        router.push(`/login?redirectUrl=/letter/${secretId}`);
         break;
     }
   };
