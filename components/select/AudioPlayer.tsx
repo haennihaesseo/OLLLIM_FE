@@ -29,6 +29,8 @@ export default function AudioPlayer({
   seek: originalSeek,
 }: AudioPlayerProps) {
   const bgmRef = useRef<HTMLAudioElement | null>(null);
+  const audioContextRef = useRef<AudioContext | null>(null);
+  const gainNodeRef = useRef<GainNode | null>(null);
 
   // BGM 오디오 엘리먼트 생성 및 관리
   useEffect(() => {
@@ -42,11 +44,43 @@ export default function AudioPlayer({
     // bgmUrl이 없으면 종료
     if (!bgmUrl) return;
 
-    const bgm = new Audio(bgmUrl);
-    bgm.crossOrigin = "anonymous";
-    bgm.loop = true; // 반복 재생
-    bgm.volume = Math.max(0, Math.min(100, bgmSize)) / 100; // 0-100을 0-1로 변환
-    bgmRef.current = bgm;
+    // Web Audio API를 사용하여 iOS에서도 볼륨 제어 가능하도록 설정
+    try {
+      // AudioContext 생성 (한 번만)
+      if (!audioContextRef.current) {
+        const AudioContextClass =
+          window.AudioContext ||
+          (
+            window as typeof window & {
+              webkitAudioContext: typeof AudioContext;
+            }
+          ).webkitAudioContext;
+        audioContextRef.current = new AudioContextClass();
+      }
+
+      const bgm = new Audio(bgmUrl);
+      bgm.crossOrigin = "anonymous";
+      bgm.loop = true; // 반복 재생
+      bgmRef.current = bgm;
+
+      // MediaElementSource와 GainNode 생성
+      const source = audioContextRef.current.createMediaElementSource(bgm);
+      const gainNode = audioContextRef.current.createGain();
+      gainNode.gain.value = Math.max(0, Math.min(100, bgmSize)) / 100; // 0-100을 0-1로 변환
+      gainNodeRef.current = gainNode;
+
+      // 연결: source -> gainNode -> destination
+      source.connect(gainNode);
+      gainNode.connect(audioContextRef.current.destination);
+    } catch (error) {
+      console.error("BGM Web Audio API 설정 실패:", error);
+      // fallback: 기본 Audio 사용
+      const bgm = new Audio(bgmUrl);
+      bgm.crossOrigin = "anonymous";
+      bgm.loop = true;
+      bgm.volume = Math.max(0, Math.min(100, bgmSize)) / 100;
+      bgmRef.current = bgm;
+    }
 
     return () => {
       if (bgmRef.current) {
@@ -82,6 +116,10 @@ export default function AudioPlayer({
     } else {
       // 정지 중이었으면 재생
       try {
+        // iOS에서 AudioContext가 suspended 상태일 수 있으므로 resume
+        if (audioContextRef.current?.state === "suspended") {
+          await audioContextRef.current.resume();
+        }
         await bgmRef.current.play();
       } catch (error) {
         console.error("BGM 재생 실패:", error);
