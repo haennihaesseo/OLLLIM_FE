@@ -31,8 +31,9 @@ export default function AudioPlayer({
   const bgmRef = useRef<HTMLAudioElement | null>(null);
   const audioContextRef = useRef<AudioContext | null>(null);
   const gainNodeRef = useRef<GainNode | null>(null);
+  const sourceNodeRef = useRef<MediaElementAudioSourceNode | null>(null);
 
-  // BGM 오디오 엘리먼트 생성 및 관리
+  // BGM URL 변경 시 오디오 엘리먼트 생성
   useEffect(() => {
     // cleanup previous bgm instance
     if (bgmRef.current) {
@@ -40,6 +41,7 @@ export default function AudioPlayer({
       bgmRef.current.src = "";
       bgmRef.current = null;
     }
+    sourceNodeRef.current = null; // source node 참조 초기화
 
     // bgmUrl이 없으면 종료
     if (!bgmUrl) return;
@@ -65,6 +67,8 @@ export default function AudioPlayer({
 
       // MediaElementSource와 GainNode 생성
       const source = audioContextRef.current.createMediaElementSource(bgm);
+      sourceNodeRef.current = source;
+
       const gainNode = audioContextRef.current.createGain();
       gainNode.gain.value = Math.max(0, Math.min(100, bgmSize)) / 100; // 0-100을 0-1로 변환
       gainNodeRef.current = gainNode;
@@ -88,8 +92,21 @@ export default function AudioPlayer({
         bgmRef.current.src = "";
         bgmRef.current = null;
       }
+      sourceNodeRef.current = null;
     };
-  }, [bgmUrl, bgmSize]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [bgmUrl]); // bgmUrl만 의존성으로 설정 (bgmSize는 별도 useEffect에서 처리)
+
+  // BGM 볼륨만 변경될 때는 GainNode 값만 업데이트
+  useEffect(() => {
+    if (gainNodeRef.current) {
+      gainNodeRef.current.gain.value =
+        Math.max(0, Math.min(100, bgmSize)) / 100;
+    } else if (bgmRef.current && !sourceNodeRef.current) {
+      // fallback 모드에서는 기본 volume 속성 사용
+      bgmRef.current.volume = Math.max(0, Math.min(100, bgmSize)) / 100;
+    }
+  }, [bgmSize]);
 
   // voice 재생 상태에 따라 BGM 정지
   useEffect(() => {
