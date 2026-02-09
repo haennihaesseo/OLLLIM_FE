@@ -48,7 +48,7 @@ export default function FloatingButton({ onOptionClick }: FloatingButtonProps) {
   ];
 
   return (
-    <div className="fixed top-[500px] left-10 lg:left-[40%] z-50">
+    <div className="fixed top-[380px] left-10 lg:left-[40%] z-50">
       {/* 확장된 옵션 버튼들 */}
       {isExpanded && (
         <div className="absolute bottom-16 left-0 flex flex-col gap-3 mb-2">
