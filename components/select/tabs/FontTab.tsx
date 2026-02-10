@@ -12,15 +12,16 @@ interface FontTabProps {
 }
 
 export default function FontTab({ selectedFont, onFontChange }: FontTabProps) {
-  const { data } = useGetLetterFont();
+  const { data: voiceFonts, isLoading: isVoiceFontsLoading } =
+    useGetLetterFont("VOICE");
+  const { data: contextFonts, isLoading: isContextFontsLoading } =
+    useGetLetterFont("CONTEXT");
 
-  // 모든 폰트를 하나의 배열로 합침
-  const allFonts = [...(data?.voiceFonts || []), ...(data?.contextFonts || [])];
+  const allFonts = [
+    ...(voiceFonts?.fonts || []),
+    ...(contextFonts?.fonts || []),
+  ];
   const fontFamilyMap = useDynamicFonts(allFonts);
-
-  if (!data) {
-    return null;
-  }
 
   const renderFontItem = (font: FontInfo) => {
     const fontIdStr = String(font.fontId);
@@ -62,28 +63,32 @@ export default function FontTab({ selectedFont, onFontChange }: FontTabProps) {
     <div className="px-4 py-4">
       <RadioGroup value={selectedFont} onValueChange={onFontChange}>
         {/* 목소리 기반 폰트 */}
-        {data.voiceFonts && data.voiceFonts.length > 0 && (
-          <div>
-            <h3 className="typo-h2-base text-gray-900 mb-2 items-center flex justify-center border-b border-gray-400 pb-2">
-              목소리 기반
-            </h3>
+        <div>
+          <h3 className="typo-h2-base text-gray-900 mb-2 items-center flex justify-center border-b border-gray-400 pb-2">
+            목소리 기반
+          </h3>
+          {isVoiceFontsLoading || !voiceFonts?.fonts?.length ? (
+            <p className="text-center text-gray-500 py-4">폰트 추천 중...</p>
+          ) : (
             <div className="space-y-0">
-              {data.voiceFonts.map(renderFontItem)}
+              {voiceFonts.fonts.map(renderFontItem)}
             </div>
-          </div>
-        )}
+          )}
+        </div>
 
-        {/* 컨텍스트 기반 폰트 */}
-        {data.contextFonts && data.contextFonts.length > 0 && (
-          <div>
-            <h3 className="typo-h2-base text-gray-900 mb-2 items-center flex justify-center border-b border-gray-400 pb-2">
-              내용 기반
-            </h3>
+        {/* 내용 기반 폰트 */}
+        <div>
+          <h3 className="typo-h2-base text-gray-900 mb-2 items-center flex justify-center border-b border-gray-400 pb-2">
+            내용 기반
+          </h3>
+          {isContextFontsLoading || !contextFonts?.fonts?.length ? (
+            <p className="text-center text-gray-500 py-4">폰트 추천 중...</p>
+          ) : (
             <div className="space-y-0">
-              {data.contextFonts.map(renderFontItem)}
+              {contextFonts.fonts.map(renderFontItem)}
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </RadioGroup>
     </div>
   );
