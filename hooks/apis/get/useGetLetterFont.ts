@@ -4,14 +4,17 @@ import { letterIdAtom } from "@/store/letterAtoms";
 import { client } from "@/lib/axiosInstance";
 import type { ApiResponse, LetterFontResponse } from "@/types/letter";
 
-export function useGetLetterFont(enabled: boolean = true) {
+export function useGetLetterFont(
+  type: "CONTEXT" | "VOICE" = "VOICE",
+  options?: { enabled?: boolean }
+) {
   const [letterId] = useAtom(letterIdAtom);
 
   return useQuery({
-    queryKey: ["letterFont", letterId],
+    queryKey: ["letterFont", letterId, type],
     queryFn: async () => {
       const response = await client.get<ApiResponse<LetterFontResponse>>(
-        "/api/letter/font",
+        `/api/letter/font?type=${type}`,
         {
           headers: {
             letterId: letterId,
@@ -20,6 +23,6 @@ export function useGetLetterFont(enabled: boolean = true) {
       );
       return response.data.data;
     },
-    enabled: !!letterId && enabled,
+    enabled: !!letterId && (options?.enabled ?? true),
   });
 }
