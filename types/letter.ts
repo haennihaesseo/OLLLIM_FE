@@ -58,8 +58,7 @@ export type LetterVoiceResponse = {
  * 추천 폰트 리스트 응답 타입 (GET /api/letter/font 응답)
  */
 export type LetterFontResponse = {
-  voiceFonts: FontInfo[];
-  contextFonts: FontInfo[];
+  fonts: FontInfo[];
 };
 
 /**

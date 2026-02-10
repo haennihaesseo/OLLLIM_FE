@@ -9,14 +9,21 @@ import ReanalyzeButtonContainer from "@/components/analyze/ReanalyzeButtonContai
 import AnalyzeLoading from "./loading";
 
 export default function AnalyzePage() {
-  const { data: voiceData, isSuccess: isVoiceSuccess } = useGetLetterVoice();
-  const { data: fontData, isLoading: isFontLoading } =
-    useGetLetterFont(isVoiceSuccess);
+  const {
+    data: voiceData,
+    isLoading: isVoiceLoading,
+    isSuccess: isVoiceSuccess,
+  } = useGetLetterVoice();
+  const { data: fontData, isLoading: isFontLoading } = useGetLetterFont(
+    "VOICE",
+    { enabled: isVoiceSuccess }
+  );
   const [selectedFontId, setSelectedFontId] = useState<number | undefined>(
-    undefined,
+    undefined
   );
 
-  if (isFontLoading || !voiceData || !fontData) return <AnalyzeLoading />;
+  if (isVoiceLoading || isFontLoading || !voiceData || !fontData)
+    return <AnalyzeLoading />;
 
   return (
     <article className="flex flex-col h-full">
@@ -31,7 +38,7 @@ export default function AnalyzePage() {
             {voiceData.result}
           </h3>
           <FontCards
-            cards={fontData.voiceFonts}
+            cards={fontData.fonts}
             selectedFontId={selectedFontId}
             onSelectFont={setSelectedFontId}
           />
