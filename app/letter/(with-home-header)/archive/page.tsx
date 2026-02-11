@@ -79,7 +79,7 @@ export const MyLetterPage = ({
 
   const handleCopyLink = () => {
     navigator.clipboard.writeText(
-      `${window.location.origin}/letter/${secretId?.secretLetterId}`,
+      `${window.location.origin}/letter/${secretId?.secretLetterId}`
     );
     toast.success("링크가 복사되었습니다");
   };
@@ -167,16 +167,16 @@ export default function ArchivePage() {
 
   // 편지 목록 보기 상태일 때
   return (
-    <article className="flex flex-col items-start justify-center px-5">
-      <header className="flex gap-2 items-center">
+    <article className="flex flex-col h-full px-5">
+      <header className="flex gap-2 items-center shrink-0">
         <Archive size={28} />
         <h1 className="typo-h2-3xl text-gray-900">올림 보관함</h1>
       </header>
-      <section className="w-full mt-5">
+      <section className="flex flex-col w-full mt-5 min-h-0 flex-1">
         <Tabs
           value={tabType}
           onValueChange={setTabType}
-          className="w-full h-10.5"
+          className="w-full h-10.5 shrink-0"
         >
           <TabsList className="w-full rounded-full h-10.5">
             {tabs.map((tab) => (
@@ -192,7 +192,7 @@ export default function ArchivePage() {
             ))}
           </TabsList>
         </Tabs>
-        <div className="px-2">
+        <div className="px-2 flex-1 min-h-0 overflow-y-auto mb-30">
           {tabType === "received" ? (
             <div className="w-full">
               {receivedLetter && receivedLetter.length > 0 ? (
@@ -229,7 +229,7 @@ export default function ArchivePage() {
             </div>
           )}
         </div>
-        <Button className="fixed bottom-15 left-0 right-0 w-[90%] mx-auto h-11.5 bg-[#E6002314] border-primary-700 border text-primary-700 typo-h1-base">
+        <Button className="fixed lg:w-95 bottom-15 left-0 right-0 w-[90%] mx-auto h-11.5 bg-[#E6002314] border-primary-700 border text-primary-700 typo-h1-base">
           <Link href="/letter/new/record">편지 작성하기</Link>
         </Button>
       </section>
