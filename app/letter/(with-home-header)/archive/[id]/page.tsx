@@ -1,6 +1,5 @@
 "use client";
 
-import PageLoading from "@/components/common/PageLoading";
 import LoginRequiredPage from "@/components/common/LoginRequiredPage";
 import AudioPlayer from "@/components/select/AudioPlayer";
 import LetterBox from "@/components/select/LetterBox";
@@ -19,8 +18,8 @@ export default function MyLetterPage() {
   const params = useParams();
   const router = useRouter();
   const letterId = decodeURIComponent(params.id as string);
-  const { data, isPending } = useGetMyLetter(letterId);
   const [isLoggedIn] = useAtom(isLoggedInAtom);
+  const { data } = useGetMyLetter(letterId);
 
   const {
     status,
@@ -31,21 +30,11 @@ export default function MyLetterPage() {
     stop,
     seek,
   } = useAudioPlayer({
-    audioUrl: data?.voice.voiceUrl || null,
-    initialDuration: data?.voice.duration || 0,
+    audioUrl: data.voice.voiceUrl,
+    initialDuration: data.voice.duration,
   });
 
   const { data: secretId } = useGetSecretId(letterId);
-
-  const handleCopyLink = () => {
-    navigator.clipboard.writeText(
-      `${window.location.origin}/letter/${secretId?.secretLetterId}`
-    );
-    toast.success("링크가 복사되었습니다");
-  };
-  const handleWriteLetter = () => {
-    router.push(`/letter/new/record`);
-  };
 
   if (!isLoggedIn) {
     return (
@@ -56,7 +45,15 @@ export default function MyLetterPage() {
     );
   }
 
-  if (isPending || !data) return <PageLoading title="편지 불러오는 중..." />;
+  const handleCopyLink = () => {
+    navigator.clipboard.writeText(
+      `${window.location.origin}/letter/${secretId?.secretLetterId}`
+    );
+    toast.success("링크가 복사되었습니다");
+  };
+  const handleWriteLetter = () => {
+    router.push(`/letter/new/record`);
+  };
 
   return (
     <article className="bg-gray-50 h-full relative">
