@@ -1,6 +1,4 @@
-"use client";
-
-import NavigationButton from "@/components/common/NavigationButton";
+import { Button } from "@/components/ui/button";
 import Image from "next/image";
 
 export default function ShopPage() {
@@ -40,15 +38,23 @@ export default function ShopPage() {
           </div>
         </div>
       </section>
-      <div className="px-5 b-5">
-        <NavigationButton
-          nextText="서비스 준비 중"
-          isNextDisabled={true}
-          isLoading={false}
-          onPrev={() => {}}
-          onNext={() => {}}
-        />
-      </div>
+      <nav className="px-5 mb-15 w-full">
+        <div className="flex items-start gap-4 w-full">
+          <Button
+            variant="outline"
+            className="h-auto bg-white border-gray-200 px-4 py-3 rounded-lg typo-body1-medium-base text-gray-800"
+            disabled
+          >
+            이전
+          </Button>
+          <Button
+            className="h-auto flex-1 bg-primary-700 px-4 py-3 rounded-lg typo-heading1-bold-base text-white disabled:bg-gray-300 disabled:cursor-not-allowed"
+            disabled
+          >
+            서비스 준비 중
+          </Button>
+        </div>
+      </nav>
     </article>
   );
 }
