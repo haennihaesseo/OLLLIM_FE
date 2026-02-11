@@ -6,7 +6,12 @@ import { useAudioPlayer } from "@/hooks/common/useAudioPlayer";
 import CompleteButtonContainer from "@/components/select/CompleteButtonContainer";
 import LetterBox from "@/components/select/LetterBox";
 import AudioPlayer from "@/components/select/AudioPlayer";
-import LetterOptionsBottomSheet from "@/components/select/LetterOptionsBottomSheet";
+import dynamic from "next/dynamic";
+
+const LetterOptionsBottomSheet = dynamic(
+  () => import("@/components/select/LetterOptionsBottomSheet"),
+  { ssr: false }
+);
 import FloatingButton from "@/components/select/FloatingButton";
 
 type TabType = "font" | "paper" | "bgm";

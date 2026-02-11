@@ -1,6 +1,11 @@
 "use client";
 
-import RecordNote from "@/components/record/RecordNote";
+import dynamic from "next/dynamic";
+
+const RecordNote = dynamic(
+  () => import("@/components/record/RecordNote"),
+  { ssr: false }
+);
 import VoiceRecorderContainer from "@/components/record/VoiceRecorderContainer";
 import CompleteButtonContainer from "@/components/record/CompleteButtonContainer";
 import { useAtomValue } from "jotai";
