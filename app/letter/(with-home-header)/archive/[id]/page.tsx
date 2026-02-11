@@ -1,6 +1,7 @@
 "use client";
 
 import PageLoading from "@/components/common/PageLoading";
+import LoginRequiredPage from "@/components/common/LoginRequiredPage";
 import AudioPlayer from "@/components/select/AudioPlayer";
 import LetterBox from "@/components/select/LetterBox";
 import { Button } from "@/components/ui/button";
@@ -11,12 +12,15 @@ import { Link2, Mail } from "lucide-react";
 import { useParams } from "next/navigation";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { useAtom } from "jotai";
+import { isLoggedInAtom } from "@/store/auth";
 
 export default function MyLetterPage() {
   const params = useParams();
   const router = useRouter();
   const letterId = decodeURIComponent(params.id as string);
   const { data, isPending } = useGetMyLetter(letterId);
+  const [isLoggedIn] = useAtom(isLoggedInAtom);
 
   const {
     status,
@@ -42,6 +46,15 @@ export default function MyLetterPage() {
   const handleWriteLetter = () => {
     router.push(`/letter/new/record`);
   };
+
+  if (!isLoggedIn) {
+    return (
+      <LoginRequiredPage
+        title="로그인이 필요합니다"
+        description="보관함에 저장된 편지를 보려면 로그인이 필요합니다."
+      />
+    );
+  }
 
   if (isPending || !data) return <PageLoading title="편지 불러오는 중..." />;
 
