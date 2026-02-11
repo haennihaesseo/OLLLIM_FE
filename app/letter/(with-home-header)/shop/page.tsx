@@ -6,7 +6,7 @@ import Image from "next/image";
 export default function ShopPage() {
   return (
     <article className="flex flex-col h-full">
-      <header className="flex justify-end px-[20px]">
+      <header className="flex justify-end px-5">
         <p className="typo-body2-xs text-gray-600 py-2">홈 {">"} 굿즈제작</p>
       </header>
       <Image
@@ -17,7 +17,7 @@ export default function ShopPage() {
         className="w-full h-auto"
       />
 
-      <section className="flex flex-col gap-2 px-[20px] py-5">
+      <section className="flex flex-col gap-2 px-5 pt-3 overflow-auto">
         <h1 className="typo-h2-xl">NFC 카세트 테이프 키링 + 편지</h1>
         <h2 className="typo-h2-3xl">7,000원</h2>
         <div className="flex justify-between typo-body1-base py-4">
@@ -40,7 +40,7 @@ export default function ShopPage() {
           </div>
         </div>
       </section>
-      <div className="px-[20px] b-5">
+      <div className="px-5 b-5">
         <NavigationButton
           nextText="서비스 준비 중"
           isNextDisabled={true}
