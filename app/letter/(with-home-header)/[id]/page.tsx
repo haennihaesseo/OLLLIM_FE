@@ -231,7 +231,7 @@ export default function LetterPage() {
             open={passwordDialogOpen}
             onOpenChange={setPasswordDialogOpen}
           >
-            <DialogContent className="w-[90%] max-w-[400px] rounded-lg p-0 gap-0">
+            <DialogContent className="w-[90%] max-w-100 rounded-lg p-0 gap-0">
               <DialogHeader className="flex items-center justify-start w-full">
                 <DialogTitle className="flex px-7 text-center justify-start typo-h2-base text-gray-900 mt-5 w-full">
                   비밀번호 입력하기
