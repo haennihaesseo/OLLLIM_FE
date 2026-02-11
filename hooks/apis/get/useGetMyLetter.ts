@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { useAtom } from "jotai";
 import { client } from "@/lib/axiosInstance";
 import type { ApiResponse, LetterViewResponse } from "@/types/letter";
@@ -7,7 +7,7 @@ import { accessTokenAtom } from "@/store/auth";
 export function useGetMyLetter(letterId: string) {
   const [accessToken] = useAtom(accessTokenAtom);
 
-  return useQuery({
+  return useSuspenseQuery({
     queryKey: ["my-letter", letterId, accessToken],
     queryFn: async () => {
       const response = await client.get<ApiResponse<LetterViewResponse>>(
@@ -20,6 +20,5 @@ export function useGetMyLetter(letterId: string) {
       );
       return response.data.data;
     },
-    enabled: !!letterId && !!accessToken,
   });
 }
