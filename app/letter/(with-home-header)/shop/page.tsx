@@ -38,7 +38,7 @@ export default function ShopPage() {
           </div>
         </div>
       </section>
-      <nav className="px-5 b-5 mb-15 w-full">
+      <nav className="px-5 mb-15 w-full">
         <div className="flex items-start gap-4 w-full">
           <Button
             variant="outline"
