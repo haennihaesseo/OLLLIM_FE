@@ -170,7 +170,7 @@ export default function ArchivePage() {
     <article className="flex flex-col h-full px-5">
       <header className="flex gap-2 items-center shrink-0">
         <Archive size={28} />
-        <h1 className="typo-h2-3xl text-gray-900">올림 보관함</h1>
+        <h1 className="typo-h2-3xl text-gray-900">편지함</h1>
       </header>
       <section className="flex flex-col w-full mt-5 min-h-0 flex-1">
         <Tabs
