@@ -3,16 +3,16 @@
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { useAtom, useSetAtom } from "jotai";
-import { isLoggedInAtom, accessTokenAtom, refreshTokenStorage } from "@/store/auth";
+import {
+  isLoggedInAtom,
+  accessTokenAtom,
+  refreshTokenStorage,
+} from "@/store/auth";
 import { Settings, Bell, LogOut } from "lucide-react";
 import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 import { useState } from "react";
-import {
-  Sheet,
-  SheetContent,
-  SheetTrigger,
-} from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import {
   AlertDialog,
   AlertDialogAction,
