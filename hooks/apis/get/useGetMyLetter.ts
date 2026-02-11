@@ -8,7 +8,7 @@ export function useGetMyLetter(letterId: string) {
   const [accessToken] = useAtom(accessTokenAtom);
 
   return useQuery({
-    queryKey: ["my-letter", letterId],
+    queryKey: ["my-letter", letterId, accessToken],
     queryFn: async () => {
       const response = await client.get<ApiResponse<LetterViewResponse>>(
         `/api/letter/user/${letterId}`,
@@ -16,7 +16,7 @@ export function useGetMyLetter(letterId: string) {
           headers: {
             Authorization: `Bearer ${accessToken}`,
           },
-        },
+        }
       );
       return response.data.data;
     },
