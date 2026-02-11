@@ -59,7 +59,7 @@ export default function CompletePage() {
             "링크가 복사되었습니다. 편지를 전달해보세요",
             {
               className: "bg-gray-800 text-white shadow-lg",
-            },
+            }
           );
           setTimeout(() => toast.dismiss(id), 2000);
         })

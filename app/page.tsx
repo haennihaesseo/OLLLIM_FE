@@ -55,9 +55,9 @@ export default function Page() {
               href="/letter/archive"
               className="flex flex-col w-full items-start justify-center gap-2 bg-white border-gray-300 border rounded-lg px-5 py-5 shadow-md"
             >
-              <Archive size={24} className="text-primary-700" />
+              <Archive size={32} className="text-primary-700" />
               <div className="flex items-center justify-between gap-2 w-full">
-                <h3 className="typo-h2-lg text-gray-900 ">올림 보관함</h3>
+                <h3 className="typo-h2-lg text-gray-900 ">편지함</h3>
                 <p className="typo-body1-sm text-gray-500">
                   {letterCount?.count}개 보관중
                 </p>
@@ -80,8 +80,8 @@ export default function Page() {
             <Image
               src="/gif/mail-motion.gif"
               alt="mail-img"
-              width={30}
-              height={30}
+              width={32}
+              height={24}
             />
             <div
               className="flex flex-col items-start justify-between gap-2 w-full mt-0.5"

@@ -1,6 +1,19 @@
 "use client";
 
-import RecordNote from "@/components/record/RecordNote";
+import dynamic from "next/dynamic";
+
+const RecordNote = dynamic(() => import("@/components/record/RecordNote"), {
+  ssr: false,
+  loading: () => (
+    <div className="h-[30%]">
+      <div className="bg-gray-100 rounded-lg p-5">
+        <header className="flex justify-between items-center">
+          <h3 className="typo-h2-xl text-gray-900">Note</h3>
+        </header>
+      </div>
+    </div>
+  ),
+});
 import VoiceRecorderContainer from "@/components/record/VoiceRecorderContainer";
 import CompleteButtonContainer from "@/components/record/CompleteButtonContainer";
 import { useAtomValue } from "jotai";
