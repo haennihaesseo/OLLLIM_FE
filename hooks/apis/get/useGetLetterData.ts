@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { useAtom } from "jotai";
 import { letterIdAtom } from "@/store/letterAtoms";
 import { client } from "@/lib/axiosInstance";
@@ -22,5 +22,24 @@ export function useGetLetterData() {
       return response.data.data;
     },
     enabled: !!letterId,
+  });
+}
+
+export function useSuspenseLetterData() {
+  const [letterId] = useAtom(letterIdAtom);
+
+  return useSuspenseQuery({
+    queryKey: ["letter", letterId],
+    queryFn: async () => {
+      const response = await client.get<ApiResponse<LetterData>>(
+        "/api/letter/content",
+        {
+          headers: {
+            letterId: letterId,
+          },
+        },
+      );
+      return response.data.data;
+    },
   });
 }
