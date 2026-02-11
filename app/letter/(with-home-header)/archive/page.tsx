@@ -12,10 +12,10 @@ import { useRouter } from "next/navigation";
 import { useGetMyLetter } from "@/hooks/apis/get/useGetMyLetter";
 import { useAudioPlayer } from "@/hooks/common/useAudioPlayer";
 import { toast } from "sonner";
-import LetterLoading from "../[id]/loading";
 import LetterBox from "@/components/select/LetterBox";
 import AudioPlayer from "@/components/select/AudioPlayer";
 import useGetSecretId from "@/hooks/apis/get/useGetSecretId";
+import PageLoading from "@/components/common/PageLoading";
 
 // 날짜 포맷 함수 (예: 2026-01-22 -> 26.01.22)
 const formatDate = (dateString: string) => {
@@ -87,7 +87,7 @@ export const MyLetterPage = ({
     router.push(`/letter/new/record`);
   };
 
-  if (isPending || !data) return <LetterLoading />;
+  if (isPending || !data) return <PageLoading title="편지 불러오는 중..." />;
 
   return (
     <article className="bg-gray-50 h-full relative">

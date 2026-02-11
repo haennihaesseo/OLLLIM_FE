@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { usePostLetterView } from "@/hooks/apis/post/usePostLetterView";
-import LetterLoading from "./loading";
 import Image from "next/image";
 import CompleteButton from "@/components/common/CompleteButton";
 import LetterBox from "@/components/select/LetterBox";
@@ -24,6 +23,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { motion } from "framer-motion";
+import PageLoading from "@/components/common/PageLoading";
 
 export default function LetterPage() {
   const params = useParams();
@@ -68,7 +68,7 @@ export default function LetterPage() {
             setNeedsPassword(true);
           }
         },
-      },
+      }
     );
   }, [secretId, mutate]);
 
@@ -125,15 +125,16 @@ export default function LetterPage() {
         onError: () => {
           toast.error("비밀번호가 올바르지 않습니다");
         },
-      },
+      }
     );
   };
 
-  if (!data && !needsPassword) return <LetterLoading />;
+  if (!data && !needsPassword)
+    return <PageLoading title="편지 불러오는 중..." />;
 
   switch (isLetterOpen) {
     case true:
-      if (!data) return <LetterLoading />;
+      if (!data) return <PageLoading title="편지 불러오는 중..." />;
       return (
         <article className="bg-gray-50 h-full relative">
           <motion.section
