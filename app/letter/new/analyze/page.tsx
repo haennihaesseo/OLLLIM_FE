@@ -6,7 +6,7 @@ import { useGetLetterFont } from "@/hooks/apis/get/useGetLetterFont";
 import FontCards from "@/components/analyze/FontCards";
 import CompleteButtonContainer from "@/components/analyze/CompleteButtonContainer";
 import ReanalyzeButtonContainer from "@/components/analyze/ReanalyzeButtonContainer";
-import AnalyzeLoading from "./loading";
+import PageLoading from "@/components/common/PageLoading";
 
 export default function AnalyzePage() {
   const {
@@ -23,7 +23,7 @@ export default function AnalyzePage() {
   );
 
   if (isVoiceLoading || isFontLoading || !voiceData || !fontData)
-    return <AnalyzeLoading />;
+    return <PageLoading title="목소리 분석 중..." />;
 
   return (
     <article className="flex flex-col h-full">

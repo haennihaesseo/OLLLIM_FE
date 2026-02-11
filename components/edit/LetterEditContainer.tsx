@@ -1,21 +1,16 @@
 "use client";
 
 import { useState } from "react";
+import { useSuspenseLetterData } from "@/hooks/apis/get/useGetLetterData";
 import { LetterEditor } from "./LetterEditor";
 import { VoicePlayer } from "./VoicePlayer";
 import CompleteButtonContainer from "./CompleteButtonContainer";
 
-interface LetterEditContainerProps {
-  initialData: {
-    content: string;
-    voiceUrl: string;
-  };
-}
-
-export function LetterEditContainer({ initialData }: LetterEditContainerProps) {
+export function LetterEditContainer() {
+  const { data } = useSuspenseLetterData();
   const [title, setTitle] = useState("");
   const [sender, setSender] = useState("");
-  const [content, setContent] = useState(initialData.content);
+  const [content, setContent] = useState(data.content);
 
   return (
     <article className="flex flex-col justify-between h-full">
@@ -28,7 +23,7 @@ export function LetterEditContainer({ initialData }: LetterEditContainerProps) {
           content={content}
           onContentChange={setContent}
         />
-        <VoicePlayer audioUrl={initialData.voiceUrl} />
+        <VoicePlayer audioUrl={data.voiceUrl} />
         <CompleteButtonContainer
           title={title}
           sender={sender}
