@@ -4,11 +4,24 @@ import { Archive, Pencil } from "lucide-react";
 import Link from "next/link";
 import { useGetLetterCount } from "@/hooks/apis/get/useGetLetterCount";
 import { useAtomValue } from "jotai";
-import { isLoggedInAtom } from "@/store/auth";
+import { isLoggedInAtom, isAuthLoadingAtom } from "@/store/auth";
 
 export function LetterCountCard() {
   const isLoggedIn = useAtomValue(isLoggedInAtom);
-  const { data: letterCount } = useGetLetterCount();
+  const isAuthLoading = useAtomValue(isAuthLoadingAtom);
+  const { data: letterCount, isLoading } = useGetLetterCount();
+
+  if (isAuthLoading || isLoading) {
+    return (
+      <div className="flex flex-col w-full items-start justify-center gap-2 border-gray-300 border rounded-lg p-5 shadow-md animate-pulse">
+        <div className="w-8 h-8 bg-gray-200 rounded" />
+        <div className="flex items-center justify-between gap-2 w-full">
+          <div className="h-6 w-20 bg-gray-200 rounded" />
+          <div className="h-5 w-24 bg-gray-200 rounded" />
+        </div>
+      </div>
+    );
+  }
 
   if (isLoggedIn) {
     return (
