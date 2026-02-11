@@ -1,20 +1,10 @@
-"use client";
-
 import { HomeHeader } from "@/components/home/HomeHeader";
-import { Archive, Pencil } from "lucide-react";
+import { LetterCountCard } from "@/components/home/LetterCountCard";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import Link from "next/link";
-import { useGetLetterCount } from "@/hooks/apis/get/useGetLetterCount";
-import { useAtom } from "jotai";
-import { isLoggedInAtom } from "@/store/auth";
-import { useRouter } from "next/navigation";
 
 export default function Page() {
-  const [isLoggedIn] = useAtom(isLoggedInAtom);
-  const { data: letterCount } = useGetLetterCount();
-  const router = useRouter();
-
   return (
     <main className="h-dvh flex flex-col">
       <HomeHeader />
@@ -40,7 +30,7 @@ export default function Page() {
             <h3 className="typo-h1-3xl text-white">새 편지 쓰기</h3>
             <p className="typo-body1-sm text-white">
               말의 속도와 톤을 바탕으로, <br />
-              당신의 목소리에 어울리는 글씨가 쓰여집니다.
+              당신의 목소리에 어울리는 폰트가 추천됩니다.
             </p>
             <Link href="/letter/onboarding" className="w-full">
               <Button className="bg-white text-primary-700 h-11 w-full mt-2">
@@ -50,43 +40,18 @@ export default function Page() {
           </div>
         </section>
         <section className="p-4 flex flex-col items-start justify-center w-full gap-5">
-          {isLoggedIn ? (
-            <Link
-              href="/letter/archive"
-              className="flex flex-col w-full items-start justify-center gap-2 bg-white border-gray-300 border rounded-lg px-5 py-5 shadow-md"
-            >
-              <Archive size={24} className="text-primary-700" />
-              <div className="flex items-center justify-between gap-2 w-full">
-                <h3 className="typo-h2-lg text-gray-900 ">올림 보관함</h3>
-                <p className="typo-body1-sm text-gray-500">
-                  {letterCount?.count}개 보관중
-                </p>
-              </div>
-            </Link>
-          ) : (
-            <div className="flex flex-col w-full items-start justify-center gap-2 border-gray-300 border rounded-lg p-5 shadow-md">
-              <Pencil size={28} className="text-primary-700" />
-              <div className="flex items-center justify-between gap-2 w-full">
-                <h3 className="typo-h2-lg text-gray-900">
-                  지금까지 올림을 통해 보내진 편지
-                </h3>
-                <p className="typo-h2-2xl text-primary-700">
-                  {letterCount?.count ? letterCount.count : 0}개
-                </p>
-              </div>
-            </div>
-          )}
-          <div className="flex w-full items-start justify-center gap-2 bg-gray-100 border-gray-300 border rounded-lg p-5 shadow-md">
+          <LetterCountCard />
+          <Link
+            href="/letter/shop"
+            className="flex w-full items-start justify-center gap-2 bg-gray-100 border-gray-300 border rounded-lg p-5 shadow-md"
+          >
             <Image
               src="/gif/mail-motion.gif"
               alt="mail-img"
-              width={30}
-              height={30}
+              width={32}
+              height={24}
             />
-            <div
-              className="flex flex-col items-start justify-between gap-2 w-full mt-0.5"
-              onClick={() => router.push("/letter/shop")}
-            >
+            <div className="flex flex-col items-start justify-between gap-2 w-full mt-0.5">
               <h3 className="typo-h2-lg text-gray-900 ">
                 편지를 실물 굿즈에 담아 선물해보세요
               </h3>
@@ -96,7 +61,7 @@ export default function Page() {
                 키링으로 제작하여 선물할 수 있어요
               </p>
             </div>
-          </div>
+          </Link>
         </section>
       </article>
     </main>

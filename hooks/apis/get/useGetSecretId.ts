@@ -15,11 +15,11 @@ export function useGetSecretId(letterId: string) {
           headers: {
             Authorization: `Bearer ${accessToken}`,
           },
-        },
+        }
       );
       return response.data.data;
     },
-    enabled: !!accessToken,
+    enabled: !!accessToken && !!letterId,
   });
 }
 

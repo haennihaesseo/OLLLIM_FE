@@ -1,16 +1,13 @@
-"use client";
-
-import { useGetLetterData } from "@/hooks/apis/get/useGetLetterData";
+import { Suspense } from "react";
+import PageLoading from "@/components/common/PageLoading";
 import { LetterEditContainer } from "@/components/edit/LetterEditContainer";
 
 export default function EditPage() {
-  const { data } = useGetLetterData();
-
-  if (!data) return null;
-
   return (
-    <article className="bg-gray-50 h-full">
-      <LetterEditContainer initialData={data} />
-    </article>
+    <Suspense fallback={<PageLoading title="편지 불러오는 중..." />}>
+      <article className="bg-gray-50 h-full">
+        <LetterEditContainer />
+      </article>
+    </Suspense>
   );
 }

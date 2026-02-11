@@ -24,7 +24,7 @@ export function usePostFontRefresh() {
     onSuccess: () => {
       // 폰트 데이터 자동 업데이트를 위해 query invalidation
       queryClient.invalidateQueries({
-        queryKey: ["letterFont", letterId],
+        queryKey: ["letterFont", letterId, "VOICE"],
       });
     },
   });

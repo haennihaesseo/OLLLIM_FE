@@ -1,12 +1,10 @@
-"use client";
-
-import NavigationButton from "@/components/common/NavigationButton";
+import { Button } from "@/components/ui/button";
 import Image from "next/image";
 
 export default function ShopPage() {
   return (
     <article className="flex flex-col h-full">
-      <header className="flex justify-end px-[20px]">
+      <header className="flex justify-end px-5">
         <p className="typo-body2-xs text-gray-600 py-2">홈 {">"} 굿즈제작</p>
       </header>
       <Image
@@ -17,7 +15,7 @@ export default function ShopPage() {
         className="w-full h-auto"
       />
 
-      <section className="flex flex-col gap-2 px-[20px] py-5">
+      <section className="flex flex-col gap-2 px-5 pt-3 overflow-auto">
         <h1 className="typo-h2-xl">NFC 카세트 테이프 키링 + 편지</h1>
         <h2 className="typo-h2-3xl">7,000원</h2>
         <div className="flex justify-between typo-body1-base py-4">
@@ -40,15 +38,23 @@ export default function ShopPage() {
           </div>
         </div>
       </section>
-      <div className="px-[20px] b-5">
-        <NavigationButton
-          nextText="서비스 준비 중"
-          isNextDisabled={true}
-          isLoading={false}
-          onPrev={() => {}}
-          onNext={() => {}}
-        />
-      </div>
+      <nav className="px-5 mb-15 w-full">
+        <div className="flex items-start gap-4 w-full">
+          <Button
+            variant="outline"
+            className="h-auto bg-white border-gray-200 px-4 py-3 rounded-lg typo-body1-medium-base text-gray-800"
+            disabled
+          >
+            이전
+          </Button>
+          <Button
+            className="h-auto flex-1 bg-primary-700 px-4 py-3 rounded-lg typo-heading1-bold-base text-white disabled:bg-gray-300 disabled:cursor-not-allowed"
+            disabled
+          >
+            서비스 준비 중
+          </Button>
+        </div>
+      </nav>
     </article>
   );
 }

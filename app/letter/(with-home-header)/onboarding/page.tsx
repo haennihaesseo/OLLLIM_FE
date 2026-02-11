@@ -1,14 +1,7 @@
-"use client";
-
-import CompleteButton from "@/components/common/CompleteButton";
+import { CompleteButtonContainer } from "@/components/onboarding/CompleteButtonContainer";
 import { Badge } from "@/components/ui/badge";
-import { useRouter } from "next/navigation";
 
 export default function OnboardingPage() {
-  const router = useRouter();
-  const handleNext = () => {
-    router.push("/letter/new/record");
-  };
   const onboardingSteps = [
     {
       id: 1,
@@ -58,7 +51,7 @@ export default function OnboardingPage() {
           </div>
         </div>
       </section>
-      <CompleteButton title="다음" onClick={handleNext} />
+      <CompleteButtonContainer />
     </article>
   );
 }

@@ -49,7 +49,7 @@ export default function LetterBox({
       const currentWord = words[wordIndex];
       const wordStartIndex = limitedContent.indexOf(
         currentWord.word,
-        contentIndex,
+        contentIndex
       );
 
       // 현재 단어를 찾을 수 없으면 다음 단어로
@@ -62,12 +62,12 @@ export default function LetterBox({
       if (wordStartIndex > contentIndex) {
         const beforeText = limitedContent.substring(
           contentIndex,
-          wordStartIndex,
+          wordStartIndex
         );
         parts.push(
           <span key={`before-${wordIndex}`} className="text-gray-900">
             {beforeText}
-          </span>,
+          </span>
         );
       }
 
@@ -86,7 +86,7 @@ export default function LetterBox({
           className={isActive ? "text-primary-700" : "text-gray-900"}
         >
           {currentWord.word}
-        </span>,
+        </span>
       );
 
       contentIndex = wordStartIndex + currentWord.word.length;
@@ -98,7 +98,7 @@ export default function LetterBox({
       parts.push(
         <span key="after" className="text-gray-900">
           {limitedContent.substring(contentIndex)}
-        </span>,
+        </span>
       );
     }
 
@@ -113,7 +113,7 @@ export default function LetterBox({
         backgroundSize: "cover",
         backgroundPosition: "center",
       }}
-      className="relative bg-white rounded-[0.5rem] p-10 h-[370px] flex flex-col"
+      className="relative bg-white rounded-xl p-10 h-[390px] flex flex-col"
     >
       <h3 className="mb-5">To. {title}</h3>
 

@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { useAtom } from "jotai";
 import { letterIdAtom } from "@/store/letterAtoms";
 import { client } from "@/lib/axiosInstance";
@@ -24,5 +24,24 @@ export function useGetLetterFont(
       return response.data.data;
     },
     enabled: !!letterId && (options?.enabled ?? true),
+  });
+}
+
+export function useSuspenseLetterFont(type: "CONTEXT" | "VOICE" = "VOICE") {
+  const [letterId] = useAtom(letterIdAtom);
+
+  return useSuspenseQuery({
+    queryKey: ["letterFont", letterId, type],
+    queryFn: async () => {
+      const response = await client.get<ApiResponse<LetterFontResponse>>(
+        `/api/letter/font?type=${type}`,
+        {
+          headers: {
+            letterId: letterId,
+          },
+        },
+      );
+      return response.data.data;
+    },
   });
 }
